@@ -16,10 +16,8 @@ plugins {
 apply plugin: "org.spongepowered.gradle.vanilla"
 apply plugin: 'kotlin'
 
-allprojects {
-    group 'sh.talonfox'
-    version "1.0.0-1.19.2-SNAPSHOT"
-}
+group = 'sh.talonfox'
+version = "1.0.0-1.19.2-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -42,14 +40,4 @@ test {
 
 minecraft {
     latestRelease()
-    runs {
-        server {
-            mainClass("net.minecraft.launchwrapper.Launch")
-            args('--tweakClass','sh.talonfox.vulpesloader.bootstrap.MinecraftServerBootstrap')
-        }
-        client {
-            mainClass("net.minecraft.launchwrapper.Launch")
-            args('--tweakClass','sh.talonfox.vulpesloader.bootstrap.MinecraftClientBootstrap')
-        }
-    }
 }
