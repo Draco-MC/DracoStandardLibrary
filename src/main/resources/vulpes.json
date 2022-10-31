@@ -1,0 +1,11 @@
+{
+  "id": "vulpes",
+  "name": "Vulpes Standard Library",
+  "version": "1.0.0-1.19.2",
+  "authors": "The Vulpes Team, founded by TalonFox",
+  "description": "APIs and Utilities to assist developers with creating mods for the Vulpes Mod Loader.",
+  "mixin": "vulpes_std.mixins.json",
+  "entrypoints": {
+    "vulpesloader:common": "sh.talonfox.vulpes_std.CommonEntrypoint"
+  }
+}
