@@ -25,13 +25,6 @@ repositories {
     maven { url = "https://repo.spongepowered.org/maven/" }
     maven { url = "https://maven.minecraftforge.net/" }
     maven { url = "https://maven.enaium.cn" }
-    maven {
-        url = uri("https://maven.pkg.github.com/VulpesMC/VulpesLoader")
-        credentials {
-            username = "Talon396"
-            password = "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" // This token can only download GitHub packages I publish, so don't try to doing anything naughty with this, YOU CAN'T.
-        }
-    }
 }
 
 dependencies {
