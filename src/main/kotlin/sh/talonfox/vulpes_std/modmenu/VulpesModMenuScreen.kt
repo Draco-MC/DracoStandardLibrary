@@ -45,7 +45,7 @@ class VulpesModMenuScreen(
         if(modIcons.isEmpty()) {
             VulpesModLoader.Mods.forEach { (id, mod) ->
                 val jar = JarFile(
-                    Paths.get(VulpesModLoader.ModJars[id]!!.toURI()).toFile())
+                    Paths.get(VulpesModLoader.ModJars[id]!!).toFile())
                 val iconZipEntry = jar.getEntry("pack.png")
                 if (iconZipEntry != null) {
                     val img = DynamicTexture(NativeImage.read(jar.getInputStream(iconZipEntry)))

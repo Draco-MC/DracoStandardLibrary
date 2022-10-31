@@ -42,11 +42,7 @@ public class MinecraftMixin {
         final var sources = Sets.newHashSet(access.getSources());
         sources.add((packList, factory) -> VulpesModLoader.INSTANCE.getModJars().forEach((id, jar) -> {
             final Pack packInfo = Pack.create(id + "_resources", true, () -> {
-                    try {
-                        return new ModResourcePack(Paths.get(jar.toURI()),id);
-                    } catch (URISyntaxException e) {
-                        throw new RuntimeException(e);
-                    }
+                return new ModResourcePack(Paths.get(jar),id);
                 },factory,Pack.Position.TOP, PackSource.DEFAULT);
             packList.accept(packInfo);
         }));

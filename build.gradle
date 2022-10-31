@@ -11,14 +11,15 @@ buildscript {
 
 plugins {
     id "org.jetbrains.kotlin.jvm" version "1.7.20"
-    id "maven-publish"
 }
 
 apply plugin: "org.spongepowered.gradle.vanilla"
 apply plugin: 'kotlin'
 
-group 'sh.talonfox'
-version = "1.0.0-1.19.2-SNAPSHOT"
+allprojects {
+    group 'sh.talonfox'
+    version "1.0.0-1.19.2-SNAPSHOT"
+}
 
 repositories {
     mavenCentral()
@@ -28,7 +29,11 @@ repositories {
 }
 
 dependencies {
-    implementation 'sh.talonfox:vulpesloader:0.1.0-SNAPSHOT'
+    implementation('sh.talonfox:VulpesLoader') {
+        version {
+            branch = 'main'
+        }
+    }
 }
 
 test {
@@ -45,26 +50,6 @@ minecraft {
         client {
             mainClass("net.minecraft.launchwrapper.Launch")
             args('--tweakClass','sh.talonfox.vulpesloader.bootstrap.MinecraftClientBootstrap')
-        }
-    }
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/VulpesMC/VulpesStandardLibrary")
-            credentials {
-                username = "Talon396"
-                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-            }
-        }
-    }
-    publications {
-        gpr(MavenPublication) {
-            groupId 'sh.talonfox'
-            artifactId 'vulpes_std'
-            from(components.java)
         }
     }
 }
