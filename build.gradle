@@ -16,7 +16,7 @@ plugins {
 apply plugin: "org.spongepowered.gradle.vanilla"
 apply plugin: 'kotlin'
 
-group = 'sh.talonfox'
+group = 'sh.talonfox.vulpes_std'
 version = "1.0.0-1.19.2-SNAPSHOT"
 
 repositories {
@@ -24,14 +24,11 @@ repositories {
     maven { url = "https://repo.spongepowered.org/maven/" }
     maven { url = "https://maven.minecraftforge.net/" }
     maven { url = "https://maven.enaium.cn" }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    implementation('sh.talonfox:VulpesLoader') {
-        version {
-            branch = 'main'
-        }
-    }
+    implementation 'com.github.VulpesMC:VulpesLoader:main-SNAPSHOT'
 }
 
 test {

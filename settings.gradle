@@ -15,11 +15,5 @@ pluginManagement {
     }
 }
 
-sourceControl {
-    gitRepository('https://github.com/VulpesMC/VulpesLoader.git') {
-        producesModule('sh.talonfox:VulpesLoader')
-    }
-}
-
 rootProject.name = 'VulpesStandardLibrary'
 
