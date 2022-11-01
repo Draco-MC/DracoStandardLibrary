@@ -6,6 +6,6 @@
   "description": "APIs and Utilities to assist developers with creating mods for the Vulpes Mod Loader.",
   "mixin": "vulpes_std.mixins.json",
   "entrypoints": {
-    "vulpesloader:common": "sh.talonfox.vulpes_std.CommonEntrypoint"
+    "vulpes:common": "sh.talonfox.vulpes_std.CommonEntrypoint"
   }
 }

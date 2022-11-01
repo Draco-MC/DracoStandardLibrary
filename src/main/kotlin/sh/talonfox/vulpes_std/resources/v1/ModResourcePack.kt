@@ -21,7 +21,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.AbstractPackResources
 import net.minecraft.server.packs.FilePackResources
 import net.minecraft.server.packs.PackType
-import sh.talonfox.vulpes_std.CommonEntrypoint.LOGGER
+import sh.talonfox.vulpes_std.CommonEntrypoint.Companion.LOGGER
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -77,7 +77,7 @@ open class ModResourcePack(s: Path, pn: String) : AbstractPackResources(File("du
                         val anotherName: String = name.substring(pathVar2.length)
                         val identifier = ResourceLocation.tryBuild(namespace, anotherName)
                         if(identifier == null) {
-                            LOGGER.warn("Invalid path in mod: {}:{}, ignoring", namespace, anotherName)
+                            LOGGER.warn("Invalid path in mod: $namespace:$anotherName, ignoring")
                         } else if(filter.test(identifier)) {
                             resources.add(identifier)
                         }

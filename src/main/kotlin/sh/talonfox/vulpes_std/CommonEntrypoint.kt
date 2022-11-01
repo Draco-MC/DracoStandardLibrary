@@ -16,12 +16,17 @@
 
 package sh.talonfox.vulpes_std
 
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import sh.talonfox.vulpesloader.api.IEntrypoint
 
-object CommonEntrypoint : IEntrypoint {
-    val LOGGER = LoggerFactory.getLogger("VulpesStandardLibrary")
+class CommonEntrypoint : IEntrypoint {
+    companion object {
+        @JvmStatic
+        val LOGGER: Logger = LogManager.getLogger("VulpesStandardLibrary")
+    }
 
     override fun enter() {
+        LOGGER.info("Vulpes Standard Library v1.0.0 for 1.19.2")
     }
 }
