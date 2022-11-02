@@ -13,6 +13,10 @@ plugins {
     id "org.jetbrains.kotlin.jvm" version "1.7.20"
 }
 
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+}
+
 apply plugin: "org.spongepowered.gradle.vanilla"
 apply plugin: 'kotlin'
 
