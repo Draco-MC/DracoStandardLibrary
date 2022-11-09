@@ -1,15 +1,19 @@
 buildscript {
+    ext.kotlin_version = '1.7.20'
     repositories {
         maven {
             url "https://repo.spongepowered.org/repository/maven-public/"
         }
+        mavenCentral()
     }
     dependencies {
         classpath "org.spongepowered:vanillagradle:0.2.1-SNAPSHOT"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 plugins {
+    id 'java'
     id "org.jetbrains.kotlin.jvm" version "1.7.20"
 }
 
@@ -33,6 +37,7 @@ repositories {
 
 dependencies {
     implementation 'com.github.VulpesMC:VulpesLoader:main-SNAPSHOT'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 test {
@@ -41,4 +46,15 @@ test {
 
 minecraft {
     latestRelease()
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }

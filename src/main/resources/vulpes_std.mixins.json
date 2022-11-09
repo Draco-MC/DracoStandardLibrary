@@ -10,6 +10,7 @@
   ],
   "mixins": [
     "BootstrapMixin",
-    "IPackRepoAccessor"
+    "IPackRepoAccessor",
+    "ServerLifeEventHookMixin"
   ]
 }
