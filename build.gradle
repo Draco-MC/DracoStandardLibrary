@@ -45,7 +45,7 @@ test {
 }
 
 minecraft {
-    latestRelease()
+    latestSnapshot()
 }
 
 compileKotlin {

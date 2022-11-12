@@ -18,6 +18,8 @@ package sh.talonfox.vulpes_std.mixins;
 
 import com.google.common.collect.Sets;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
@@ -27,8 +29,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import sh.talonfox.vulpes_std.resources.v1.ModResourcePack;
 import sh.talonfox.vulpesloader.mod.VulpesModLoader;
 
-import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Set;
 
 @Mixin(Minecraft.class)
@@ -39,12 +41,12 @@ public class MinecraftMixin {
     )
     private void vulpes$addResources(PackRepository packRepository) {
         final var access = (IPackRepoAccessor)packRepository;
-        final var sources = Sets.newHashSet(access.getSources());
-        sources.add((packList, factory) -> VulpesModLoader.INSTANCE.getModJars().forEach((id, jar) -> {
-            final Pack packInfo = Pack.create(id + "_resources", true, () -> {
+        final var sources = Sets.newHashSet(Objects.requireNonNull(access.getSources()));
+        sources.add((packList) -> VulpesModLoader.INSTANCE.getModJars().forEach((id, jar) -> {
+            final Pack packResourceInfo = Pack.readMetaAndCreate(id + "_resources", Component.literal(Objects.requireNonNull(VulpesModLoader.INSTANCE.getMods().get(id).getName())), true, (val) -> {
                 return new ModResourcePack(Paths.get(jar),id);
-                },factory,Pack.Position.TOP, PackSource.DEFAULT);
-            packList.accept(packInfo);
+            }, PackType.SERVER_DATA,Pack.Position.TOP, PackSource.DEFAULT);
+            packList.accept(packResourceInfo);
         }));
         access.setSources(Set.copyOf(sources));
         packRepository.reload();

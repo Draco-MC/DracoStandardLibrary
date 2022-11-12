@@ -23,13 +23,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sh.talonfox.vulpesloader.api.VulpesEntrypointExecutor;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 @Mixin(Bootstrap.class)
 public class BootstrapMixin {
     @Inject(
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/core/Registry;freezeBuiltins()V"
+                    target = "Lnet/minecraft/core/Registry;freeze()V"
             ),
             method = "bootStrap"
     )

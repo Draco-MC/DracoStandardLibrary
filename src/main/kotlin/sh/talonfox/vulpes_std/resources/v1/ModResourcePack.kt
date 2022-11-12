@@ -16,27 +16,15 @@
 
 package sh.talonfox.vulpes_std.resources.v1
 
-import com.google.common.collect.Lists
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.server.packs.AbstractPackResources
 import net.minecraft.server.packs.FilePackResources
-import net.minecraft.server.packs.PackType
-import sh.talonfox.vulpes_std.CommonEntrypoint.Companion.LOGGER
 import java.io.File
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.io.InputStream
 import java.nio.file.Path
-import java.util.*
-import java.util.function.Predicate
-import java.util.jar.JarFile
-import java.util.zip.ZipEntry
 
-open class ModResourcePack(s: Path, pn: String) : AbstractPackResources(File("dummy")) {
+open class ModResourcePack(s: Path, pn: String) : FilePackResources(pn, File(s.toUri()), true) {
     private val source: Path = s
     private val packName: String = pn
 
-    private fun getSource(): Path = source
+    /*private fun getSource(): Path = source
 
     override fun getName(): String = packName
 
@@ -122,7 +110,7 @@ open class ModResourcePack(s: Path, pn: String) : AbstractPackResources(File("du
     }
 
     @Throws(IOException::class)
-    override fun getResource(type: PackType, location: ResourceLocation): InputStream {
+    override fun getResource(type: PackType, location: ResourceLocation): IoSupplier<InputStream>? {
         return if (location.path.startsWith("lang/")) {
             super.getResource(PackType.CLIENT_RESOURCES, location)
         } else {
@@ -136,5 +124,6 @@ open class ModResourcePack(s: Path, pn: String) : AbstractPackResources(File("du
         } else {
             super.hasResource(type, location)
         }
-    }
+    }*/
+
 }
