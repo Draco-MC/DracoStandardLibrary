@@ -15,7 +15,35 @@
  */
 
 package sh.talonfox.vulpes_std.events.v1
+import net.minecraft.server.MinecraftServer
 
 abstract class EventInformation {
+    open protected fun getID(): String {
+        return "invalid"
+    }
 
+    open fun get(key: String): Any? {
+        if(!key.contains(":") || key.startsWith(":") || key.endsWith(":") || key.lowercase() != key) {
+            return null
+        } else if(key == "vulpes:id") {
+            return this.getID()
+        }
+        return null
+    }
+}
+
+open class ServerLifeTickInfo(val Server: MinecraftServer, val IsTickEnding: Boolean) : EventInformation() {
+    override open protected fun getID(): String {
+        return "vulpes:server_life_tick"
+    }
+
+    override open fun get(key: String): Any? {
+        if(key == "minecraft:server") {
+            return Server
+        } else if(key == "minecraft:tick_type") {
+            return if(IsTickEnding) "ending" else "starting"
+        } else {
+            return super.get(key)
+        }
+    }
 }

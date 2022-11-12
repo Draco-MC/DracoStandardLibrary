@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sh.talonfox.vulpes_std.mixins;
+package sh.talonfox.vulpes_std.mixins.client;
 
 import com.google.common.collect.Sets;
 import net.minecraft.client.Minecraft;
@@ -27,6 +27,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import sh.talonfox.vulpes_std.resources.v1.ModResourcePack;
+import sh.talonfox.vulpes_std.mixins.IPackRepoAccessor;
 import sh.talonfox.vulpesloader.mod.VulpesModLoader;
 
 import java.nio.file.Paths;

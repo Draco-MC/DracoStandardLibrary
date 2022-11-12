@@ -22,10 +22,13 @@ object EventRegistry {
     private var EventHooks: MutableMap<String,MutableList<Consumer<EventInformation>>> = mutableMapOf()
 
     @JvmStatic
-    fun invokeEvent(eventID: String) {
+    fun invokeEvent(eventID: String, info: EventInformation) {
         if(!eventID.contains(":") || eventID.startsWith(":") || eventID.endsWith(":")) {
             System.err.println("A mod attempted to invoke an event with the invalid name, \"$eventID\"")
             return
+        }
+        for(i in EventHooks[eventID]!!.iterator()) {
+            i.accept(info)
         }
     }
 
