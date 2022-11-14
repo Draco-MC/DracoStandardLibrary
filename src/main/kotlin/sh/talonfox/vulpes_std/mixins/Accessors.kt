@@ -15,6 +15,8 @@
  */
 package sh.talonfox.vulpes_std.mixins
 
+import net.minecraft.client.gui.components.events.GuiEventListener
+import net.minecraft.client.gui.screens.TitleScreen
 import net.minecraft.server.packs.repository.PackRepository
 import net.minecraft.server.packs.repository.RepositorySource
 import org.spongepowered.asm.mixin.Mixin

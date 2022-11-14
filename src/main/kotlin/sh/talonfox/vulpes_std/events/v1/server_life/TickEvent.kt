@@ -13,20 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package sh.talonfox.vulpes_std.events.v1.server_life
 
-package sh.talonfox.vulpes_std
+class TickEvent {
 
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
-import sh.talonfox.vulpesloader.api.IEntrypoint
-
-class CommonEntrypoint : IEntrypoint {
-    private companion object {
-        @JvmField
-        val LOGGER: Logger = LogManager.getLogger("VulpesStandardLibrary")
-    }
-
-    override fun enter() {
-        LOGGER.info("Vulpes Standard Library v1.0.0 for 1.19.2")
-    }
 }

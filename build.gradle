@@ -25,7 +25,7 @@ apply plugin: "org.spongepowered.gradle.vanilla"
 apply plugin: 'kotlin'
 
 group = 'sh.talonfox.vulpes_std'
-version = "1.0.0-1.19.2-SNAPSHOT"
+version = "1.0.0-snapshot-SNAPSHOT"
 
 repositories {
     mavenCentral()

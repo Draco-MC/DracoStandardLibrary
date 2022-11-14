@@ -4,13 +4,15 @@
   "compatibilityLevel": "JAVA_8",
   "package": "sh.talonfox.vulpes_std.mixins",
   "client": [
-    "MinecraftMixin",
     "client.ClientBrandRetrieverMixin",
-    "client.TitleScreenMixin"
+    "client.MinecraftMixin",
+    "client.TitleScreenMixin",
+    "client.PauseScreenMixin"
   ],
   "mixins": [
-    "BootstrapMixin",
+    "EntrypointBootstrapMixin",
+    "DataPackMixin",
     "IPackRepoAccessor",
-    "ServerLifeEventHookMixin"
+    "events.v1.ServerLifeEventMixin"
   ]
 }

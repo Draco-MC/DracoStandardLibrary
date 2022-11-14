@@ -26,20 +26,21 @@ import net.minecraft.client.renderer.PanoramaRenderer
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.Mth
 import sh.talonfox.vulpesloader.mod.VulpesModLoader
 import java.nio.file.Paths
 import java.util.jar.JarFile
 
 class VulpesModMenuScreen(
-    parentScreen: Screen,
-    panorama: PanoramaRenderer?
+    private val ParentScreen: Screen?,
+    private val Panorama: PanoramaRenderer?
 ) : Screen(Component.literal("Vulpes Mod Menu")) {
-    private val superClassScreen: Screen = parentScreen
-    private val Panorama: PanoramaRenderer? = panorama
     private val vulpesIcon: ResourceLocation = ResourceLocation("vulpes:textures/vulpes.png")
-    private var scrollPosition: Int = 0;
-    private var columnCount: Int = 0
+    private var scrollPosition: Int = 0
+    private var scrollTransition: Double = 0.0
+    private var selectedMod: Int = -1
     private var modIcons: MutableMap<String, Pair<ResourceLocation,Pair<Int,Int>>> = mutableMapOf()
+    private val keys = VulpesModLoader.Mods.keys.stream().sorted().toArray()
 
     override fun init() {
         if(modIcons.isEmpty()) {
@@ -58,54 +59,114 @@ class VulpesModMenuScreen(
         }
     }
 
+    override fun tick() {
+        super.tick()
+        if(scrollTransition != 0.0) {
+            scrollTransition = Mth.lerp(scrollTransition,0.0,0.3)
+        }
+    }
+
     override fun render(ps: PoseStack, a: Int, b: Int, c: Float) {
         super.render(ps,a,b,c)
         if(Panorama != null) {
             Panorama.render(c, 1.0F)
         } else {
-            this.renderDirtBackground(0)
+            this.renderDirtBackground((c*32.0).toInt())
+            fill(ps, 0, 32, width, height-32, 0x7f000000)
         }
+        ps.pushPose()
+        ps.translate(0.0,-scrollTransition,0.0)
+        enableScissor(0,32,0+width,32+(height-64))
+        val size = ((height-64)/32)
+        val beginOffset = ((height-64)/2)-(size*32/2)
+        for(index in scrollPosition-1 until scrollPosition+size+1) {
+            val y = index-scrollPosition
+            if(keys.getOrNull(index) != null) {
+                if (VulpesModLoader.Mods[keys[index]] != null) {
+                    if (modIcons.contains(keys[index])) {
+                        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+                        RenderSystem.setShaderTexture(0, modIcons[keys[index]]!!.first)
+                        val dimensions = modIcons[keys[index]]!!.second
+                        blit(
+                            ps,
+                            0,
+                            beginOffset + 32 + (y * 32),
+                            32,
+                            32,
+                            0F,
+                            0F,
+                            dimensions.first,
+                            dimensions.second,
+                            dimensions.first,
+                            dimensions.second
+                        )
+                    }
+                    drawString(
+                        ps,
+                        font,
+                        VulpesModLoader.Mods[keys[index]]?.getName()!!,
+                        33,
+                        beginOffset + 32 + (y * 32),
+                        0xffffffff.toInt()
+                    )
+                    drawString(
+                        ps,
+                        font,
+                        VulpesModLoader.Mods[keys[index]]?.getVersion()!!,
+                        33,
+                        beginOffset + 32 + (y * 32) + 8,
+                        0xff808080.toInt()
+                    )
+                    drawString(
+                        ps,
+                        font,
+                        VulpesModLoader.Mods[keys[index]]?.getAuthors()!!,
+                        33,
+                        beginOffset + 32 + (y * 32) + 16,
+                        0xff808080.toInt()
+                    )
+                }
+            }
+        }
+        disableScissor()
+        ps.popPose()
         RenderSystem.setShader{ GameRenderer.getPositionTexShader() }
         RenderSystem.setShaderTexture(0,vulpesIcon)
         RenderSystem.enableBlend()
         ps.pushPose()
         ps.scale(0.25F,0.25F,0.25F)
-        fill(ps,0,0,width*4,128,0x7f000000)
-        fill(ps,0,(height*4)-128,width*4,height*4,0x7f000000)
+        if(Panorama != null) {
+            fill(ps, 0, 0, width * 4, 128, 0x7f000000)
+            fill(ps, 0, (height * 4) - 128, width * 4, height * 4, 0x7f000000)
+        }
         blit(ps,0,0,128,128,0F,0F,512,512,512,512)
         ps.popPose()
         drawString(ps,font,"Vulpes Mod Menu",(width/2)-(font.width("Vulpes Mod Menu")/2),12,0xffffffff.toInt())
-        val keys = VulpesModLoader.Mods.keys.stream().sorted().toArray()
-        for(i in scrollPosition until scrollPosition+((height-(256/4))/(128/4))) {
-            if(keys.getOrNull(i) == null) {
-                break
-            }
-            if(VulpesModLoader.Mods[keys[i]] != null) {
-                if(modIcons.contains(keys[i])) {
-                    RenderSystem.setShader{ GameRenderer.getPositionTexShader() }
-                    RenderSystem.setShaderTexture(0,modIcons[keys[i]]!!.first)
-                    val dimensions = modIcons[keys[i]]!!.second
-                    blit(ps,0,(128 / 4) + (i * (128 / 4)),128/4,128/4,0F,0F,dimensions.first,dimensions.second,dimensions.first,dimensions.second)
+    }
+
+    override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollAmount: Double): Boolean {
+        super.mouseScrolled(mouseX, mouseY, scrollAmount)
+        val prevScroll = scrollPosition
+        scrollPosition = (scrollPosition - scrollAmount.toInt()).coerceIn(0,modIcons.size)
+        if((prevScroll - scrollAmount.toInt()) == scrollPosition) {
+            scrollTransition = 32.0 * scrollAmount
+        }
+        return true;
+    }
+
+    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        super.mouseClicked(mouseX, mouseY, button)
+        return if(mouseY >= 32 && mouseY <= height-32) {
+            val size = ((height-64)/32)
+            val beginOffset = ((height-64)/2)-(size*32/2)
+            for(i in 0 until size) {
+                if(mouseY >= (i * 32) && mouseY <= ((i+1) * 32)) {
+
                 }
-                drawString(
-                    ps,
-                    font,
-                    VulpesModLoader.Mods[keys[i]]?.getName()!!,
-                    130/4,
-                    (128 / 4) + (i * (128 / 4)),
-                    0xffffffff.toInt()
-                )
-                drawString(
-                    ps,
-                    font,
-                    VulpesModLoader.Mods[keys[i]]?.getVersion()!!,
-                    130/4,
-                    (128 / 4) + (i * (128 / 4))+8,
-                    0xff808080.toInt()
-                )
-            } else {
-                break
             }
+            true
+        } else {
+            false
         }
     }
 
