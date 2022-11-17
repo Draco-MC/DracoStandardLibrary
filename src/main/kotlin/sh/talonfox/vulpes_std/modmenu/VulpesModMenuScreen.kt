@@ -30,6 +30,8 @@ import net.minecraft.util.Mth
 import sh.talonfox.vulpesloader.mod.VulpesModLoader
 import java.nio.file.Paths
 import java.util.jar.JarFile
+import kotlin.math.abs
+import kotlin.math.sin
 
 class VulpesModMenuScreen(
     private val ParentScreen: Screen?,
@@ -38,6 +40,7 @@ class VulpesModMenuScreen(
     private val vulpesIcon: ResourceLocation = ResourceLocation("vulpes:textures/vulpes.png")
     private var scrollPosition: Int = 0
     private var scrollTransition: Double = 0.0
+    private var ticks: Long = 0
     private var selectedMod: Int = -1
     private var modIcons: MutableMap<String, Pair<ResourceLocation,Pair<Int,Int>>> = mutableMapOf()
     private val keys = VulpesModLoader.Mods.keys.stream().sorted().toArray()
@@ -61,8 +64,11 @@ class VulpesModMenuScreen(
 
     override fun tick() {
         super.tick()
+        ticks += 1
         if(scrollTransition != 0.0) {
-            scrollTransition = Mth.lerp(scrollTransition,0.0,0.3)
+            for(i in 0 until 3) {
+                scrollTransition = Mth.lerp(0.3, scrollTransition, 0.0)
+            }
         }
     }
 
@@ -83,6 +89,10 @@ class VulpesModMenuScreen(
             val y = index-scrollPosition
             if(keys.getOrNull(index) != null) {
                 if (VulpesModLoader.Mods[keys[index]] != null) {
+                    if(index == selectedMod) {
+                        val intensity = (abs(sin(Math.toRadians((ticks * 9).toDouble()))) * 128).toInt()
+                        fill(ps,0,beginOffset + 32 + (y * 32),width,(beginOffset + 32 + (y * 32))+32,((intensity.toUInt() shl 24) or (intensity.toUInt() shl 16) or (intensity.toUInt() shl 8) or intensity.toUInt()).toInt())
+                    }
                     if (modIcons.contains(keys[index])) {
                         RenderSystem.setShader { GameRenderer.getPositionTexShader() }
                         RenderSystem.setShaderTexture(0, modIcons[keys[index]]!!.first)
@@ -160,12 +170,18 @@ class VulpesModMenuScreen(
             val size = ((height-64)/32)
             val beginOffset = ((height-64)/2)-(size*32/2)
             for(i in 0 until size) {
-                if(mouseY >= (i * 32) && mouseY <= ((i+1) * 32)) {
-
+                if(mouseY >= 32 + beginOffset + (i * 32) && mouseY <= 32 + beginOffset + ((i+1) * 32)) {
+                    selectedMod = i+scrollPosition
+                    ticks = 5
+                    return true
                 }
             }
-            true
+            selectedMod = -1
+            false
         } else {
+            if(mouseY < 32) {
+                selectedMod = -1
+            }
             false
         }
     }
