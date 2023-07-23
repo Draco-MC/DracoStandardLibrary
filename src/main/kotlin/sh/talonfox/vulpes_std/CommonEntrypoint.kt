@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Vulpes
+ * Copyright 2022-2023 Vulpes
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,6 @@ class CommonEntrypoint : IEntrypoint {
     }
 
     override fun enter() {
-        LOGGER.info("Vulpes Standard Library v1.0.0 for 1.19.2")
+        LOGGER.info("Vulpes Standard Library v1.0.0 for 1.20.1")
     }
 }

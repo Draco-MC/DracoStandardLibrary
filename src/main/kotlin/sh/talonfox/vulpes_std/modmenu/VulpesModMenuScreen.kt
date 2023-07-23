@@ -20,6 +20,7 @@ import com.google.common.hash.Hashing
 import com.mojang.blaze3d.platform.NativeImage
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.client.renderer.PanoramaRenderer
@@ -72,17 +73,18 @@ class VulpesModMenuScreen(
         }
     }
 
-    override fun render(ps: PoseStack, a: Int, b: Int, c: Float) {
-        super.render(ps,a,b,c)
+    override fun render(gfx: GuiGraphics, a: Int, b: Int, c: Float) {
+        super.render(gfx,a,b,c)
         if(Panorama != null) {
             Panorama.render(c, 1.0F)
         } else {
-            this.renderDirtBackground((c*32.0).toInt())
-            fill(ps, 0, 32, width, height-32, 0x7f000000)
+            this.renderDirtBackground(gfx)
+            gfx.fill( 0, 32, width, height-32, 0x7f000000)
         }
-        ps.pushPose()
-        ps.translate(0.0,-scrollTransition,0.0)
-        enableScissor(0,32,0+width,32+(height-64))
+
+        gfx.pose().pushPose()
+        gfx.pose().translate(0.0,-scrollTransition,0.0)
+        gfx.enableScissor(0,32,0+width,32+(height-64))
         val size = ((height-64)/32)
         val beginOffset = ((height-64)/2)-(size*32/2)
         for(index in scrollPosition-1 until scrollPosition+size+1) {
@@ -91,14 +93,12 @@ class VulpesModMenuScreen(
                 if (VulpesModLoader.Mods[keys[index]] != null) {
                     if(index == selectedMod) {
                         val intensity = (abs(sin(Math.toRadians((ticks * 9).toDouble()))) * 128).toInt()
-                        fill(ps,0,beginOffset + 32 + (y * 32),width,(beginOffset + 32 + (y * 32))+32,((intensity.toUInt() shl 24) or (intensity.toUInt() shl 16) or (intensity.toUInt() shl 8) or intensity.toUInt()).toInt())
+                        gfx.fill(0,beginOffset + 32 + (y * 32),width,(beginOffset + 32 + (y * 32))+32,((intensity.toUInt() shl 24) or (intensity.toUInt() shl 16) or (intensity.toUInt() shl 8) or intensity.toUInt()).toInt())
                     }
                     if (modIcons.contains(keys[index])) {
-                        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-                        RenderSystem.setShaderTexture(0, modIcons[keys[index]]!!.first)
                         val dimensions = modIcons[keys[index]]!!.second
-                        blit(
-                            ps,
+                        gfx.blit(
+                            modIcons[keys[index]]!!.first,
                             0,
                             beginOffset + 32 + (y * 32),
                             32,
@@ -111,24 +111,21 @@ class VulpesModMenuScreen(
                             dimensions.second
                         )
                     }
-                    drawString(
-                        ps,
+                    gfx.drawString(
                         font,
                         VulpesModLoader.Mods[keys[index]]?.getName()!!,
                         33,
                         beginOffset + 32 + (y * 32),
                         0xffffffff.toInt()
                     )
-                    drawString(
-                        ps,
+                    gfx.drawString(
                         font,
                         VulpesModLoader.Mods[keys[index]]?.getVersion()!!,
                         33,
                         beginOffset + 32 + (y * 32) + 8,
                         0xff808080.toInt()
                     )
-                    drawString(
-                        ps,
+                    gfx.drawString(
                         font,
                         VulpesModLoader.Mods[keys[index]]?.getAuthors()!!,
                         33,
@@ -138,20 +135,18 @@ class VulpesModMenuScreen(
                 }
             }
         }
-        disableScissor()
-        ps.popPose()
-        RenderSystem.setShader{ GameRenderer.getPositionTexShader() }
-        RenderSystem.setShaderTexture(0,vulpesIcon)
+        gfx.disableScissor()
+        gfx.pose().popPose()
         RenderSystem.enableBlend()
-        ps.pushPose()
-        ps.scale(0.25F,0.25F,0.25F)
+        gfx.pose().pushPose()
+        gfx.pose().scale(0.25F,0.25F,0.25F)
         if(Panorama != null) {
-            fill(ps, 0, 0, width * 4, 128, 0x7f000000)
-            fill(ps, 0, (height * 4) - 128, width * 4, height * 4, 0x7f000000)
+            gfx.fill( 0, 0, width * 4, 128, 0x7f000000)
+            gfx.fill( 0, (height * 4) - 128, width * 4, height * 4, 0x7f000000)
         }
-        blit(ps,0,0,128,128,0F,0F,512,512,512,512)
-        ps.popPose()
-        drawString(ps,font,"Vulpes Mod Menu",(width/2)-(font.width("Vulpes Mod Menu")/2),12,0xffffffff.toInt())
+        gfx.blit(vulpesIcon,0,0,128,128,0F,0F,512,512,512,512)
+        gfx.pose().popPose()
+        gfx.drawString(font,"Vulpes Mod Menu",(width/2)-(font.width("Vulpes Mod Menu")/2),12,0xffffffff.toInt())
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollAmount: Double): Boolean {

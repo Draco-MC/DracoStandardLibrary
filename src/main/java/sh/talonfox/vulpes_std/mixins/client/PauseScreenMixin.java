@@ -2,8 +2,9 @@ package sh.talonfox.vulpes_std.mixins.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.CenteredStringWidget;
-import net.minecraft.client.gui.components.GridWidget;
+import net.minecraft.client.gui.layouts.GridLayout;
+import net.minecraft.client.gui.layouts.LayoutElement;
+import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
@@ -32,18 +33,19 @@ public class PauseScreenMixin {
         isAfter = false;
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/GridWidget;addChild(Lnet/minecraft/client/gui/components/AbstractWidget;IIII)Lnet/minecraft/client/gui/components/AbstractWidget;"), method = "createPauseMenu")
-    public <T extends net.minecraft.client.gui.components.AbstractWidget> T buttonOverride(GridWidget instance, T widget, int row, int column, int rows, int columns) {
+
+    /*@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/layouts/GridLayout$RowHelper;addChild(Lnet/minecraft/client/gui/layouts/LayoutElement;ILnet/minecraft/client/gui/layouts/LayoutSettings;)Lnet/minecraft/client/gui/layouts/LayoutElement;"), method = "createPauseMenu")
+    public <T extends LayoutElement> T buttonOverride(GridLayout.RowHelper instance, T $$0, int $$1, LayoutSettings $$2) {
         Component text = widget.getMessage();
         ComponentContents textContent = text.getContents();
         if(textContent instanceof TranslatableContents && (((TranslatableContents)textContent).getKey().equals("menu.returnToMenu") || ((TranslatableContents)textContent).getKey().equals("menu.disconnect"))) {
             System.out.println("ADD IT NOW!");
             instance.addChild(new VulpesButton(0,0,204,20,Component.literal("Mods"),(x) -> {
                 Minecraft.getInstance().setScreen(new VulpesModMenuScreen(((PauseScreen)(Object)this),null));
-            }),row,column,rows,columns);
+            }),);
             return instance.addChild(widget, row+1, column, rows, columns);
         }
         return instance.addChild(widget, row, column, rows, columns);
-    }
+    }*/
 
 }

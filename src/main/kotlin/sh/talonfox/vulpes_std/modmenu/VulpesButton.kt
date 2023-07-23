@@ -3,6 +3,7 @@ package sh.talonfox.vulpes_std.modmenu
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
@@ -18,11 +19,10 @@ class VulpesButton(x: Int, y: Int, width: Int, height: Int, text: Component, pre
 
     private val vulpes_logo = ResourceLocation("vulpes:textures/vulpes.png")
 
-    override fun renderButton(matrices: PoseStack, mouseX: Int, mouseY: Int, d: Float) {
+    override fun renderWidget(gfx: GuiGraphics, mouseX: Int, mouseY: Int, d: Float) {
         if (mouseX >= x && (mouseX <= x + width) and (mouseY >= y) && mouseY <= y + height) {
             val intensity = (abs(sin(Math.toRadians((ticks * 9).toDouble()))) * 128).toInt()
-            fill(
-                matrices,
+            gfx.fill(
                 x,
                 y,
                 x + width,
@@ -31,8 +31,7 @@ class VulpesButton(x: Int, y: Int, width: Int, height: Int, text: Component, pre
             )
         } else {
             ticks = 5
-            fill(
-                matrices,
+            gfx.fill(
                 x,
                 y,
                 x + width,
@@ -40,10 +39,8 @@ class VulpesButton(x: Int, y: Int, width: Int, height: Int, text: Component, pre
                 0x80000000.toInt()
             )
         }
-        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-        RenderSystem.setShaderTexture(0, vulpes_logo)
-        blit(
-            matrices,
+        gfx.blit(
+            vulpes_logo,
             x,
             y,
             height,
@@ -55,8 +52,7 @@ class VulpesButton(x: Int, y: Int, width: Int, height: Int, text: Component, pre
             512,
             512
         )
-        drawCenteredString(
-            matrices,
+        gfx.drawCenteredString(
             Minecraft.getInstance().font,
             message,
             x + (width/2),

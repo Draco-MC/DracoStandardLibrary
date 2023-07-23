@@ -16,13 +16,10 @@
 
 package sh.talonfox.vulpes_std.mixins.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PanoramaRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
@@ -65,18 +62,16 @@ public class TitleScreenMixin {
     }
 
     @Inject(at = @At("TAIL"), method = "render")
-    public void renderVulpesModButton(PoseStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    public void renderVulpesModButton(GuiGraphics gfx, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if(mouseX >= modButtonXCoord && mouseX <= modButtonXCoord+200 & mouseY >= modButtonYCoord && mouseY <= modButtonYCoord+20) {
             var intensity = (int)(Math.abs(Math.sin(Math.toRadians(ticks*9)))*128);
-            GuiComponent.fill(matrices,modButtonXCoord,modButtonYCoord,modButtonXCoord+200,modButtonYCoord+20,(0x80000000 | (intensity << 16) | (intensity << 8) | intensity));
+            gfx.fill(modButtonXCoord,modButtonYCoord,modButtonXCoord+200,modButtonYCoord+20,(0x80000000 | (intensity << 16) | (intensity << 8) | intensity));
         } else {
             ticks = 5;
-            GuiComponent.fill(matrices,modButtonXCoord,modButtonYCoord,modButtonXCoord+200,modButtonYCoord+20,0x80000000);
+            gfx.fill(modButtonXCoord,modButtonYCoord,modButtonXCoord+200,modButtonYCoord+20,0x80000000);
         }
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, vulpes_logo);
-        GuiComponent.blit(matrices,modButtonXCoord,modButtonYCoord,20,20,0F,0F,512,512,512,512);
-        GuiComponent.drawCenteredString(matrices, Minecraft.getInstance().font, "Mods", modButtonXCoord+100, modButtonYCoord+5, 0xffffff);
+        gfx.blit(vulpes_logo,modButtonXCoord,modButtonYCoord,20,20,0F,0F,512,512,512,512);
+        gfx.drawCenteredString(Minecraft.getInstance().font, "Mods", modButtonXCoord+100, modButtonYCoord+5, 0xffffff);
     }
 
     @Inject(at = @At("HEAD"), method = "tick")
