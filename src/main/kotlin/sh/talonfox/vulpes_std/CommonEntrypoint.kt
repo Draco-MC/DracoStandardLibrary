@@ -18,15 +18,20 @@ package sh.talonfox.vulpes_std
 
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import sh.talonfox.vulpesloader.api.IEntrypoint
+import sh.talonfox.vulpes_std.listeners.v1.client.IClientEntryListener
+import sh.talonfox.vulpes_std.listeners.v1.ICommonEntryListener
 
-class CommonEntrypoint : IEntrypoint {
+open class CommonEntrypoint : ICommonEntryListener, IClientEntryListener {
     private companion object {
         @JvmField
         val LOGGER: Logger = LogManager.getLogger("VulpesStandardLibrary")
     }
 
-    override fun enter() {
+    override fun enterClient() {
+
+    }
+
+    override fun enterCommon() {
         LOGGER.info("Vulpes Standard Library v1.0.0 for 1.20.1")
     }
 }

@@ -22,7 +22,10 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import sh.talonfox.vulpesloader.api.VulpesEntrypointExecutor;
+import sh.talonfox.vulpes_std.listeners.v1.client.IClientEntryListener;
+import sh.talonfox.vulpes_std.listeners.v1.ICommonEntryListener;
+import sh.talonfox.vulpesloader.api.VulpesListenerManager;
+
 
 @Mixin(BuiltInRegistries.class)
 public class EntrypointBootstrapMixin {
@@ -34,9 +37,9 @@ public class EntrypointBootstrapMixin {
             method = "bootStrap"
     )
     private static void vulpes$executeEntrypoints(CallbackInfo ci) {
-        VulpesEntrypointExecutor.executeEntrypoint("vulpes:common");
+        VulpesListenerManager.getListeners(ICommonEntryListener.class).forEach((clazz) -> ((ICommonEntryListener)clazz).enterCommon());
         if(MixinEnvironment.getCurrentEnvironment().getSide() != MixinEnvironment.Side.SERVER) {
-            VulpesEntrypointExecutor.executeEntrypoint("vulpes:client");
+            VulpesListenerManager.getListeners(IClientEntryListener.class).forEach((clazz) -> ((IClientEntryListener)clazz).enterClient());
         }
     }
 }

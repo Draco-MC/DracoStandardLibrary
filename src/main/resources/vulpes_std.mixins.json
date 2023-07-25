@@ -4,15 +4,18 @@
   "compatibilityLevel": "JAVA_8",
   "package": "sh.talonfox.vulpes_std.mixins",
   "client": [
+    "client.AccessorGridLayout",
     "client.ClientBrandRetrieverMixin",
+    "client.CreativeInventoryMixin",
     "client.MinecraftMixin",
-    "client.TitleScreenMixin",
-    "client.PauseScreenMixin"
+    "client.PauseScreenMixin",
+    "client.TitleScreenMixin"
   ],
   "mixins": [
-    "EntrypointBootstrapMixin",
     "DataPackMixin",
+    "EntrypointBootstrapMixin",
     "IPackRepoAccessor",
-    "events.v1.ServerLifeEventMixin"
+    "ItemGroupMixin",
+    "listeners.v1.ServerLifeMixin"
   ]
 }
