@@ -16,15 +16,32 @@
 
 package sh.talonfox.vulpes_std
 
+import net.minecraft.core.Registry
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.registries.Registries
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.item.CreativeModeTab
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
+import net.minecraft.world.level.block.Blocks
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import sh.talonfox.vulpes_std.listeners.v1.client.IClientEntryListener
 import sh.talonfox.vulpes_std.listeners.v1.ICommonEntryListener
+import sh.talonfox.vulpes_std.listeners.v1.client.IClientEntryListener
+import java.util.function.Supplier
+
+class TestItem(settings: Properties) : Item(settings) {
+
+}
 
 open class CommonEntrypoint : ICommonEntryListener, IClientEntryListener {
     private companion object {
         @JvmField
         val LOGGER: Logger = LogManager.getLogger("VulpesStandardLibrary")
+        @JvmField
+        var CUSTOM_ITEM: TestItem? = null
     }
 
     override fun enterClient() {
@@ -32,6 +49,14 @@ open class CommonEntrypoint : ICommonEntryListener, IClientEntryListener {
     }
 
     override fun enterCommon() {
+        CUSTOM_ITEM = TestItem(Item.Properties())
         LOGGER.info("Vulpes Standard Library v1.0.0 for 1.20.1")
+        Registry.register(BuiltInRegistries.ITEM,ResourceLocation("vulpes","testitem"),CUSTOM_ITEM!!)
+        Registry.register(
+            BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation("vulpes","test"), CreativeModeTab.builder(null,-1).title(
+                Component.literal("Vulpes Test Tab")).icon(
+            Supplier { ItemStack(Blocks.DIAMOND_ORE) }).displayItems { _, y ->
+                y.accept(ItemStack(CUSTOM_ITEM!!))
+            }.build())
     }
 }

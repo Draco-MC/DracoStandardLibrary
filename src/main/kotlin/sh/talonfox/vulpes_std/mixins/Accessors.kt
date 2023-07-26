@@ -17,8 +17,11 @@ package sh.talonfox.vulpes_std.mixins
 
 import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.client.gui.screens.TitleScreen
+import net.minecraft.resources.ResourceKey
 import net.minecraft.server.packs.repository.PackRepository
 import net.minecraft.server.packs.repository.RepositorySource
+import net.minecraft.world.item.CreativeModeTab
+import net.minecraft.world.item.CreativeModeTabs
 import org.spongepowered.asm.mixin.Mixin
 import org.spongepowered.asm.mixin.Mutable
 import org.spongepowered.asm.mixin.gen.Accessor

@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_11",
   "package": "sh.talonfox.vulpes_std.mixins",
   "client": [
     "client.AccessorGridLayout",
@@ -12,10 +12,13 @@
     "client.TitleScreenMixin"
   ],
   "mixins": [
+    "CreativeModeTabMixin",
+    "CreativeModeTabsMixin",
     "DataPackMixin",
     "EntrypointBootstrapMixin",
+    "ICreativeModeTabAccessor",
+    "ICreativeModeTabsAccessor",
     "IPackRepoAccessor",
-    "ItemGroupsMixin",
     "listeners.v1.ServerLifeMixin"
   ]
 }
