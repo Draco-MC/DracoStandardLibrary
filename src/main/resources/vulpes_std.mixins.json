@@ -15,7 +15,7 @@
     "DataPackMixin",
     "EntrypointBootstrapMixin",
     "IPackRepoAccessor",
-    "ItemGroupMixin",
+    "ItemGroupsMixin",
     "listeners.v1.ServerLifeMixin"
   ]
 }
