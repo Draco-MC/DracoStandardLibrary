@@ -15,6 +15,7 @@ buildscript {
 plugins {
     id 'java'
     id "org.jetbrains.kotlin.jvm" version "1.7.20"
+    id 'maven-publish'
 }
 
 java {
@@ -56,5 +57,25 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+}
+
+publishing {
+    repositories {
+        def ENV = System.getenv()
+        if (ENV.MAVEN_URL) {
+            maven {
+                url ENV.MAVEN_URL
+            }
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version project.version
+            from components.java
+        }
     }
 }
