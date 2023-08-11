@@ -7,6 +7,7 @@
     "client.AccessorGridLayout",
     "client.ClientBrandRetrieverMixin",
     "client.CreativeInventoryMixin",
+    "client.LoadingOverlayMixin",
     "client.MinecraftMixin",
     "client.PauseScreenMixin",
     "client.TitleScreenMixin"

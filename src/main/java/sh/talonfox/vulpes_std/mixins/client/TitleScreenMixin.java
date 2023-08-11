@@ -37,7 +37,6 @@ import sh.talonfox.vulpes_std.modmenu.VulpesModMenuScreen;
 @Mixin(TitleScreen.class)
 public class TitleScreenMixin {
     @Shadow @Final private PanoramaRenderer panorama;
-    private static ResourceLocation vulpes_logo = new ResourceLocation("vulpes:textures/vulpes.png");
     private static long ticks = 0;
     private static int modButtonXCoord = -1;
     private static int modButtonYCoord = -1;
@@ -70,7 +69,6 @@ public class TitleScreenMixin {
             ticks = 5;
             gfx.fill(modButtonXCoord,modButtonYCoord,modButtonXCoord+200,modButtonYCoord+20,0x80000000);
         }
-        gfx.blit(vulpes_logo,modButtonXCoord,modButtonYCoord,20,20,0F,0F,512,512,512,512);
         gfx.drawCenteredString(Minecraft.getInstance().font, "Mods", modButtonXCoord+100, modButtonYCoord+5, 0xffffff);
     }
 
