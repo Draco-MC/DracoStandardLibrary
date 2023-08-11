@@ -1,4 +1,4 @@
-package sh.talonfox.vulpes_std.listeners.v1
+package sh.talonfox.vulpes_std.listeners
 
 import net.minecraft.server.MinecraftServer
 

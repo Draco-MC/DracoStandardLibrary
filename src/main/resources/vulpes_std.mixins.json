@@ -19,6 +19,6 @@
     "ICreativeModeTabAccessor",
     "ICreativeModeTabsAccessor",
     "IPackRepoAccessor",
-    "listeners.v1.ServerLifeMixin"
+    "listeners.ServerLifeMixin"
   ]
 }

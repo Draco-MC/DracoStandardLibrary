@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package sh.talonfox.vulpes_std.mixins.listeners.v1;
+package sh.talonfox.vulpes_std.mixins.listeners;
 
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import sh.talonfox.vulpes_std.listeners.v1.IServerEndTickListener;
-import sh.talonfox.vulpes_std.listeners.v1.IServerStartTickListener;
-import sh.talonfox.vulpes_std.listeners.v1.IServerStartingListener;
+import sh.talonfox.vulpes_std.listeners.IServerEndTickListener;
+import sh.talonfox.vulpes_std.listeners.IServerStartTickListener;
+import sh.talonfox.vulpes_std.listeners.IServerStartingListener;
 import sh.talonfox.vulpesloader.api.VulpesListenerManager;
 
 @Mixin(MinecraftServer.class)

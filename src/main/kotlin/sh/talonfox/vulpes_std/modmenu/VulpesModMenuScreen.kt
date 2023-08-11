@@ -149,8 +149,8 @@ class VulpesModMenuScreen(
         gfx.drawString(font,"Vulpes Mod Menu",(width/2)-(font.width("Vulpes Mod Menu")/2),12,0xffffffff.toInt())
     }
 
-    override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollAmount: Double): Boolean {
-        super.mouseScrolled(mouseX, mouseY, scrollAmount)
+    override fun mouseScrolled(mouseX: Double, mouseY: Double, idk: Double, scrollAmount: Double): Boolean {
+        super.mouseScrolled(mouseX, mouseY, idk, scrollAmount)
         val prevScroll = scrollPosition
         scrollPosition = (scrollPosition - scrollAmount.toInt()).coerceIn(0,modIcons.size)
         if((prevScroll - scrollAmount.toInt()) == scrollPosition) {

@@ -22,8 +22,8 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import sh.talonfox.vulpes_std.listeners.v1.client.IClientEntryListener;
-import sh.talonfox.vulpes_std.listeners.v1.ICommonEntryListener;
+import sh.talonfox.vulpes_std.listeners.client.IClientEntryListener;
+import sh.talonfox.vulpes_std.listeners.ICommonEntryListener;
 import sh.talonfox.vulpesloader.api.VulpesListenerManager;
 
 
