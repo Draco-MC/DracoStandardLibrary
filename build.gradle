@@ -19,7 +19,7 @@ plugins {
 }
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(17)
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
 }
 
 apply plugin: "org.spongepowered.gradle.vanilla"
@@ -46,7 +46,7 @@ test {
 }
 
 minecraft {
-    latestSnapshot()
+    version("1.20.6")
 }
 
 compileKotlin {

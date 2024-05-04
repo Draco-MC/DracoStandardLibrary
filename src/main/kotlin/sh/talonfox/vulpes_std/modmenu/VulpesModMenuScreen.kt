@@ -75,12 +75,8 @@ class VulpesModMenuScreen(
 
     override fun render(gfx: GuiGraphics, a: Int, b: Int, c: Float) {
         super.render(gfx,a,b,c)
-        if(Panorama != null) {
-            Panorama.render(c, 1.0F)
-        } else {
-            this.renderDirtBackground(gfx)
-            gfx.fill( 0, 32, width, height-32, 0x7f000000)
-        }
+        this.renderBlurredBackground(c);
+        gfx.fill( 0, 32, width, height-32, 0x7f000000)
 
         gfx.pose().pushPose()
         gfx.pose().translate(0.0,-scrollTransition,0.0)

@@ -39,7 +39,7 @@ class VulpesButton(x: Int, y: Int, width: Int, height: Int, text: Component, pre
                 0x80000000.toInt()
             )
         }
-        gfx.blit(
+        /*gfx.blit(
             vulpes_logo,
             x,
             y,
@@ -51,7 +51,7 @@ class VulpesButton(x: Int, y: Int, width: Int, height: Int, text: Component, pre
             512,
             512,
             512
-        )
+        )*/
         gfx.drawCenteredString(
             Minecraft.getInstance().font,
             message,

@@ -19,7 +19,10 @@ import com.google.common.collect.Sets;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.FilePackResources;
+import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
@@ -30,6 +33,7 @@ import sh.talonfox.vulpesloader.mod.VulpesModLoader;
 
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Mixin(MinecraftServer.class)
@@ -42,7 +46,9 @@ public class DataPackMixin {
         final var access = (IPackRepoAccessor)packRepository;
         final var sources = Sets.newHashSet(Objects.requireNonNull(access.getSources()));
         sources.add((packList) -> VulpesModLoader.INSTANCE.getModJars().forEach((id, jar) -> {
-            final Pack packResourceInfo = Pack.readMetaAndCreate(id, Component.literal(Objects.requireNonNull(VulpesModLoader.INSTANCE.getMods().get(id).getName())), true, new FilePackResources.FileResourcesSupplier(Paths.get(jar),true), PackType.SERVER_DATA, Pack.Position.TOP, PackSource.BUILT_IN);
+            //
+            final var info = new PackLocationInfo(id, Component.literal(Objects.requireNonNull(VulpesModLoader.INSTANCE.getMods().get(id).getName())), PackSource.BUILT_IN, Optional.empty());
+            final Pack packResourceInfo = Pack.readMetaAndCreate(info, new FilePackResources.FileResourcesSupplier(Paths.get(jar)), PackType.SERVER_DATA, new PackSelectionConfig(true,Pack.Position.TOP,true));
             packList.accept(packResourceInfo);
         }));
         access.setSources(Set.copyOf(sources));
