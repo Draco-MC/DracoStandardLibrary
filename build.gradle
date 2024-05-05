@@ -18,10 +18,6 @@ plugins {
     id 'maven-publish'
 }
 
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(21)
-}
-
 apply plugin: "org.spongepowered.gradle.vanilla"
 apply plugin: 'kotlin'
 
