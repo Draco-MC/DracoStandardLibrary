@@ -35,8 +35,7 @@ import kotlin.math.abs
 import kotlin.math.sin
 
 class VulpesModMenuScreen(
-    private val ParentScreen: Screen?,
-    private val Panorama: PanoramaRenderer?
+    private val ParentScreen: Screen?
 ) : Screen(Component.literal("Vulpes Mod Menu")) {
     private val vulpesIcon: ResourceLocation = ResourceLocation("vulpes:textures/vulpes.png")
     private var scrollPosition: Int = 0
@@ -76,7 +75,7 @@ class VulpesModMenuScreen(
     override fun render(gfx: GuiGraphics, a: Int, b: Int, c: Float) {
         super.render(gfx,a,b,c)
         this.renderBlurredBackground(c);
-        gfx.fill( 0, 32, width, height-32, 0x7f000000)
+        //gfx.fill( 0, 32, width, height-32, 0x7f000000)
 
         gfx.pose().pushPose()
         gfx.pose().translate(0.0,-scrollTransition,0.0)
@@ -136,11 +135,8 @@ class VulpesModMenuScreen(
         RenderSystem.enableBlend()
         gfx.pose().pushPose()
         gfx.pose().scale(0.25F,0.25F,0.25F)
-        if(Panorama != null) {
-            gfx.fill( 0, 0, width * 4, 128, 0x7f000000)
-            gfx.fill( 0, (height * 4) - 128, width * 4, height * 4, 0x7f000000)
-        }
-        gfx.blit(vulpesIcon,0,0,128,128,0F,0F,512,512,512,512)
+        gfx.fill( 0, 0, width * 4, 128, 0x7f000000)
+        gfx.fill( 0, (height * 4) - 128, width * 4, height * 4, 0x7f000000)
         gfx.pose().popPose()
         gfx.drawString(font,"Vulpes Mod Menu",(width/2)-(font.width("Vulpes Mod Menu")/2),12,0xffffffff.toInt())
     }

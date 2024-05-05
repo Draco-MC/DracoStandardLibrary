@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sh.talonfox.vulpes_std.CommonEntrypoint;
 import sh.talonfox.vulpes_std.creative_tab.VulpesCreativeModeTab;
+import sh.talonfox.vulpes_std.creative_tab.VulpesCreativeTabVars;
 
 @Mixin(CreativeModeInventoryScreen.class)
 public abstract class CreativeInventoryMixin<T extends AbstractContainerMenu> extends EffectRenderingInventoryScreen<T> {
@@ -86,7 +87,7 @@ public abstract class CreativeInventoryMixin<T extends AbstractContainerMenu> ex
     private void onMouseRelease(double x, double y, int type, CallbackInfoReturnable<Boolean> cir) {
         if(leftSidePressed && currentPage > 0) {
             currentPage -= 1;
-        } else if(rightSidePressed) {
+        } else if(rightSidePressed && currentPage < (VulpesCreativeTabVars.pageCount-1)) {
             currentPage += 1;
 
         }

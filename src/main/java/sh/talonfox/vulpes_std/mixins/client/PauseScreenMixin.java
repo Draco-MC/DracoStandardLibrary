@@ -39,7 +39,7 @@ public class PauseScreenMixin extends Screen {
                 if(widget instanceof Button) {
                     if (Objects.equals(((Button) widget).getMessage().getString(), Component.translatable("menu.reportBugs").getString())) {
                         buttons.set(i, new VulpesButton(widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), Component.literal("Mods"), (x) -> {
-                            Minecraft.getInstance().setScreen(new VulpesModMenuScreen(((PauseScreen) (Object) this), null));
+                            Minecraft.getInstance().setScreen(new VulpesModMenuScreen(((PauseScreen) (Object) this)));
                         }));
                     }
                 }

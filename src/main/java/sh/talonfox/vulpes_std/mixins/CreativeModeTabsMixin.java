@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sh.talonfox.vulpes_std.CommonEntrypoint;
 import sh.talonfox.vulpes_std.creative_tab.VulpesCreativeModeTab;
+import sh.talonfox.vulpes_std.creative_tab.VulpesCreativeTabVars;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -55,6 +56,7 @@ public abstract class CreativeModeTabsMixin {
             itemGroupAccessor.setColumn(row == CreativeModeTab.Row.TOP ? pageIndex % 10 : (pageIndex - 10 / 2) % (10));
             count++;
         }
+        VulpesCreativeTabVars.pageCount = (count / 10)+1;
         record TabPosition(CreativeModeTab.Row row, int column, int page) { }
         var map = new HashMap<TabPosition, String>();
         for (ResourceKey<CreativeModeTab> registryKey : BuiltInRegistries.CREATIVE_MODE_TAB.registryKeySet()) {

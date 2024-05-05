@@ -36,7 +36,6 @@ import sh.talonfox.vulpes_std.modmenu.VulpesModMenuScreen;
 
 @Mixin(TitleScreen.class)
 public class TitleScreenMixin {
-    @Shadow @Final private PanoramaRenderer panorama;
     private static long ticks = 0;
     private static int modButtonXCoord = -1;
     private static int modButtonYCoord = -1;
@@ -56,7 +55,7 @@ public class TitleScreenMixin {
     public void clickVulpesModButton(double mouseX, double mouseY, int mouseButton, CallbackInfoReturnable<Boolean> cir) {
         if(mouseX >= modButtonXCoord && mouseX <= modButtonXCoord+200 && mouseY >= modButtonYCoord && mouseY <= modButtonYCoord+20 && mouseButton == 0) {
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            Minecraft.getInstance().setScreen(new VulpesModMenuScreen(((TitleScreen)(Object)this),panorama));
+            Minecraft.getInstance().setScreen(new VulpesModMenuScreen(((TitleScreen)(Object)this)));
         }
     }
 
