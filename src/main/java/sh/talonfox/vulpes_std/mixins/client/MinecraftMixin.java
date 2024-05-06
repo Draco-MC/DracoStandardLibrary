@@ -28,7 +28,9 @@ import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sh.talonfox.vulpes_std.mixins.IPackRepoAccessor;
 import sh.talonfox.vulpesloader.mod.VulpesModLoader;
 
@@ -39,6 +41,11 @@ import java.util.Set;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
+    @Inject(method = "allowsTelemetry", at = @At("HEAD"), cancellable = true)
+    public void vulpes$disableTelemetry(CallbackInfoReturnable<Boolean> cir) {
+        cir.setReturnValue(false);
+    }
+
     @Redirect(
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;reload()V"),
             method = "<init>(Lnet/minecraft/client/main/GameConfig;)V"
@@ -48,7 +55,7 @@ public class MinecraftMixin {
         final var sources = Sets.newHashSet(Objects.requireNonNull(access.getSources()));
         sources.add((packList) -> VulpesModLoader.INSTANCE.getModJars().forEach((id, jar) -> {
             final var info = new PackLocationInfo(id + "_resources", Component.literal(Objects.requireNonNull(VulpesModLoader.INSTANCE.getMods().get(id).getName())), PackSource.BUILT_IN, Optional.empty());
-            final Pack packResourceInfo = Pack.readMetaAndCreate(info, new FilePackResources.FileResourcesSupplier(Paths.get(jar)), PackType.SERVER_DATA, new PackSelectionConfig(true,Pack.Position.TOP,true));
+            final Pack packResourceInfo = Pack.readMetaAndCreate(info, new FilePackResources.FileResourcesSupplier(Paths.get(jar)), PackType.SERVER_DATA, new PackSelectionConfig(true,Pack.Position.TOP,false));
             packList.accept(packResourceInfo);
         }));
         access.setSources(Set.copyOf(sources));

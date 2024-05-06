@@ -2,8 +2,8 @@
   "id": "vulpes",
   "name": "Vulpes Standard Library",
   "version": "1.0.0-snapshot",
-  "authors": "The Vulpes Team, founded by TalonFox",
-  "description": "APIs and Utilities to assist developers with creating mods for the Vulpes Mod Loader.",
+  "authors": "The Vulpes Team",
+  "description": "APIs and Utilities to assist developers with creating mods for the Vulpes Mod Loader. This mod also provides some extra functionality, such as a built-in mod menu. Nearly every mod depends on this one, if this is not installed, your mods will most likely not work or break!",
   "mixin": "vulpes_std.mixins.json",
   "listeners": [
     "sh.talonfox.vulpes_std.CommonEntrypoint"

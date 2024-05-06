@@ -10,7 +10,9 @@
     "client.LoadingOverlayMixin",
     "client.MinecraftMixin",
     "client.PauseScreenMixin",
-    "client.TitleScreenMixin"
+    "client.TitleScreenMixin",
+    "client.IScreenAccessor",
+    "client.NewYggdrasilUserApiServiceMixin"
   ],
   "mixins": [
     "CreativeModeTabMixin",

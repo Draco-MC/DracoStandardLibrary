@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.Button
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
+import sh.talonfox.vulpes_std.modmenu.VulpesModMenuScreen.Companion.renderBox
 import kotlin.math.abs
 import kotlin.math.sin
 
@@ -20,24 +21,18 @@ class VulpesButton(x: Int, y: Int, width: Int, height: Int, text: Component, pre
     private val vulpes_logo = ResourceLocation("vulpes:textures/vulpes.png")
 
     override fun renderWidget(gfx: GuiGraphics, mouseX: Int, mouseY: Int, d: Float) {
-        if (mouseX >= x && (mouseX <= x + width) and (mouseY >= y) && mouseY <= y + height) {
+        renderBox(gfx,x,y,width,height)
+        if (this.isHoveredOrFocused) {
             val intensity = (abs(sin(Math.toRadians((ticks * 9).toDouble()))) * 128).toInt()
             gfx.fill(
                 x,
                 y,
                 x + width,
                 y + height,
-                (0x80000000.toUInt() or (intensity.toUInt() shl 16) or (intensity.toUInt() shl 8) or intensity.toUInt()).toInt()
+                ((intensity.toUInt() shl 24) or (intensity.toUInt() shl 16) or (intensity.toUInt() shl 8) or intensity.toUInt()).toInt()
             )
         } else {
             ticks = 5
-            gfx.fill(
-                x,
-                y,
-                x + width,
-                y + height,
-                0x80000000.toInt()
-            )
         }
         /*gfx.blit(
             vulpes_logo,

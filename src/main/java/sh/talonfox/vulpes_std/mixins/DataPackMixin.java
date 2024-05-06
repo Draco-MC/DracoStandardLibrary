@@ -48,7 +48,7 @@ public class DataPackMixin {
         sources.add((packList) -> VulpesModLoader.INSTANCE.getModJars().forEach((id, jar) -> {
             //
             final var info = new PackLocationInfo(id, Component.literal(Objects.requireNonNull(VulpesModLoader.INSTANCE.getMods().get(id).getName())), PackSource.BUILT_IN, Optional.empty());
-            final Pack packResourceInfo = Pack.readMetaAndCreate(info, new FilePackResources.FileResourcesSupplier(Paths.get(jar)), PackType.SERVER_DATA, new PackSelectionConfig(true,Pack.Position.TOP,true));
+            final Pack packResourceInfo = Pack.readMetaAndCreate(info, new FilePackResources.FileResourcesSupplier(Paths.get(jar)), PackType.SERVER_DATA, new PackSelectionConfig(true,Pack.Position.TOP,false));
             packList.accept(packResourceInfo);
         }));
         access.setSources(Set.copyOf(sources));

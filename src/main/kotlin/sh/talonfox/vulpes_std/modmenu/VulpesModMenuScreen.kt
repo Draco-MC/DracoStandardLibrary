@@ -19,19 +19,18 @@ package sh.talonfox.vulpes_std.modmenu
 import com.google.common.hash.Hashing
 import com.mojang.blaze3d.platform.NativeImage
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
-import net.minecraft.client.renderer.GameRenderer
-import net.minecraft.client.renderer.PanoramaRenderer
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import sh.talonfox.vulpesloader.mod.VulpesModLoader
 import java.nio.file.Paths
 import java.util.jar.JarFile
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.sin
 
 class VulpesModMenuScreen(
@@ -39,7 +38,11 @@ class VulpesModMenuScreen(
 ) : Screen(Component.literal("Vulpes Mod Menu")) {
     private val vulpesIcon: ResourceLocation = ResourceLocation("vulpes:textures/vulpes.png")
     private var scrollPosition: Int = 0
+    private var scrollTransitionPrevious: Double = 0.0
     private var scrollTransition: Double = 0.0
+    private var secondScrollPosition: Int = 0
+    private var secondScrollTransitionPrevious: Double = 0.0
+    private var secondScrollTransition: Double = 0.0
     private var ticks: Long = 0
     private var selectedMod: Int = -1
     private var modIcons: MutableMap<String, Pair<ResourceLocation,Pair<Int,Int>>> = mutableMapOf()
@@ -65,21 +68,58 @@ class VulpesModMenuScreen(
     override fun tick() {
         super.tick()
         ticks += 1
+        if((secondScrollTransition.toInt() - secondScrollPosition).absoluteValue > 0.1) {
+            secondScrollTransitionPrevious = secondScrollTransition
+            for(i in 0 until 3) {
+                secondScrollTransition = Mth.lerp(0.3, secondScrollTransition, secondScrollPosition.toDouble())
+            }
+        } else {
+            secondScrollTransitionPrevious = secondScrollTransition
+            secondScrollTransition = secondScrollPosition.toDouble()
+        }
         if(scrollTransition != 0.0) {
+            scrollTransitionPrevious = scrollTransition
             for(i in 0 until 3) {
                 scrollTransition = Mth.lerp(0.3, scrollTransition, 0.0)
             }
         }
     }
 
+    companion object {
+        @JvmStatic
+        public fun renderBox(gfx: GuiGraphics, x: Int, y: Int, w: Int, h: Int) {
+            RenderSystem.enableBlend();
+            gfx.blit(
+                ResourceLocation("textures/gui/menu_list_background.png"),
+                x,
+                y + 2,
+                (x + w).toFloat(),
+                (y + h - 4).toFloat(),
+                w,
+                h - 4,
+                32,
+                32
+            )
+            val head = HEADER_SEPARATOR
+            val foot = FOOTER_SEPARATOR
+            gfx.blit(head, x, y, 0.0f, 0.0f, w, 2, 32, 2)
+            gfx.blit(foot, x, y + h - 2, 0.0f, 0.0f, w, 2, 32, 2)
+            RenderSystem.disableBlend();
+        }
+    }
+
     override fun render(gfx: GuiGraphics, a: Int, b: Int, c: Float) {
         super.render(gfx,a,b,c)
-        this.renderBlurredBackground(c);
+        //this.renderBlurredBackground(c);
         //gfx.fill( 0, 32, width, height-32, 0x7f000000)
+        renderBox(gfx,8,32,(width.toDouble()*0.5).toInt()-8,height-64);
+        val secondSize = width-8-((width.toDouble()*0.5).toInt()+8)
+        val secondX = (width.toDouble()*0.5).toInt()+8;
+        renderBox(gfx,secondX,32,secondSize,height-64);
 
         gfx.pose().pushPose()
-        gfx.pose().translate(0.0,-scrollTransition,0.0)
-        gfx.enableScissor(0,32,0+width,32+(height-64))
+        gfx.pose().translate(8.0,-Mth.lerp(c.toDouble(),scrollTransitionPrevious,scrollTransition),0.0)
+        gfx.enableScissor(8,34,(width.toDouble()*0.5).toInt(),32+(height-64)-2)
         val size = ((height-64)/32)
         val beginOffset = ((height-64)/2)-(size*32/2)
         for(index in scrollPosition-1 until scrollPosition+size+1) {
@@ -113,52 +153,103 @@ class VulpesModMenuScreen(
                         beginOffset + 32 + (y * 32),
                         0xffffffff.toInt()
                     )
+                    var t = font.splitter.splitLines(VulpesModLoader.Mods[keys[index]]?.getDescription()!!,(width.toDouble()*0.5).toInt()-8-32, Style.EMPTY)
+                    var ind = 0;
+                    for(text in t) {
+                        if(ind+1 >= 2) {
+                            gfx.drawString(font, text.string+"...", 33, beginOffset + 32 + (y * 32)+8+(ind*font.lineHeight), 0xff808080.toInt())
+                            break
+                        }
+                        gfx.drawString(font, text.string, 33, beginOffset + 32 + (y * 32)+8+(ind*font.lineHeight), 0xff808080.toInt())
+                        ind++
+                    }
+                }
+            }
+        }
+        gfx.disableScissor()
+        gfx.pose().popPose()
+        gfx.pose().pushPose()
+        gfx.pose().translate(secondX.toDouble(),32.0-Mth.lerp(c.toDouble(),secondScrollTransitionPrevious,secondScrollTransition), 0.0)
+        gfx.enableScissor(secondX,34,width-8,32+(height-64)-2)
+        if (selectedMod != -1) {
+            if(keys.getOrNull(selectedMod) != null) {
+                if (VulpesModLoader.Mods[keys[selectedMod]] != null) {
+                    if (modIcons.contains(keys[selectedMod])) {
+                        val dimensions = modIcons[keys[selectedMod]]!!.second
+                        gfx.blit(
+                            modIcons[keys[selectedMod]]!!.first,
+                            2,
+                            4,
+                            32,
+                            32,
+                            0F,
+                            0F,
+                            dimensions.first,
+                            dimensions.second,
+                            dimensions.first,
+                            dimensions.second
+                        )
+                    }
                     gfx.drawString(
                         font,
-                        VulpesModLoader.Mods[keys[index]]?.getVersion()!!,
-                        33,
-                        beginOffset + 32 + (y * 32) + 8,
+                        VulpesModLoader.Mods[keys[selectedMod]]?.getName()!!,
+                        35,
+                        4,
+                        0xffffffff.toInt()
+                    )
+                    gfx.drawString(
+                        font,
+                        VulpesModLoader.Mods[keys[selectedMod]]?.getVersion()!!,
+                        35,
+                        4 + 8,
                         0xff808080.toInt()
                     )
                     gfx.drawString(
                         font,
-                        VulpesModLoader.Mods[keys[index]]?.getAuthors()!!,
-                        33,
-                        beginOffset + 32 + (y * 32) + 16,
+                        "By " + VulpesModLoader.Mods[keys[selectedMod]]?.getAuthors()!!,
+                        35,
+                        4 + 16,
                         0xff808080.toInt()
                     )
+                    var t = font.splitter.splitLines(VulpesModLoader.Mods[keys[selectedMod]]?.getDescription()!!,secondSize, Style.EMPTY)
+                    var index = 0;
+                    for(text in t) {
+                        gfx.drawString(font, text.string, 2, 4+32+1+(index*font.lineHeight), 0xffffffff.toInt())
+                        index++
+                    }
                 }
             }
         }
         gfx.disableScissor()
         gfx.pose().popPose()
         RenderSystem.enableBlend()
-        gfx.pose().pushPose()
-        gfx.pose().scale(0.25F,0.25F,0.25F)
-        gfx.fill( 0, 0, width * 4, 128, 0x7f000000)
-        gfx.fill( 0, (height * 4) - 128, width * 4, height * 4, 0x7f000000)
-        gfx.pose().popPose()
         gfx.drawString(font,"Vulpes Mod Menu",(width/2)-(font.width("Vulpes Mod Menu")/2),12,0xffffffff.toInt())
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, idk: Double, scrollAmount: Double): Boolean {
         super.mouseScrolled(mouseX, mouseY, idk, scrollAmount)
-        val prevScroll = scrollPosition
-        scrollPosition = (scrollPosition - scrollAmount.toInt()).coerceIn(0,modIcons.size)
-        if((prevScroll - scrollAmount.toInt()) == scrollPosition) {
-            scrollTransition = 32.0 * scrollAmount
+        if(mouseY >= 34 && mouseY <= height-34 && mouseX >= 8 && mouseX <= (width.toDouble()*0.5).toInt()) {
+            val prevScroll = scrollPosition
+            scrollPosition = (scrollPosition - scrollAmount.toInt()).coerceIn(0, modIcons.size)
+            if ((prevScroll - scrollAmount.toInt()) == scrollPosition) {
+                scrollTransitionPrevious = 32.0 * scrollAmount
+                scrollTransition = 32.0 * scrollAmount
+            }
+        } else if(mouseY >= 34 && mouseY <= height-34 && mouseX >= (width.toDouble()*0.5).toInt()+8 && mouseX <= width-8) {
+            secondScrollPosition = (secondScrollPosition - (scrollAmount * 16.0).toInt()).coerceAtLeast(0)
         }
         return true;
     }
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
         super.mouseClicked(mouseX, mouseY, button)
-        return if(mouseY >= 32 && mouseY <= height-32) {
+        return if(mouseY >= 34 && mouseY <= height-34 && mouseX >= 8 && mouseX <= (width.toDouble()*0.6).toInt()) {
             val size = ((height-64)/32)
             val beginOffset = ((height-64)/2)-(size*32/2)
             for(i in 0 until size) {
                 if(mouseY >= 32 + beginOffset + (i * 32) && mouseY <= 32 + beginOffset + ((i+1) * 32)) {
                     selectedMod = i+scrollPosition
+                    secondScrollPosition = 0
                     ticks = 5
                     return true
                 }

@@ -18,61 +18,67 @@ package sh.talonfox.vulpes_std.mixins.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.client.renderer.PanoramaRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentContents;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.sounds.SoundEvents;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import sh.talonfox.vulpes_std.modmenu.VulpesButton;
 import sh.talonfox.vulpes_std.modmenu.VulpesModMenuScreen;
+
+import java.util.List;
 
 @Mixin(TitleScreen.class)
 public class TitleScreenMixin {
-    private static long ticks = 0;
-    private static int modButtonXCoord = -1;
-    private static int modButtonYCoord = -1;
-
-    @Inject(at = @At("HEAD"), method = "createNormalMenuOptions")
-    public void calculateButtonPos(int a, int b, CallbackInfo ci) {
-        modButtonXCoord = ((TitleScreen)(Object)this).width / 2 - 100;
-        modButtonYCoord = (a + b * 3) - 12;
-    }
-
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/Button$Builder;bounds(IIII)Lnet/minecraft/client/gui/components/Button$Builder;"), method = "createNormalMenuOptions")
-    public Button.Builder buttonOverride(Button.Builder instance, int x, int y, int w, int h) {
-        return instance.bounds(x, y-12, w, h);
-    }
-
-    @Inject(at = @At("HEAD"), method = "mouseClicked")
-    public void clickVulpesModButton(double mouseX, double mouseY, int mouseButton, CallbackInfoReturnable<Boolean> cir) {
-        if(mouseX >= modButtonXCoord && mouseX <= modButtonXCoord+200 && mouseY >= modButtonYCoord && mouseY <= modButtonYCoord+20 && mouseButton == 0) {
-            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            Minecraft.getInstance().setScreen(new VulpesModMenuScreen(((TitleScreen)(Object)this)));
-        }
-    }
-
-    @Inject(at = @At("TAIL"), method = "render")
-    public void renderVulpesModButton(GuiGraphics gfx, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if(mouseX >= modButtonXCoord && mouseX <= modButtonXCoord+200 & mouseY >= modButtonYCoord && mouseY <= modButtonYCoord+20) {
-            var intensity = (int)(Math.abs(Math.sin(Math.toRadians(ticks*9)))*128);
-            gfx.fill(modButtonXCoord,modButtonYCoord,modButtonXCoord+200,modButtonYCoord+20,(0x80000000 | (intensity << 16) | (intensity << 8) | intensity));
-        } else {
-            ticks = 5;
-            gfx.fill(modButtonXCoord,modButtonYCoord,modButtonXCoord+200,modButtonYCoord+20,0x80000000);
-        }
-        gfx.drawCenteredString(Minecraft.getInstance().font, "Mods", modButtonXCoord+100, modButtonYCoord+5, 0xffffff);
-    }
-
     @Inject(at = @At("HEAD"), method = "tick")
-    public void tickVulpesModButton(CallbackInfo ci) {
-        ticks++;
+    public void tick(CallbackInfo ci) {
+        VulpesButton.ticks += 1;
+    }
+
+    @Inject(at = @At("TAIL"), method = "createNormalMenuOptions")
+    public void vulpes$injectButton(int a, int b, CallbackInfo ci) {
+        int modsButtonIndex = -1;
+        int buttonsY = ((TitleScreen)(Object)this).height / 4 + 48;
+        final int spacing = 24;
+        final List<GuiEventListener> buttons = (List<GuiEventListener>)((TitleScreen)(Object)this).children();
+        for(int i = 0; i < buttons.size(); i++) {
+            GuiEventListener widget = buttons.get(i);
+            if (widget instanceof Button button) {
+                if(button.visible) {
+                    if (modsButtonIndex == -1) {
+                        button.setY(button.getY() - spacing / 2);
+                        buttonsY = button.getY();
+                    } else if (!(widget instanceof AbstractButton && button.getMessage().equals(Component.translatable("title.credits")))) {
+                        button.setY(button.getY() + spacing / 2);
+                    }
+                }
+                ComponentContents c = button.getMessage().getContents();
+                if((c instanceof TranslatableContents) && ((TranslatableContents)c).getKey().equals("menu.online")) {
+                    modsButtonIndex = i + 1;
+                    if (button.visible) {
+                        buttonsY = button.getY();
+                    }
+                }
+            }
+        }
+        if (modsButtonIndex != -1) {
+            VulpesButton button = new VulpesButton(((TitleScreen) (Object) this).width / 2 - 100, buttonsY + spacing, 200, 20, Component.literal("Mods"), (x) -> {
+                Minecraft.getInstance().setScreen(new VulpesModMenuScreen(((TitleScreen) (Object) this)));
+            });
+            ((IScreenAccessor)((TitleScreen)(Object)this)).getRenderables().add(modsButtonIndex, button);
+            ((IScreenAccessor)((TitleScreen)(Object)this)).getNarratables().add(modsButtonIndex, button);
+            buttons.add(modsButtonIndex, button);
+        }
     }
 }
