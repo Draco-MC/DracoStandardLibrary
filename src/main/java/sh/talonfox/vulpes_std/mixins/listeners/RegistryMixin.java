@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package sh.talonfox.vulpes_std.mixins;
+package sh.talonfox.vulpes_std.mixins.listeners;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import sh.talonfox.vulpes_std.listeners.client.IClientEntryListener;
-import sh.talonfox.vulpes_std.listeners.ICommonEntryListener;
+import sh.talonfox.vulpes_std.listeners.IRegisterListener;
 import sh.talonfox.vulpesloader.api.VulpesListenerManager;
 
 
 @Mixin(BuiltInRegistries.class)
-public class EntrypointBootstrapMixin {
+public class RegistryMixin {
     @Inject(
             at = @At(
                     value = "INVOKE",
@@ -36,10 +34,10 @@ public class EntrypointBootstrapMixin {
             ),
             method = "bootStrap"
     )
-    private static void vulpes$executeEntrypoints(CallbackInfo ci) {
-        VulpesListenerManager.getListeners(ICommonEntryListener.class).forEach((clazz) -> ((ICommonEntryListener)clazz).enterCommon());
-        if(MixinEnvironment.getCurrentEnvironment().getSide() != MixinEnvironment.Side.SERVER) {
-            VulpesListenerManager.getListeners(IClientEntryListener.class).forEach((clazz) -> ((IClientEntryListener)clazz).enterClient());
+    private static void vulpes$registryHook(CallbackInfo ci) {
+        var instances = VulpesListenerManager.getListeners(IRegisterListener.class);
+        if(instances != null) {
+            instances.forEach((clazz) -> ((IRegisterListener) clazz).register());
         }
     }
 }

@@ -7,21 +7,25 @@
     "client.AccessorGridLayout",
     "client.ClientBrandRetrieverMixin",
     "client.CreativeInventoryMixin",
+    "client.IScreenAccessor",
     "client.LoadingOverlayMixin",
     "client.MinecraftMixin",
+    "client.NewYggdrasilUserApiServiceMixin",
     "client.PauseScreenMixin",
     "client.TitleScreenMixin",
-    "client.IScreenAccessor",
-    "client.NewYggdrasilUserApiServiceMixin"
+    "listeners.ClientTickMixin",
+    "networking.ClientboundCustomPacketMixin"
   ],
   "mixins": [
     "CreativeModeTabMixin",
     "CreativeModeTabsMixin",
     "DataPackMixin",
-    "EntrypointBootstrapMixin",
     "ICreativeModeTabAccessor",
     "ICreativeModeTabsAccessor",
     "IPackRepoAccessor",
-    "listeners.ServerLifeMixin"
+    "listeners.RegistryMixin",
+    "listeners.ServerLifeMixin",
+    "networking.DiscardedPayloadMixin",
+    "networking.ServerGamePacketListenerImplMixin"
   ]
 }

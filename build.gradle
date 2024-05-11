@@ -39,6 +39,7 @@ repositories {
 dependencies {
     implementation 'com.github.VulpesMC:VulpesLoader:main-SNAPSHOT'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compileOnly("io.github.llamalad7:mixinextras-common:0.3.5")
 }
 
 test {

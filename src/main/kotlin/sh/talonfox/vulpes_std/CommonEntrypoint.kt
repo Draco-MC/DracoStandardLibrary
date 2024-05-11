@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Vulpes
+ * Copyright 2022-2024 Vulpes
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,15 @@ package sh.talonfox.vulpes_std
 
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import sh.talonfox.vulpes_std.listeners.ICommonEntryListener
-import sh.talonfox.vulpes_std.listeners.client.IClientEntryListener
+import sh.talonfox.vulpes_std.listeners.IRegisterListener
 
-open class CommonEntrypoint : ICommonEntryListener, IClientEntryListener {
+open class CommonEntrypoint : IRegisterListener {
     private companion object {
         @JvmField
         val LOGGER: Logger = LogManager.getLogger("VulpesStandardLibrary")
     }
 
-    override fun enterClient() {
-
-    }
-
-    override fun enterCommon() {
-        LOGGER.info("Vulpes Standard Library v1.0.0 for 1.20.2")
+    override fun register() {
+        LOGGER.info("Vulpes Standard Library for 1.20.6")
     }
 }
