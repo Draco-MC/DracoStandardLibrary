@@ -29,6 +29,7 @@ import net.minecraft.util.Mth
 import sh.talonfox.vulpesloader.mod.VulpesModLoader
 import java.nio.file.Paths
 import java.util.jar.JarFile
+import kotlin.io.path.toPath
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.sin
@@ -46,20 +47,32 @@ class VulpesModMenuScreen(
     private var ticks: Long = 0
     private var selectedMod: Int = -1
     private var modIcons: MutableMap<String, Pair<ResourceLocation,Pair<Int,Int>>> = mutableMapOf()
-    private val keys = VulpesModLoader.Mods.keys.stream().sorted().toArray()
+    private val keys = VulpesModLoader.MODS.keys.stream().sorted().toArray()
 
     override fun init() {
         if(modIcons.isEmpty()) {
-            VulpesModLoader.Mods.forEach { (id, mod) ->
-                val jar = JarFile(
-                    Paths.get(VulpesModLoader.ModJars[id]!!).toFile())
-                val iconZipEntry = jar.getEntry("pack.png")
-                if (iconZipEntry != null) {
-                    val img = DynamicTexture(NativeImage.read(jar.getInputStream(iconZipEntry)))
-                    val resourceLocation =
-                        ResourceLocation("vulpes", "mod_icon/" + Hashing.sha1().hashString(id, Charsets.UTF_8))
-                    minecraft!!.textureManager.register(resourceLocation,img)
-                    modIcons[id] = Pair(resourceLocation,Pair(img.pixels!!.width,img.pixels!!.height))
+            VulpesModLoader.MODS.forEach { (id, mod) ->
+                if(VulpesModLoader.MOD_PATHS[id]!!.toPath().toString().endsWith(".jar")) {
+                    val jar = JarFile(
+                        Paths.get(VulpesModLoader.MOD_PATHS[id]!!).toFile()
+                    )
+                    val iconZipEntry = jar.getEntry("pack.png")
+                    if (iconZipEntry != null) {
+                        val img = DynamicTexture(NativeImage.read(jar.getInputStream(iconZipEntry)))
+                        val resourceLocation =
+                            ResourceLocation("vulpes", "mod_icon/" + Hashing.sha1().hashString(id, Charsets.UTF_8))
+                        minecraft!!.textureManager.register(resourceLocation, img)
+                        modIcons[id] = Pair(resourceLocation, Pair(img.pixels!!.width, img.pixels!!.height))
+                    }
+                } else {
+                    val icon = Paths.get(VulpesModLoader.MOD_PATHS[id]!!).toFile().resolve("pack.png")
+                    if(icon.exists()) {
+                        val img = DynamicTexture(NativeImage.read(icon.inputStream()))
+                        val resourceLocation =
+                            ResourceLocation("vulpes", "mod_icon/" + Hashing.sha1().hashString(id, Charsets.UTF_8))
+                        minecraft!!.textureManager.register(resourceLocation, img)
+                        modIcons[id] = Pair(resourceLocation, Pair(img.pixels!!.width, img.pixels!!.height))
+                    }
                 }
             }
         }
@@ -125,7 +138,7 @@ class VulpesModMenuScreen(
         for(index in scrollPosition-1 until scrollPosition+size+1) {
             val y = index-scrollPosition
             if(keys.getOrNull(index) != null) {
-                if (VulpesModLoader.Mods[keys[index]] != null) {
+                if (VulpesModLoader.MOD_PATHS[keys[index]] != null) {
                     if(index == selectedMod) {
                         val intensity = (abs(sin(Math.toRadians((ticks * 9).toDouble()))) * 128).toInt()
                         gfx.fill(0,beginOffset + 32 + (y * 32),width,(beginOffset + 32 + (y * 32))+32,((intensity.toUInt() shl 24) or (intensity.toUInt() shl 16) or (intensity.toUInt() shl 8) or intensity.toUInt()).toInt())
@@ -148,12 +161,12 @@ class VulpesModMenuScreen(
                     }
                     gfx.drawString(
                         font,
-                        VulpesModLoader.Mods[keys[index]]?.getName()!!,
+                        VulpesModLoader.MODS[keys[index]]?.getName()!!,
                         33,
                         beginOffset + 32 + (y * 32),
                         0xffffffff.toInt()
                     )
-                    var t = font.splitter.splitLines(VulpesModLoader.Mods[keys[index]]?.getDescription()!!,(width.toDouble()*0.5).toInt()-8-32, Style.EMPTY)
+                    var t = font.splitter.splitLines(VulpesModLoader.MODS[keys[index]]?.getDescription()!!,(width.toDouble()*0.5).toInt()-8-32, Style.EMPTY)
                     var ind = 0;
                     for(text in t) {
                         if(ind+1 >= 2) {
@@ -173,7 +186,7 @@ class VulpesModMenuScreen(
         gfx.enableScissor(secondX,34,width-8,32+(height-64)-2)
         if (selectedMod != -1) {
             if(keys.getOrNull(selectedMod) != null) {
-                if (VulpesModLoader.Mods[keys[selectedMod]] != null) {
+                if (VulpesModLoader.MODS[keys[selectedMod]] != null) {
                     if (modIcons.contains(keys[selectedMod])) {
                         val dimensions = modIcons[keys[selectedMod]]!!.second
                         gfx.blit(
@@ -192,26 +205,26 @@ class VulpesModMenuScreen(
                     }
                     gfx.drawString(
                         font,
-                        VulpesModLoader.Mods[keys[selectedMod]]?.getName()!!,
+                        VulpesModLoader.MODS[keys[selectedMod]]?.getName()!!,
                         35,
                         4,
                         0xffffffff.toInt()
                     )
                     gfx.drawString(
                         font,
-                        VulpesModLoader.Mods[keys[selectedMod]]?.getVersion()!!,
+                        VulpesModLoader.MODS[keys[selectedMod]]?.getVersion()!!,
                         35,
                         4 + 8,
                         0xff808080.toInt()
                     )
                     gfx.drawString(
                         font,
-                        "By " + VulpesModLoader.Mods[keys[selectedMod]]?.getAuthors()!!,
+                        "By " + VulpesModLoader.MODS[keys[selectedMod]]?.getAuthors()!!,
                         35,
                         4 + 16,
                         0xff808080.toInt()
                     )
-                    var t = font.splitter.splitLines(VulpesModLoader.Mods[keys[selectedMod]]?.getDescription()!!,secondSize, Style.EMPTY)
+                    var t = font.splitter.splitLines(VulpesModLoader.MODS[keys[selectedMod]]?.getDescription()!!,secondSize, Style.EMPTY)
                     var index = 0;
                     for(text in t) {
                         gfx.drawString(font, text.string, 2, 4+32+1+(index*font.lineHeight), 0xffffffff.toInt())

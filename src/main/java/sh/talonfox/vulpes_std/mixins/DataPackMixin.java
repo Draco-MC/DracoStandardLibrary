@@ -18,10 +18,7 @@ package sh.talonfox.vulpes_std.mixins;
 import com.google.common.collect.Sets;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.packs.FilePackResources;
-import net.minecraft.server.packs.PackLocationInfo;
-import net.minecraft.server.packs.PackSelectionConfig;
-import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.*;
 import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
@@ -45,10 +42,10 @@ public class DataPackMixin {
     private static void vulpes$addData(PackRepository packRepository) {
         final var access = (IPackRepoAccessor)packRepository;
         final var sources = Sets.newHashSet(Objects.requireNonNull(access.getSources()));
-        sources.add((packList) -> VulpesModLoader.INSTANCE.getModJars().forEach((id, jar) -> {
+        sources.add((packList) -> VulpesModLoader.INSTANCE.getMOD_PATHS().forEach((id, jar) -> {
             //
-            final var info = new PackLocationInfo(id, Component.literal(Objects.requireNonNull(VulpesModLoader.INSTANCE.getMods().get(id).getName())), PackSource.BUILT_IN, Optional.empty());
-            final Pack packResourceInfo = Pack.readMetaAndCreate(info, new FilePackResources.FileResourcesSupplier(Paths.get(jar)), PackType.SERVER_DATA, new PackSelectionConfig(true,Pack.Position.TOP,false));
+            final var info = new PackLocationInfo(id, Component.literal(Objects.requireNonNull(VulpesModLoader.INSTANCE.getMODS().get(id).getName())), PackSource.BUILT_IN, Optional.empty());
+            final Pack packResourceInfo = Pack.readMetaAndCreate(info, jar.toString().endsWith(".jar") ? new FilePackResources.FileResourcesSupplier(Paths.get(jar)) : new PathPackResources.PathResourcesSupplier(Paths.get(jar)), PackType.SERVER_DATA, new PackSelectionConfig(true,Pack.Position.TOP,false));
             packList.accept(packResourceInfo);
         }));
         access.setSources(Set.copyOf(sources));

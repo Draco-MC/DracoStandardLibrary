@@ -50,9 +50,9 @@ public class MinecraftMixin {
     private void vulpes$addResources(PackRepository packRepository) {
         final var access = (IPackRepoAccessor)packRepository;
         final var sources = Sets.newHashSet(Objects.requireNonNull(access.getSources()));
-        sources.add((packList) -> VulpesModLoader.INSTANCE.getModJars().forEach((id, jar) -> {
-            final var info = new PackLocationInfo(id + "_resources", Component.literal(Objects.requireNonNull(VulpesModLoader.INSTANCE.getMods().get(id).getName())), PackSource.BUILT_IN, Optional.empty());
-            final Pack packResourceInfo = Pack.readMetaAndCreate(info, new FilePackResources.FileResourcesSupplier(Paths.get(jar)), PackType.SERVER_DATA, new PackSelectionConfig(true,Pack.Position.TOP,false));
+        sources.add((packList) -> VulpesModLoader.INSTANCE.getMOD_PATHS().forEach((id, jar) -> {
+            final var info = new PackLocationInfo(id + "_resources", Component.literal(Objects.requireNonNull(VulpesModLoader.INSTANCE.getMODS().get(id).getName())), PackSource.BUILT_IN, Optional.empty());
+            final Pack packResourceInfo = Pack.readMetaAndCreate(info, jar.toString().endsWith(".jar") ? new FilePackResources.FileResourcesSupplier(Paths.get(jar)) : new PathPackResources.PathResourcesSupplier(Paths.get(jar)), PackType.SERVER_DATA, new PackSelectionConfig(true,Pack.Position.TOP,false));
             packList.accept(packResourceInfo);
         }));
         access.setSources(Set.copyOf(sources));
