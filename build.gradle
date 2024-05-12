@@ -48,6 +48,12 @@ test {
 
 minecraft {
     version("1.20.6")
+    runs {
+        server()
+        client() {
+            mainClass("net.minecraft.launchwrapper.Launch")
+        }
+    }
 }
 
 compileKotlin {
