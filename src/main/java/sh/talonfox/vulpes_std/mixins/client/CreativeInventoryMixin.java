@@ -87,7 +87,7 @@ public abstract class CreativeInventoryMixin<T extends AbstractContainerMenu> ex
     private void onMouseRelease(double x, double y, int type, CallbackInfoReturnable<Boolean> cir) {
         if(leftSidePressed && currentPage > 0) {
             currentPage -= 1;
-        } else if(rightSidePressed && currentPage < (VulpesCreativeTabVars.pageCount-1)) {
+        } else if(rightSidePressed && currentPage < (VulpesCreativeTabVars.pageCount)-1) {
             currentPage += 1;
 
         }

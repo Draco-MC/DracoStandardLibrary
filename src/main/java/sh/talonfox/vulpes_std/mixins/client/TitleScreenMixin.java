@@ -16,6 +16,7 @@
 
 package sh.talonfox.vulpes_std.mixins.client;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -80,5 +81,10 @@ public class TitleScreenMixin {
             ((IScreenAccessor)((TitleScreen)(Object)this)).getNarratables().add(modsButtonIndex, button);
             buttons.add(modsButtonIndex, button);
         }
+    }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)I"))
+    public void vulpes$render(GuiGraphics gfx, int $$1, int $$2, float $$3, CallbackInfo ci, @Local(ordinal=2) int fade) {
+        gfx.drawString(Minecraft.getInstance().font,"VulpesMC",2,gfx.guiHeight()-10-10,16777215 | fade);
     }
 }

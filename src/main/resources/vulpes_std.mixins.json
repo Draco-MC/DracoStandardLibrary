@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_17",
   "package": "sh.talonfox.vulpes_std.mixins",
   "client": [
     "client.AccessorGridLayout",
@@ -23,9 +23,13 @@
     "ICreativeModeTabAccessor",
     "ICreativeModeTabsAccessor",
     "IPackRepoAccessor",
+    "client.EarlyScreenMixin",
     "listeners.RegistryMixin",
     "listeners.ServerLifeMixin",
     "networking.DiscardedPayloadMixin",
     "networking.ServerGamePacketListenerImplMixin"
-  ]
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

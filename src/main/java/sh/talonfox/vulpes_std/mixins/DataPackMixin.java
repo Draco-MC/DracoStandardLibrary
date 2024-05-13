@@ -26,6 +26,7 @@ import net.minecraft.server.packs.repository.PackSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import sh.talonfox.vulpes_std.debug.VulpesEarlyLog;
 import sh.talonfox.vulpesloader.mod.VulpesModLoader;
 
 import java.nio.file.Paths;

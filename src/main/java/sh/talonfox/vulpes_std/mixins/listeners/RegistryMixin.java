@@ -20,23 +20,28 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import sh.talonfox.vulpes_std.debug.VulpesEarlyLog;
 import sh.talonfox.vulpes_std.listeners.IRegisterListener;
 import sh.talonfox.vulpesloader.api.VulpesListenerManager;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Mixin(BuiltInRegistries.class)
 public class RegistryMixin {
     @Inject(
             at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/core/registries/BuiltInRegistries;freeze()V"
+                    value = "HEAD"
             ),
-            method = "bootStrap"
+            cancellable = true,
+            method = "Lnet/minecraft/core/registries/BuiltInRegistries;freeze()V"
     )
     private static void vulpes$registryHook(CallbackInfo ci) {
+        VulpesEarlyLog.addToLog("REGISTER BuiltInRegistries");
         var instances = VulpesListenerManager.getListeners(IRegisterListener.class);
-        if(instances != null) {
+        if (instances != null) {
             instances.forEach((clazz) -> ((IRegisterListener) clazz).register());
         }
     }

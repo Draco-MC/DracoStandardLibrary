@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sh.talonfox.vulpes_std.CommonEntrypoint;
 import sh.talonfox.vulpes_std.creative_tab.VulpesCreativeModeTab;
 import sh.talonfox.vulpes_std.creative_tab.VulpesCreativeTabVars;
+import sh.talonfox.vulpes_std.debug.VulpesEarlyLog;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.List;
 public abstract class CreativeModeTabsMixin {
     @Inject(method = "validate", at = @At("HEAD"), cancellable = true)
     private static void validate(CallbackInfo ci) {
+        VulpesEarlyLog.addToLog("REGISTER CreativeModeTabs");
         int count = 0;
         final List<ResourceKey<CreativeModeTab>> vanillaGroups = List.of(
                 ICreativeModeTabsAccessor.BUILDING_BLOCKS(),
@@ -56,7 +58,7 @@ public abstract class CreativeModeTabsMixin {
             itemGroupAccessor.setColumn(row == CreativeModeTab.Row.TOP ? pageIndex % 10 : (pageIndex - 10 / 2) % (10));
             count++;
         }
-        VulpesCreativeTabVars.pageCount = (count / 10)+1;
+        VulpesCreativeTabVars.pageCount = Math.ceilDiv(count,10)+1;
         record TabPosition(CreativeModeTab.Row row, int column, int page) { }
         var map = new HashMap<TabPosition, String>();
         for (ResourceKey<CreativeModeTab> registryKey : BuiltInRegistries.CREATIVE_MODE_TAB.registryKeySet()) {

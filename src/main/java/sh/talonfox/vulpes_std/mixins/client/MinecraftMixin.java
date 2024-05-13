@@ -17,20 +17,35 @@
 package sh.talonfox.vulpes_std.mixins.client;
 
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.platform.DisplayData;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.DataFixer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
+import net.minecraft.client.main.GameConfig;
+import net.minecraft.client.renderer.VirtualScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.*;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.util.datafix.DataFixers;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import sh.talonfox.vulpes_std.debug.VulpesEarlyLog;
 import sh.talonfox.vulpes_std.mixins.IPackRepoAccessor;
 import sh.talonfox.vulpesloader.mod.VulpesModLoader;
+import com.mojang.blaze3d.platform.Window;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
@@ -48,6 +63,7 @@ public class MinecraftMixin {
             method = "<init>(Lnet/minecraft/client/main/GameConfig;)V"
     )
     private void vulpes$addResources(PackRepository packRepository) {
+        VulpesEarlyLog.addToLog("REGISTER ResourcePacks");
         final var access = (IPackRepoAccessor)packRepository;
         final var sources = Sets.newHashSet(Objects.requireNonNull(access.getSources()));
         sources.add((packList) -> VulpesModLoader.INSTANCE.getMOD_PATHS().forEach((id, jar) -> {
