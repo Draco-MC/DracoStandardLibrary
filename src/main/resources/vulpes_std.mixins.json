@@ -13,6 +13,7 @@
     "client.NewYggdrasilUserApiServiceMixin",
     "client.PauseScreenMixin",
     "client.TitleScreenMixin",
+    "client.EarlyScreenMixin",
     "listeners.ClientTickMixin",
     "networking.ClientboundCustomPacketMixin"
   ],
@@ -23,7 +24,6 @@
     "ICreativeModeTabAccessor",
     "ICreativeModeTabsAccessor",
     "IPackRepoAccessor",
-    "client.EarlyScreenMixin",
     "listeners.RegistryMixin",
     "listeners.ServerLifeMixin",
     "networking.DiscardedPayloadMixin",

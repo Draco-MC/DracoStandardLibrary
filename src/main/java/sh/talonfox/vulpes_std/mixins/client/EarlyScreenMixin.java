@@ -9,12 +9,15 @@ import net.minecraft.client.Options;
 import net.minecraft.client.main.GameConfig;
 import net.minecraft.client.renderer.VirtualScreen;
 import net.minecraft.util.datafix.DataFixers;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sh.talonfox.vulpes_std.debug.VulpesEarlyLog;
 
 import java.io.File;
@@ -32,8 +35,8 @@ public abstract class EarlyScreenMixin {
     @Shadow @Final private DataFixer fixerUpper;
     @Mutable @Shadow @Final private Window window;
 
-    @Redirect(method = "<init>(Lnet/minecraft/client/main/GameConfig;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/main/GameConfig$FolderData;getExternalAssetSource()Ljava/nio/file/Path;"))
-    private Path vulpes$setEarlyGameWindow(GameConfig.FolderData runArgs) {
+    @Inject(method = "<init>(Lnet/minecraft/client/main/GameConfig;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/main/GameConfig$FolderData;getExternalAssetSource()Ljava/nio/file/Path;", unsafe = true))
+    private void vulpes$setEarlyGameWindow(GameConfig runArgs, CallbackInfo ci) {
         VulpesEarlyLog.addToLog("LOAD VulpesEarlyWindow");
         fixerUpper = DataFixers.getDataFixer();
         RenderSystem.initBackendSystem();
@@ -49,7 +52,6 @@ public abstract class EarlyScreenMixin {
                 createTitle() + " - Vulpes Early Load"
         );
         setWindowActive(true);
-        return runArgs.getExternalAssetSource();
     }
 
     @Redirect(method = "<init>(Lnet/minecraft/client/main/GameConfig;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/VirtualScreen;newWindow(Lcom/mojang/blaze3d/platform/DisplayData;Ljava/lang/String;Ljava/lang/String;)Lcom/mojang/blaze3d/platform/Window;"))

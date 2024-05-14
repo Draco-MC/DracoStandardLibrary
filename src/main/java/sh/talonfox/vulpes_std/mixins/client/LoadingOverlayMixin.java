@@ -1,5 +1,6 @@
 package sh.talonfox.vulpes_std.mixins.client;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,6 +28,9 @@ import java.util.function.Consumer;
 public class LoadingOverlayMixin {
     @Unique
     private static boolean firstLoad = true;
+
+    @Unique
+    private static float fade = 0;
 
     @Inject(method="render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;setOverlay(Lnet/minecraft/client/gui/screens/Overlay;)V"))
     private void vulpes$endFirstLoad(CallbackInfo ci) {
@@ -70,13 +74,16 @@ public class LoadingOverlayMixin {
         if(firstLoad) {
             Thread t = new Thread(() -> {
                 VulpesEarlyLog.addToLog("LOAD Lateinit");
-                VulpesEarlyLog.customBarName = "Vulpes Late Initialization";
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                /*VulpesEarlyLog.customBarName = "Vulpes Late Initialization";
+                for(int i=0; i < 10; i ++) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    VulpesEarlyLog.customBarProgress = (float)(i+1)/10.0F;
                 }
-                VulpesEarlyLog.customBarName = "";
+                VulpesEarlyLog.customBarName = "";*/
             });
             t.start();
         }
@@ -95,6 +102,13 @@ public class LoadingOverlayMixin {
             int diff = y1 - (int) (y1 * 0.6);
             args.set(2, y1 - diff);
             args.set(4, y2 - diff);
+        }
+    }
+
+    @Inject(method = "render", at = @At("TAIL"))
+    public void vulpes$captureFade(GuiGraphics gfx, int $$1, int $$2, float delta, CallbackInfo ci, @Local(ordinal=1) float f) {
+        if(firstLoad) {
+            fade = f;
         }
     }
 
@@ -123,7 +137,7 @@ public class LoadingOverlayMixin {
     @ModifyVariable(method = "render", at = @At("STORE"), ordinal = 6)
     private int vulpes$moveUpward(int x) {
         if(firstLoad) {
-            return x + x + (x / 2);
+            return Mth.lerpInt(Mth.clamp(fade,0F,1F),x + x + (x / 2),x);
         } else {
             return x;
         }
