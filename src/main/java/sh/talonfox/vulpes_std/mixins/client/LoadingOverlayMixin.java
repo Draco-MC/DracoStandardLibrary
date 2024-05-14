@@ -137,7 +137,7 @@ public class LoadingOverlayMixin {
     @ModifyVariable(method = "render", at = @At("STORE"), ordinal = 6)
     private int vulpes$moveUpward(int x) {
         if(firstLoad) {
-            return Mth.lerpInt((float)Math.sin(Math.toRadians(Mth.clamp(fade,0F,1F)*90F)),x + x + (x / 2),x);
+            return Mth.lerpInt((float)Math.sin(Math.toRadians(Mth.clamp((fade-0.5F)/0.5F,0F,1F)*90F)),x + x + (x / 2),x);
         } else {
             return x;
         }
