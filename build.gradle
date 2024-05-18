@@ -25,7 +25,7 @@ java {
 apply plugin: "org.spongepowered.gradle.vanilla"
 apply plugin: 'kotlin'
 
-group = 'sh.talonfox.vulpes_std'
+group = 'sh.talonfloof.draco_std'
 version = "1.0.0-snapshot-SNAPSHOT"
 
 repositories {
@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.VulpesMC:VulpesLoader:main-SNAPSHOT'
+    implementation 'com.github.Draco-MC:DracoLoader:main-SNAPSHOT'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compileOnly("io.github.llamalad7:mixinextras-common:0.3.5")
 }
@@ -49,9 +49,12 @@ test {
 minecraft {
     version("1.20.6")
     runs {
-        server()
+        server() {
+            mainClass("net.minecraft.launchwrapper.Launch")
+        }
         client() {
             mainClass("net.minecraft.launchwrapper.Launch")
+            args("--tweakClass", "sh.talonfloof.dracoloader.bootstrap.MinecraftClientBootstrap")
         }
     }
 }

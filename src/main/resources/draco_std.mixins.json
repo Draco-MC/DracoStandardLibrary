@@ -1,0 +1,35 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_16",
+  "package": "sh.talonfloof.draco_std.mixins",
+  "client": [
+    "client.AccessorGridLayout",
+    "client.ClientBrandRetrieverMixin",
+    "client.CreativeInventoryMixin",
+    "client.IScreenAccessor",
+    "client.LoadingOverlayMixin",
+    "client.MinecraftMixin",
+    "client.NewYggdrasilUserApiServiceMixin",
+    "client.PauseScreenMixin",
+    "client.TitleScreenMixin",
+    "client.EarlyScreenMixin",
+    "listeners.ClientTickMixin",
+    "networking.ClientboundCustomPacketMixin"
+  ],
+  "mixins": [
+    "CreativeModeTabMixin",
+    "CreativeModeTabsMixin",
+    "DataPackMixin",
+    "ICreativeModeTabAccessor",
+    "ICreativeModeTabsAccessor",
+    "IPackRepoAccessor",
+    "listeners.RegistryMixin",
+    "listeners.ServerLifeMixin",
+    "networking.DiscardedPayloadMixin",
+    "networking.ServerGamePacketListenerImplMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

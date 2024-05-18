@@ -15,5 +15,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'VulpesStandardLibrary'
+rootProject.name = 'DracoStandardLibrary'
 

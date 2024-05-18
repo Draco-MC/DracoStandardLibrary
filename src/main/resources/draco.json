@@ -1,0 +1,11 @@
+{
+  "id": "draco",
+  "name": "Draco Standard Library",
+  "version": "1.0.0-snapshot",
+  "authors": "The DracoMC Team",
+  "description": "APIs and Utilities to assist developers with creating mods for the Draco Mod Loader. This mod also provides some extra functionality, such as a built-in mod menu. Nearly every mod depends on this one, if this is not installed, your mods will most likely not work or break!",
+  "mixin": "draco_std.mixins.json",
+  "listeners": [
+    "sh.talonfloof.draco_std.CommonEntrypoint"
+  ]
+}
