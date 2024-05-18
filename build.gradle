@@ -15,6 +15,7 @@ buildscript {
 plugins {
     id 'java'
     id "org.jetbrains.kotlin.jvm" version "1.7.20"
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'maven-publish'
 }
 
@@ -28,6 +29,10 @@ apply plugin: 'kotlin'
 group = 'sh.talonfloof.draco_std'
 version = "1.0.0-snapshot-SNAPSHOT"
 
+configurations {
+    shadow
+}
+
 repositories {
     mavenCentral()
     maven { url = "https://repo.spongepowered.org/maven/" }
@@ -39,7 +44,7 @@ repositories {
 dependencies {
     implementation 'com.github.Draco-MC:DracoLoader:main-SNAPSHOT'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compileOnly("io.github.llamalad7:mixinextras-common:0.3.5")
+    implementation "com.formdev:flatlaf:3.1.1"
 }
 
 test {
@@ -87,5 +92,12 @@ publishing {
             version project.version
             from components.java
         }
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.compileClasspath]
+    dependencies {
+        include(dependency("com.formdev:flatlaf:3.1.1"))
     }
 }
