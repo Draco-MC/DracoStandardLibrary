@@ -107,8 +107,9 @@ public class LoadingOverlayMixin {
         if(firstLoad && logoFadeStart == Long.MAX_VALUE) {
             logoFadeStart = Util.getMillis()+100;
         }
-        assert Minecraft.getInstance().screen != null;
-        draco$guiScale = Minecraft.getInstance().screen.width/gfx.guiWidth();
+        if(firstLoad) {
+            draco$guiScale = Minecraft.getInstance().screen.width / gfx.guiWidth();
+        }
     }
 
 

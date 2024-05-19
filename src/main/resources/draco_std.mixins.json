@@ -26,6 +26,7 @@
     "IPackRepoAccessor",
     "client.ClientMainMixin",
     "client.EntityModelsMixin",
+    "client.EntityRenderersMixin",
     "client.IWindowAccessor",
     "listeners.RegistryMixin",
     "listeners.ServerLifeMixin",
