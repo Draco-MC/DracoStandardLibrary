@@ -1,4 +1,4 @@
-package sh.talonfloof.draco_std.mixins.client;
+package sh.talonfloof.draco_std.mixins.client.entity;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRenderers;
@@ -30,11 +30,10 @@ public class EntityRenderersMixin {
         AtomicInteger i = new AtomicInteger();
         var max = renders.size();
         renders.forEach((key, value) -> {
-            PROVIDERS.put(key,(EntityRendererProvider<?>)value);
+            PROVIDERS.put(key,value);
             i.getAndIncrement();
             DracoEarlyLog.customBarProgress = (float)i.get()/(float)max;
         });
-        Thread.sleep(1000);
         DracoEarlyLog.customBarName = "";
     }
 }

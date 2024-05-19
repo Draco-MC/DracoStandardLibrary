@@ -1,5 +1,7 @@
 package sh.talonfloof.draco_std.debug
 
+import sh.talonfloof.draco_std.CommonEntrypoint.Companion.LOGGER
+
 object DracoEarlyLog {
     val log = mutableListOf("")
     @JvmField
@@ -8,6 +10,7 @@ object DracoEarlyLog {
     var customBarProgress: Float = 0.0F
     @JvmStatic
     fun addToLog(s: String) {
+        LOGGER.info(s)
         log.add(0,s)
         if(log.size > 6)
             log.removeLast()
