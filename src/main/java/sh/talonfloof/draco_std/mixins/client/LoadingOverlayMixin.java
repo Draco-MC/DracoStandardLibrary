@@ -23,6 +23,8 @@ import java.lang.management.MemoryUsage;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import static sh.talonfloof.draco_std.CommonEntrypoint.VERSION;
+
 @Mixin(LoadingOverlay.class)
 public class LoadingOverlayMixin {
     @Unique
@@ -80,8 +82,8 @@ public class LoadingOverlayMixin {
         if(firstLoad) {
             Thread t = new Thread(() -> {
                 //DracoEarlyLog.addToLog("LOAD Lateinit");
-                /*VulpesEarlyLog.customBarName = "Vulpes Late Initialization";
-                for(int i=0; i < 10; i ++) {
+                //DracoEarlyLog.customBarName = "Draco Late Initialization";
+                /*for(int i=0; i < 10; i ++) {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -153,12 +155,13 @@ public class LoadingOverlayMixin {
                 draco$drawString(gfx, $$1, $$2 + 32 - 10, DracoEarlyLog.customBarName, a);
                 draco$drawProgressBar(gfx, $$1, $$2 + 32, $$3 - $$1, $$4 - $$2, a, DracoEarlyLog.customBarProgress);
             }
+            draco$drawString(gfx,gfx.guiWidth()-(VERSION.length()*6),gfx.guiHeight()-9,VERSION,a);
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(770, 1);
             gfx.setColor(1.0F, 1.0F, 1.0F, a);
-            gfx.blit(new ResourceLocation("draco","draco_monochrome.png"), gfx.guiWidth()-41, gfx.guiHeight()-51, 39, 50, 0F, 0F, 39, 50, 39, 50);
+            gfx.blit(new ResourceLocation("draco","draco_monochrome.png"), gfx.guiWidth()-40, gfx.guiHeight()-9-51, 39, 50, 0F, 0F, 39, 50, 39, 50);
             gfx.setColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.defaultBlendFunc();
             RenderSystem.disableBlend();

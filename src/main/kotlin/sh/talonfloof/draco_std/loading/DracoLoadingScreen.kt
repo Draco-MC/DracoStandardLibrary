@@ -1,5 +1,6 @@
 package sh.talonfloof.draco_std.loading
 
+import sh.talonfloof.draco_std.CommonEntrypoint
 import sh.talonfloof.draco_std.debug.DracoEarlyLog
 import java.awt.*
 import java.awt.event.ComponentAdapter
@@ -52,6 +53,7 @@ class DracoScreenAdapter : ComponentAdapter() {
             }
             DracoLoadingScreen.dracoLabel.icon = ImageIcon(DracoLoadingScreen.draco.image.getScaledInstance(39*DracoLoadingScreen.screen!!.calculateScale(),50*DracoLoadingScreen.screen!!.calculateScale(), Image.SCALE_FAST))
             DracoLoadingScreen.logLabel.font = DracoLoadingScreen.f.deriveFont(8.0F * DracoLoadingScreen.screen!!.calculateScale())
+            DracoLoadingScreen.versionLabel.font = DracoLoadingScreen.f.deriveFont(8.0F * DracoLoadingScreen.screen!!.calculateScale())
             DracoLoadingScreen.screen!!.repaint()
         }
     }
@@ -71,6 +73,8 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
         var imageLabel = JLabel()
         @JvmField
         var logLabel = JMultilineLabel()
+        @JvmField
+        var versionLabel = JLabel(CommonEntrypoint.VERSION)
         @JvmField
         var memoryLabel = JLabel("")
         @JvmField
@@ -203,16 +207,24 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
         logLabel.font = f.deriveFont(16.0F)
         logLabel.foreground = Color.WHITE
         logLabel.background = localColor
+        versionLabel.foreground = Color.WHITE
+        versionLabel.font = f.deriveFont(16.0F)
+        versionLabel.horizontalAlignment = SwingConstants.RIGHT
         c.fill = GridBagConstraints.HORIZONTAL
         c.gridx = 0
         c.gridy = 0
-        c.anchor = GridBagConstraints.SOUTH;
+        c.anchor = GridBagConstraints.SOUTH
         c.weightx = 1.0
         panel.add(logLabel, c)
-        c.gridx = 1
-        c.insets = Insets(0,0,1,2)
-        dracoLabel.icon = ImageIcon(draco.image.getScaledInstance(39*2,50*2, Image.SCALE_FAST))
-        panel.add(dracoLabel,c)
+        run {
+            val box = JPanel(BorderLayout(1,1))
+            box.background = localColor
+            dracoLabel.icon = ImageIcon(draco.image.getScaledInstance(39 * 2, 50 * 2, Image.SCALE_FAST))
+            box.add(dracoLabel, BorderLayout.EAST)
+            box.add(versionLabel, BorderLayout.SOUTH)
+            c.gridx = 1
+            panel.add(box, c)
+        }
         add(panel, BorderLayout.SOUTH)
         startMemoryThread()
         setLocationRelativeTo(null)

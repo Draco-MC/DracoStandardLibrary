@@ -12,12 +12,13 @@ import org.apache.logging.log4j.Logger
 import sh.talonfloof.draco_std.listeners.IRegisterListener
 
 open class CommonEntrypoint : IRegisterListener {
-    private companion object {
+    companion object {
         @JvmField
         val LOGGER: Logger = LogManager.getLogger("DracoStandardLibrary")
+        const val VERSION = "1.20.6-alpha0.1"
     }
 
     override fun register() {
-        LOGGER.info("Draco Standard Library for 1.20.6")
+        LOGGER.info("Draco Standard Library $VERSION")
     }
 }

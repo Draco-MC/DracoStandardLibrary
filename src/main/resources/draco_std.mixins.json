@@ -25,6 +25,7 @@
     "ICreativeModeTabsAccessor",
     "IPackRepoAccessor",
     "client.ClientMainMixin",
+    "client.EntityModelsMixin",
     "client.IWindowAccessor",
     "listeners.RegistryMixin",
     "listeners.ServerLifeMixin",
