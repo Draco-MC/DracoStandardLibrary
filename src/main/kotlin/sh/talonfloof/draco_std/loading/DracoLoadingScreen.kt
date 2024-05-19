@@ -2,10 +2,13 @@ package sh.talonfloof.draco_std.loading
 
 import sh.talonfloof.draco_std.debug.DracoEarlyLog
 import java.awt.*
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
 import java.lang.management.ManagementFactory
 import javax.imageio.ImageIO
 import javax.swing.*
 import javax.swing.border.EmptyBorder
+
 
 class JMultilineLabel() : JTextArea() {
     init {
@@ -18,15 +21,52 @@ class JMultilineLabel() : JTextArea() {
         lineWrap = true
         border = EmptyBorder(0,0,0,0)
         alignmentY = BOTTOM_ALIGNMENT
-        background = Color(239, 50, 61)
     }
 }
-class DracoLoadingScreen : JFrame() {
+
+class DracoScreenAdapter : ComponentAdapter() {
+    override fun componentResized(e: ComponentEvent) {
+        if(DracoLoadingScreen.screen != null) {
+            val guiW = DracoLoadingScreen.screen!!.rootPane.width/DracoLoadingScreen.screen!!.calculateScale()
+            val guiH = DracoLoadingScreen.screen!!.rootPane.height/DracoLoadingScreen.screen!!.calculateScale()
+            val height = (((guiW * 0.75).coerceAtMost(guiH.toDouble()))*0.25).toInt()
+            val width = height*4
+            for (c in DracoLoadingScreen.topPanel.components) {
+                if (c is JLabel) {
+                    if(c.icon != null) {
+                        c.icon = ImageIcon(DracoLoadingScreen.image.image.getScaledInstance(width*DracoLoadingScreen.screen!!.calculateScale(),height*DracoLoadingScreen.screen!!.calculateScale(), Image.SCALE_FAST))
+                        c.isOpaque = false
+                    }
+                    c.font = DracoLoadingScreen.f.deriveFont(8.0F * DracoLoadingScreen.screen!!.calculateScale())
+                }
+                if(c is JPanel) {
+                    val cm = c.components.first()
+                    cm.maximumSize = Dimension(width,8*DracoLoadingScreen.screen!!.calculateScale())
+                    cm.minimumSize = cm.maximumSize
+                    cm.preferredSize = cm.maximumSize
+                    cm.size = cm.maximumSize
+                    cm.repaint()
+                    c.border = BorderFactory.createLineBorder(Color.WHITE, DracoLoadingScreen.screen!!.calculateScale())
+                    (cm as JProgressBar).border = BorderFactory.createLineBorder(Color.WHITE, DracoLoadingScreen.screen!!.calculateScale())
+                }
+            }
+            DracoLoadingScreen.dracoLabel.icon = ImageIcon(DracoLoadingScreen.draco.image.getScaledInstance(39*DracoLoadingScreen.screen!!.calculateScale(),50*DracoLoadingScreen.screen!!.calculateScale(), Image.SCALE_FAST))
+            DracoLoadingScreen.logLabel.font = DracoLoadingScreen.f.deriveFont(8.0F * DracoLoadingScreen.screen!!.calculateScale())
+            DracoLoadingScreen.screen!!.repaint()
+        }
+    }
+}
+
+class DracoLoadingScreen(val localColor: Color) : JFrame() {
     companion object {
         @JvmField
         var screen: DracoLoadingScreen? = null
         @JvmField
         var image = ImageIcon(ImageIO.read(javaClass.classLoader.getResourceAsStream("assets/draco/draco-banner.png")))
+        @JvmField
+        var draco = ImageIcon(ImageIO.read(javaClass.classLoader.getResourceAsStream("assets/draco/draco_monochrome.png")))
+        @JvmField
+        var dracoLabel = JLabel()
         @JvmField
         var imageLabel = JLabel()
         @JvmField
@@ -37,33 +77,112 @@ class DracoLoadingScreen : JFrame() {
         var memoryBar = JProgressBar()
         @JvmField
         var memoryThread: Thread? = null
+        @JvmField
+        var diffX = 0
+        @JvmField
+        var diffY = 0
+        @JvmField
+        var color: Color = Color.BLACK
+        @JvmField
+        val topPanel = JPanel(GridBagLayout())
+        @JvmStatic
+        val f: Font = Font.createFont(Font.TRUETYPE_FONT, javaClass.classLoader.getResourceAsStream("assets/draco/monocraft.ttf"))
+        private val progressBarLabel: MutableMap<String, JLabel> = mutableMapOf()
+        private val progressBars: MutableMap<String, JPanel> = mutableMapOf()
+
+        @JvmStatic
+        fun createCustomProgressBar(id: String, title: String?, max: Int) {
+            val guiW = DracoLoadingScreen.screen!!.rootPane.width/DracoLoadingScreen.screen!!.calculateScale()
+            val guiH = DracoLoadingScreen.screen!!.rootPane.height/DracoLoadingScreen.screen!!.calculateScale()
+            val height = (((guiW * 0.75).coerceAtMost(guiH.toDouble()))*0.25).toInt()
+            val width = height*4
+            run {
+                val c = GridBagConstraints()
+                c.fill = GridBagConstraints.HORIZONTAL
+                c.gridx = 0
+                c.gridy = (progressBarLabel.size*2)+3
+                val l = JPanel(BorderLayout())
+                val progressBar = JProgressBar()
+                progressBar.isIndeterminate = max == 0
+                progressBar.background = color
+                progressBar.foreground = Color.WHITE
+                progressBar.isBorderPainted = false
+                progressBar.maximum = max
+                progressBar.maximumSize = Dimension(width,8*screen!!.calculateScale())
+                progressBar.minimumSize = progressBar.maximumSize
+                progressBar.preferredSize = progressBar.maximumSize
+                progressBar.size = progressBar.maximumSize
+                progressBar.border = BorderFactory.createLineBorder(Color.WHITE, screen!!.calculateScale())
+                l.add(progressBar, BorderLayout.CENTER)
+                l.border = BorderFactory.createLineBorder(Color.WHITE, screen!!.calculateScale())
+                val label = JLabel(title)
+                label.foreground = Color.WHITE
+                label.font = f.deriveFont(8.0F * screen!!.calculateScale())
+                topPanel.add(label,c)
+                topPanel.revalidate()
+                progressBarLabel[id] = label
+                c.gridy++
+                topPanel.add(l,c)
+                topPanel.revalidate()
+                progressBars[id] = l
+            }
+            topPanel.repaint()
+        }
+
+        @JvmStatic
+        fun updateCustomBar(id: String, title: String?, v: Int?, max: Int?) {
+            if(v == null && title == null && max == null) {
+                topPanel.remove(progressBarLabel[id]!!)
+                topPanel.remove(progressBars[id]!!)
+                return
+            }
+            if(max != null) {
+                (progressBars[id]!!.components.first() as JProgressBar).maximum = max
+                (progressBars[id]!!.components.first() as JProgressBar).isIndeterminate = max == 0
+            }
+            if(v != null) {
+                (progressBars[id]!!.components.first() as JProgressBar).value = v
+            }
+            if(title != null) {
+                progressBarLabel[id]!!.text = title
+            }
+        }
+    }
+
+    fun calculateScale() : Int {
+        var i: Int = 1
+        val w = width - diffX
+        val h = height - diffY
+        while (i < w && i < h && w / (i + 1) >= 320 && h / (i + 1) >= 240) {
+            ++i
+        }
+
+        return i
     }
 
     init {
-        val f = Font.createFont(Font.TRUETYPE_FONT, javaClass.classLoader.getResourceAsStream("assets/draco/monocraft.ttf"))
-        setTitle("Draco")
+        color = localColor
+        addComponentListener(DracoScreenAdapter())
+        setTitle("Minecraft: Draco Loading...")
+        iconImage = null
         setSize(854, 480)
-        //background = Color(239, 50, 61)
-        //rootPane.background = Color(239, 50, 61)
-        layeredPane.background = Color(239, 50, 61)
-        contentPane.background = Color(239, 50, 61)
-        isResizable = false
+        layeredPane.background = localColor
+        contentPane.background = localColor
+        //isResizable = false
         defaultCloseOperation = WindowConstants.DO_NOTHING_ON_CLOSE
-        image.image = image.image.getScaledInstance(600,204, Image.SCALE_FAST)
+        image.image = image.image.getScaledInstance(1,1, Image.SCALE_FAST)
         imageLabel.icon = image
         imageLabel.horizontalAlignment = SwingConstants.CENTER
 
-        val topPanel = JPanel(GridBagLayout())
-        topPanel.background = Color(239, 50, 61)
+        topPanel.background = localColor
         val c = GridBagConstraints()
         c.fill = GridBagConstraints.HORIZONTAL
         c.gridx = 0
         run {
             val l = JPanel(BorderLayout())
-            memoryLabel.font = f.deriveFont(16.0F)
             memoryLabel.horizontalAlignment = SwingConstants.CENTER
             memoryLabel.foreground = Color.WHITE
-            memoryBar.background = Color(239, 50, 61)
+            memoryBar.background = localColor
             memoryBar.foreground = Color.WHITE
             memoryBar.isBorderPainted = false
             l.add(memoryBar, BorderLayout.CENTER)
@@ -77,36 +196,23 @@ class DracoLoadingScreen : JFrame() {
         c.ipady = 20
         topPanel.add(imageLabel, c)
         c.ipady = 0
-        run {
-            c.gridy = 3
-            val l = JLabel("Booting Minecraft")
-            l.foreground = Color.WHITE
-            l.font = f.deriveFont(16.0F)
-            topPanel.add(l, c)
-        }
-        run {
-            val l = JPanel(BorderLayout())
-            val progressBar = JProgressBar()
-            progressBar.isIndeterminate = true
-            progressBar.font = f.deriveFont(16.0F)
-            progressBar.background = Color(239, 50, 61)
-            progressBar.foreground = Color.WHITE
-            progressBar.isBorderPainted = false
-            l.add(progressBar, BorderLayout.CENTER)
-            l.border = BorderFactory.createLineBorder(Color.WHITE, 2)
-            c.gridy = 4
-            topPanel.add(l, c)
-        }
+
         add(topPanel, BorderLayout.NORTH)
         val panel = JPanel(GridBagLayout())
-        panel.background = Color(239, 50, 61)
+        panel.background = localColor
         logLabel.font = f.deriveFont(16.0F)
         logLabel.foreground = Color.WHITE
+        logLabel.background = localColor
         c.fill = GridBagConstraints.HORIZONTAL
         c.gridx = 0
         c.gridy = 0
+        c.anchor = GridBagConstraints.SOUTH;
         c.weightx = 1.0
         panel.add(logLabel, c)
+        c.gridx = 1
+        c.insets = Insets(0,0,1,2)
+        dracoLabel.icon = ImageIcon(draco.image.getScaledInstance(39*2,50*2, Image.SCALE_FAST))
+        panel.add(dracoLabel,c)
         add(panel, BorderLayout.SOUTH)
         startMemoryThread()
         setLocationRelativeTo(null)
@@ -115,6 +221,7 @@ class DracoLoadingScreen : JFrame() {
     private fun startMemoryThread() {
         memoryThread = Thread({
             while (true) {
+                setExtendedState(extendedState and MAXIMIZED_BOTH.inv())
                 val mem = ManagementFactory.getMemoryMXBean()
                 val heapusage = mem.heapMemoryUsage
                 val heap = String.format(

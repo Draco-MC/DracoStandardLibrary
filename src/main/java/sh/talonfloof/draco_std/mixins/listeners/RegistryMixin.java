@@ -23,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sh.talonfloof.draco_std.debug.DracoEarlyLog;
 import sh.talonfloof.draco_std.listeners.IRegisterListener;
+import sh.talonfloof.draco_std.loading.DracoLoadingScreen;
 import sh.talonfloof.dracoloader.api.DracoListenerManager;
 
 
@@ -35,11 +36,28 @@ public class RegistryMixin {
             cancellable = true,
             method = "Lnet/minecraft/core/registries/BuiltInRegistries;freeze()V"
     )
-    private static void vulpes$registryHook(CallbackInfo ci) {
-        DracoEarlyLog.addToLog("REGISTER BuiltInRegistries");
+    private static void draco$registryHook(CallbackInfo ci) throws InterruptedException {
+        DracoEarlyLog.addToLog("HOOK IRegisterListener");
         var instances = DracoListenerManager.getListeners(IRegisterListener.class);
         if (instances != null) {
-            instances.forEach((clazz) -> ((IRegisterListener) clazz).register());
+            DracoLoadingScreen.createCustomProgressBar("IRegisterListener","HOOK IRegisterListener",instances.size());
+            final int[] i = {0};
+            instances.forEach((clazz) -> {
+                ((IRegisterListener) clazz).register();
+                i[0]++;
+                DracoLoadingScreen.updateCustomBar("IRegisterListener",null,i[0],null);
+            });
+            DracoLoadingScreen.updateCustomBar("IRegisterListener","FREEZE BuiltinRegistries",null,0);
         }
+        DracoEarlyLog.addToLog("FREEZE BuiltInRegistries");
+    }
+    @Inject(
+            at = @At(
+                    value = "TAIL"
+            ),
+            method = "Lnet/minecraft/core/registries/BuiltInRegistries;freeze()V"
+    )
+    private static void draco$endRegistryHook(CallbackInfo ci) {
+        DracoLoadingScreen.updateCustomBar("IRegisterListener",null,null,null);
     }
 }

@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sh.talonfloof.draco_std.creative_tab.DracoCreativeModeTab;
 import sh.talonfloof.draco_std.creative_tab.DracoCreativeTabVars;
 import sh.talonfloof.draco_std.debug.DracoEarlyLog;
+import sh.talonfloof.draco_std.loading.DracoLoadingScreen;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ public abstract class CreativeModeTabsMixin {
     @Inject(method = "validate", at = @At("HEAD"), cancellable = true)
     private static void validate(CallbackInfo ci) {
         DracoEarlyLog.addToLog("REGISTER CreativeModeTabs");
+        DracoLoadingScreen.createCustomProgressBar("CreativeTabs","REGISTER CreativeModeTabs",0);
         int count = 0;
         final List<ResourceKey<CreativeModeTab>> vanillaGroups = List.of(
                 ICreativeModeTabsAccessor.BUILDING_BLOCKS(),
@@ -71,6 +73,7 @@ public abstract class CreativeModeTabsMixin {
                 throw new IllegalArgumentException("Duplicate position: (%s) for item groups %s vs %s".formatted(position, displayName, existingName));
             }
         }
+        DracoLoadingScreen.updateCustomBar("CreativeTabs",null,null,null);
         ci.cancel();
     }
 }

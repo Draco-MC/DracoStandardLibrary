@@ -28,6 +28,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import sh.talonfloof.draco_std.loading.DracoLoadingScreen;
 import sh.talonfloof.draco_std.mixins.IPackRepoAccessor;
 import sh.talonfloof.draco_std.debug.DracoEarlyLog;
 import sh.talonfloof.dracoloader.mod.DracoModLoader;
@@ -48,8 +49,9 @@ public class MinecraftMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;reload()V"),
             method = "<init>(Lnet/minecraft/client/main/GameConfig;)V"
     )
-    private void draco$addResources(PackRepository packRepository) {
-        DracoEarlyLog.addToLog("REGISTER ResourcePacks");
+    private void draco$addResources(PackRepository packRepository) throws InterruptedException {
+        DracoEarlyLog.addToLog("DISCOVER ModResources");
+        DracoLoadingScreen.createCustomProgressBar("resources","DISCOVER ModResources",0);
         final var access = (IPackRepoAccessor)packRepository;
         final var sources = Sets.newHashSet(Objects.requireNonNull(access.getSources()));
         sources.add((packList) -> DracoModLoader.INSTANCE.getMOD_PATHS().forEach((id, jar) -> {
@@ -59,5 +61,7 @@ public class MinecraftMixin {
         }));
         access.setSources(Set.copyOf(sources));
         packRepository.reload();
+        DracoLoadingScreen.updateCustomBar("resources",null,null,null);
+        DracoLoadingScreen.updateCustomBar("minecraft_load","Minecraft Load",0,100);
     }
 }

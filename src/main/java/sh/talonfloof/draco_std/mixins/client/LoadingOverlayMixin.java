@@ -2,9 +2,11 @@ package sh.talonfloof.draco_std.mixins.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.LoadingOverlay;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.util.FastColor;
@@ -28,6 +30,13 @@ public class LoadingOverlayMixin {
 
     @Unique
     private static float fade = 0;
+
+    @Unique
+    private static long logoFadeStart = Long.MAX_VALUE;
+    @Unique
+    private static int draco$guiScale = 0;
+    @Unique
+    private static int draco$logoHeight = 0;
 
     @Inject(method="render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;setOverlay(Lnet/minecraft/client/gui/screens/Overlay;)V"))
     private void draco$endFirstLoad(CallbackInfo ci) {
@@ -70,7 +79,7 @@ public class LoadingOverlayMixin {
     private void loadMods(Minecraft minecraft, ReloadInstance $$1, Consumer<Optional<Throwable>> $$2, boolean $$3, CallbackInfo ci) {
         if(firstLoad) {
             Thread t = new Thread(() -> {
-                DracoEarlyLog.addToLog("LOAD Lateinit");
+                //DracoEarlyLog.addToLog("LOAD Lateinit");
                 /*VulpesEarlyLog.customBarName = "Vulpes Late Initialization";
                 for(int i=0; i < 10; i ++) {
                     try {
@@ -91,12 +100,28 @@ public class LoadingOverlayMixin {
         return instance.isDone() && DracoEarlyLog.customBarName.isEmpty();
     }
 
+    @Inject(method = "render", at = @At(value = "HEAD"))
+    private void draco$tick(GuiGraphics gfx, int mX, int mY, float delta, CallbackInfo ci) {
+        if(firstLoad && logoFadeStart == Long.MAX_VALUE) {
+            logoFadeStart = Util.getMillis()+100;
+        }
+        assert Minecraft.getInstance().screen != null;
+        draco$guiScale = Minecraft.getInstance().screen.width/gfx.guiWidth();
+    }
+
+
+    @ModifyArgs(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V", ordinal = 0))
+    private void draco$fadeInLogo(Args args) {
+        args.set(3,Math.min(args.get(3),(float)(((double)(Util.getMillis()-logoFadeStart))/1000.0)));
+    }
+
     @ModifyArgs(method = "render", at = @At(value = "INVOKE", target="drawProgressBar(Lnet/minecraft/client/gui/GuiGraphics;IIIIF)V"))
     private void draco$moveBarUpward(Args args) {
         if(firstLoad) {
+            int base = 10+((draco$guiScale*2)+(8*draco$guiScale))+1+(int)draco$logoHeight+12;
             int y1 = args.get(2);
             int y2 = args.get(4);
-            int diff = y1 - (int) (y1 * 0.6);
+            int diff = y1 - base;
             args.set(2, y1 - diff);
             args.set(4, y2 - diff);
         }
@@ -116,27 +141,39 @@ public class LoadingOverlayMixin {
             var mem = ManagementFactory.getMemoryMXBean();
             final MemoryUsage heapusage = mem.getHeapMemoryUsage();
             String heap = String.format("Heap: %d/%d MB (%.1f%%) OffHeap: %d MB", heapusage.getUsed() >> 20, heapusage.getMax() >> 20, ((float) heapusage.getUsed() / heapusage.getMax()) * 100.0, mem.getNonHeapMemoryUsage().getUsed() >> 20);
-            draco$drawString(gfx, gfx.guiWidth() / 2 - ((heap.length() * 6) / 2), 4, heap, a);
-            draco$drawProgressBar(gfx, $$1, (int) (gfx.guiHeight() / 16.0), $$3 - $$1, $$4 - $$2, a, (float) heapusage.getUsed() / heapusage.getMax());
+            draco$drawString(gfx, gfx.guiWidth() / 2 - ((heap.length() * 6) / 2), 1, heap, a);
+            draco$drawProgressBar(gfx, $$1, 10, $$3 - $$1, $$4 - $$2, a, (float) heapusage.getUsed() / heapusage.getMax());
             // Draw Early Logs
             for (int i = 0; i < DracoEarlyLog.INSTANCE.getLog().size(); i++) {
                 String s = DracoEarlyLog.INSTANCE.getLog().get(i);
-                draco$drawString(gfx, 2, gfx.guiHeight() - (i * 12) - 12, s, a * Mth.lerp((float) i / 5, 1F, 0.25F));
+                draco$drawString(gfx, 1, gfx.guiHeight() - (i * 10) - 10, s, a * Mth.lerp((float) i / 5, 1F, 1F));
             }
-            draco$drawString(gfx, $$1, $$2 - 10, "Minecraft Resource Initialization", a);
+            draco$drawString(gfx, $$1, $$2 - 9, "Minecraft Load", a);
             if (!DracoEarlyLog.customBarName.isEmpty()) {
                 draco$drawString(gfx, $$1, $$2 + 32 - 10, DracoEarlyLog.customBarName, a);
                 draco$drawProgressBar(gfx, $$1, $$2 + 32, $$3 - $$1, $$4 - $$2, a, DracoEarlyLog.customBarProgress);
             }
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(770, 1);
+            gfx.setColor(1.0F, 1.0F, 1.0F, a);
+            gfx.blit(new ResourceLocation("draco","draco_monochrome.png"), gfx.guiWidth()-41, gfx.guiHeight()-51, 39, 50, 0F, 0F, 39, 50, 39, 50);
+            gfx.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.disableBlend();
+            RenderSystem.depthMask(true);
+            RenderSystem.enableDepthTest();
         }
     }
 
-    @ModifyVariable(method = "render", at = @At("STORE"), ordinal = 6)
-    private int draco$moveUpward(int x) {
+    @ModifyArgs(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIFFIIII)V"))
+    private void  draco$moveUpward(Args args) {
         if(firstLoad) {
-            return Mth.lerpInt((float)Math.sin(Math.toRadians(Mth.clamp((fade-0.5F)/0.5F,0F,1F)*90F)),x + x + (x / 2),x);
-        } else {
-            return x;
+            int base = 10+((draco$guiScale*2)+(8*draco$guiScale))+1;
+            int i = (Integer)args.get(2);
+            args.set(2,Mth.lerpInt((float)Math.sin(Math.toRadians(Mth.clamp((fade-0.5F)/0.5F,0F,1F)*90F)),base,i));
+            draco$logoHeight = args.get(4);
         }
     }
 }
