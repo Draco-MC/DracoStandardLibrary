@@ -26,7 +26,7 @@ public class ClientMainMixin {
             try (var stream = new FileInputStream(options)) {
                 var content = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
                 int index = content.indexOf("darkMojangStudiosBackground:");
-                if(index != 0) {
+                if(index != -1) {
                     if(content.substring(index+("darkMojangStudiosBackground:".length())).startsWith("true")) {
                         color = Color.BLACK;
                     }
