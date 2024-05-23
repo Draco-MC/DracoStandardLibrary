@@ -11,11 +11,11 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import sh.talonfloof.draco_std.debug.DracoEarlyLog;
+/*import sh.talonfloof.draco_std.debug.DracoEarlyLog;
 import sh.talonfloof.draco_std.listeners.IAttributeRegisterListener;
 import sh.talonfloof.draco_std.listeners.IRegisterListener;
 import sh.talonfloof.draco_std.loading.DracoLoadingScreen;
-import sh.talonfloof.dracoloader.api.DracoListenerManager;
+import sh.talonfloof.dracoloader.api.DracoListenerManager;*/
 
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class DefaultAttributesRegistryMixin {
     @Inject(method = "<clinit>*", at = @At("TAIL"))
     private static void draco$attributeInjection(CallbackInfo ci) {
         SUPPLIERS = new IdentityHashMap<>(SUPPLIERS);
-        DracoEarlyLog.addToLog("HOOK IAttributeRegisterListener");
+        /*DracoEarlyLog.addToLog("HOOK IAttributeRegisterListener");
         var instances = DracoListenerManager.getListeners(IAttributeRegisterListener.class);
         if (instances != null) {
             DracoLoadingScreen.createCustomProgressBar("IAttributeRegisterListener","HOOK IAttributeRegisterListener",instances.size());
@@ -41,6 +41,6 @@ public class DefaultAttributesRegistryMixin {
                 DracoLoadingScreen.updateCustomBar("IAttributeRegisterListener",null,i[0],null);
             });
             DracoLoadingScreen.updateCustomBar("IAttributeRegisterListener",null,null,null);
-        }
+        }*/
     }
 }

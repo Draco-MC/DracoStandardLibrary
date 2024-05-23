@@ -11,13 +11,14 @@ import sh.talonfloof.draco_std.loading.DracoLoadingScreen;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 
 @Mixin(Main.class)
 public class ClientMainMixin {
 
     @Inject(method="main", at=@At("HEAD"))
-    private static void draco$earlyLoad(String[] args, CallbackInfo ci) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
+    private static void draco$earlyLoad(String[] args, CallbackInfo ci) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, NoSuchMethodException, InvocationTargetException {
         DracoEarlyLog.addToLog("Loading Draco "+ CommonEntrypoint.VERSION);
         System.setProperty("java.awt.headless","false");
         Color color = new Color(239, 50, 61);

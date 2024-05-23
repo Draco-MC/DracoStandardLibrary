@@ -1,13 +1,23 @@
 package sh.talonfloof.draco_std
 
+import net.minecraft.core.Registry
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.entity.Mob
+import net.minecraft.world.item.CreativeModeTab
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import sh.talonfloof.draco_std.listeners.IAttributeRegisterListener
 import sh.talonfloof.draco_std.listeners.IRegisterListener
+import sh.talonfloof.draco_std.transformation.RegistryUnfreezeTransformer
+import sh.talonfloof.dracoloader.transform.DracoTransformerRegistry
 
-open class CommonEntrypoint : IRegisterListener, IAttributeRegisterListener {
+open class CommonEntrypoint : IRegisterListener {
     init {
         LOGGER.info("Draco Standard Library $VERSION")
+        DracoTransformerRegistry.addTransformer(RegistryUnfreezeTransformer)
     }
 
     companion object {
@@ -17,9 +27,11 @@ open class CommonEntrypoint : IRegisterListener, IAttributeRegisterListener {
     }
 
     override fun register() {
-
-    }
-
-    override fun attributeRegister() {
+        println(Mob.createMobAttributes())
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation("draco","test"), CreativeModeTab.builder(
+            CreativeModeTab.Row.TOP,0).title(Component.literal("Draco Test Tab")).icon { ItemStack(Items.AMETHYST_SHARD) }.displayItems { a,b ->
+                b.accept(ItemStack(Items.AMETHYST_SHARD))
+        }.build())
+        Thread.sleep(1000)
     }
 }

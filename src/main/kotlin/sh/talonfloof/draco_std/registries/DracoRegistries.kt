@@ -1,6 +1,5 @@
 package sh.talonfloof.draco_std.registries
 
-import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation

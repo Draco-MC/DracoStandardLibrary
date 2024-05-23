@@ -9,12 +9,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sh.talonfloof.draco_std.listeners.client.IClientEndTickListener;
 import sh.talonfloof.draco_std.listeners.client.IClientStartTickListener;
+import sh.talonfloof.draco_std.loading.DracoLoadingScreen;
 import sh.talonfloof.dracoloader.api.DracoListenerManager;
 
 @Mixin(Minecraft.class)
 public class ClientTickMixin {
     @Inject(method = "run", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;startTick()V"))
-    private void vulpes$clientTickStart(CallbackInfo ci) {
+    private void vulpes$clientTickStart(CallbackInfo ci) throws ClassNotFoundException {
         var instances = DracoListenerManager.getListeners(IClientStartTickListener.class);
         if(instances != null) {
             instances.forEach((clazz) -> ((IClientStartTickListener) clazz).clientStartTick());
