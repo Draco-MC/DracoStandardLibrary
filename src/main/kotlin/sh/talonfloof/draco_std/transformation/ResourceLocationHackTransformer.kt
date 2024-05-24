@@ -12,7 +12,7 @@ import sh.talonfloof.dracoloader.transform.visitAsm
 This is a hack used to allow newer snapshots of Minecraft to run the standard library due to the changes with the ResourceLocation class
 This doesn't affect standard releases and only 24w21a and above, a more permanent solution will be used when 1.21 is released
  */
-object ResourceLocationHackTransformer : IDracoTransformer {
+class ResourceLocationHackTransformer : IDracoTransformer {
     override fun transform(loader: ClassLoader, className: String, originalClassData: ByteArray?): ByteArray? {
         if(className == "net.minecraft.resources.ResourceLocation") {
             val reader = ClassReader(originalClassData)

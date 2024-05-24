@@ -7,5 +7,9 @@
   "mixin": "draco_std.mixins.json",
   "listeners": [
     "sh.talonfloof.draco_std.CommonEntrypoint"
+  ],
+  "transformers": [
+    "sh.talonfloof.draco_std.transformation.RegistryUnfreezeTransformer",
+    "sh.talonfloof.draco_std.transformation.ResourceLocationHackTransformer"
   ]
 }

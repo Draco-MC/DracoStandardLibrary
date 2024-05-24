@@ -7,7 +7,7 @@ import org.objectweb.asm.tree.ClassNode
 import sh.talonfloof.dracoloader.transform.IDracoTransformer
 import sh.talonfloof.dracoloader.transform.visitAsm
 
-object RegistryUnfreezeTransformer : IDracoTransformer {
+class RegistryUnfreezeTransformer : IDracoTransformer {
     override fun transform(loader: ClassLoader, className: String, originalClassData: ByteArray?): ByteArray? {
         if(className == "net.minecraft.core.MappedRegistry" || className == "net.minecraft.core.DefaultedMappedRegistry") {
             val reader = ClassReader(originalClassData)

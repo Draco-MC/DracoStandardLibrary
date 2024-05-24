@@ -18,8 +18,6 @@ import sh.talonfloof.dracoloader.transform.DracoTransformerRegistry
 open class CommonEntrypoint : IRegisterListener {
     init {
         LOGGER.info("Draco Standard Library $VERSION")
-        DracoTransformerRegistry.addTransformer(RegistryUnfreezeTransformer)
-        DracoTransformerRegistry.addTransformer(ResourceLocationHackTransformer)
     }
 
     companion object {
