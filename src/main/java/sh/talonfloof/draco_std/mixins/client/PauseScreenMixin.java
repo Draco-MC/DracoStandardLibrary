@@ -30,8 +30,8 @@ public class PauseScreenMixin extends Screen {
         DracoButton.ticks += 1;
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/layouts/GridLayout;visitWidgets(Ljava/util/function/Consumer;)V"), method = "createPauseMenu", require = 0, locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void buttonOverride(CallbackInfo ci, GridLayout layout, GridLayout.RowHelper helper, Component text) {
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/layouts/GridLayout;visitWidgets(Ljava/util/function/Consumer;)V"), method = "createPauseMenu", locals = LocalCapture.CAPTURE_FAILSOFT)
+    public void buttonOverride(CallbackInfo ci, GridLayout layout, GridLayout.RowHelper helper) {
         if (layout != null) {
             final List<LayoutElement> buttons = ((AccessorGridLayout)layout).getChildren();
             for (int i = 0; i < buttons.size(); i++) {
@@ -45,10 +45,5 @@ public class PauseScreenMixin extends Screen {
                 }
             }
         }
-    }
-
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/layouts/GridLayout;visitWidgets(Ljava/util/function/Consumer;)V"), method = "createPauseMenu", require = 0, locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void snapshotButtonOverride(CallbackInfo ci, GridLayout layout, GridLayout.RowHelper helper) {
-        buttonOverride(ci,layout,helper,Component.empty());
     }
 }
