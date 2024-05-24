@@ -27,11 +27,5 @@ open class CommonEntrypoint : IRegisterListener {
     }
 
     override fun register() {
-        println(Mob.createMobAttributes())
-        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation("draco","test"), CreativeModeTab.builder(
-            CreativeModeTab.Row.TOP,0).title(Component.literal("Draco Test Tab")).icon { ItemStack(Items.AMETHYST_SHARD) }.displayItems { a,b ->
-                b.accept(ItemStack(Items.AMETHYST_SHARD))
-        }.build())
-        Thread.sleep(1000)
     }
 }

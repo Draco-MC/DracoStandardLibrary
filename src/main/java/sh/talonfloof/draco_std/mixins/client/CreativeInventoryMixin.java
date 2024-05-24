@@ -34,7 +34,7 @@ public abstract class CreativeInventoryMixin<T extends AbstractContainerMenu> ex
     }
 
     @Inject(method = "render", at = @At("RETURN"))
-    private void render(GuiGraphics gfx, int $$1, int $$2, float $$3, CallbackInfo ci) {
+    private void draco$render(GuiGraphics gfx, int $$1, int $$2, float $$3, CallbackInfo ci) {
         int xpos = this.leftPos + 170;
         int ypos = this.topPos + 4;
         gfx.fill(xpos+1,ypos,xpos+11,ypos+1,leftSidePressed ? 0x80ffffff : 0x80000000);
@@ -48,28 +48,28 @@ public abstract class CreativeInventoryMixin<T extends AbstractContainerMenu> ex
     }
 
     @Inject(method = "renderTabButton", at = @At("HEAD"), cancellable = true)
-    private void renderTabIcon(GuiGraphics gfx, CreativeModeTab tab, CallbackInfo info) {
+    private void draco$renderTabIcon(GuiGraphics gfx, CreativeModeTab tab, CallbackInfo info) {
         if (((DracoCreativeModeTab)tab).getPage() != currentPage) {
             info.cancel();
         }
     }
 
     @Inject(method = "checkTabClicked", at = @At("HEAD"), cancellable = true)
-    private void isClickInTab(CreativeModeTab tab, double mx, double my, CallbackInfoReturnable<Boolean> info) {
+    private void draco$isClickInTab(CreativeModeTab tab, double mx, double my, CallbackInfoReturnable<Boolean> info) {
         if (((DracoCreativeModeTab)tab).getPage() != currentPage) {
             info.setReturnValue(false);
         }
     }
 
     @Inject(method = "checkTabHovering", at = @At("HEAD"), cancellable = true)
-    private void renderTabTooltipIfHovered(GuiGraphics gfx, CreativeModeTab tab, int mx, int my, CallbackInfoReturnable<Boolean> info) {
+    private void draco$renderTabTooltipIfHovered(GuiGraphics gfx, CreativeModeTab tab, int mx, int my, CallbackInfoReturnable<Boolean> info) {
         if (((DracoCreativeModeTab)tab).getPage() != currentPage) {
             info.setReturnValue(false);
         }
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"))
-    private void onMouseClicked(double x, double y, int type, CallbackInfoReturnable<Boolean> cir) {
+    private void draco$onMouseClicked(double x, double y, int type, CallbackInfoReturnable<Boolean> cir) {
         int xpos = this.leftPos + 170;
         int ypos = this.topPos + 4;
         if(x >= xpos && x < xpos + 11 && y >= ypos && y < ypos+11) { // Previous Tab
@@ -83,7 +83,7 @@ public abstract class CreativeInventoryMixin<T extends AbstractContainerMenu> ex
     }
 
     @Inject(method = "mouseReleased", at = @At("HEAD"))
-    private void onMouseRelease(double x, double y, int type, CallbackInfoReturnable<Boolean> cir) {
+    private void draco$onMouseRelease(double x, double y, int type, CallbackInfoReturnable<Boolean> cir) {
         if(leftSidePressed && currentPage > 0) {
             currentPage -= 1;
         } else if(rightSidePressed && currentPage < (DracoCreativeTabVars.pageCount)-1) {
