@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import sh.talonfloof.draco_std.debug.DracoEarlyLog;
 
+import java.awt.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.util.Optional;
@@ -71,6 +72,22 @@ public class LoadingOverlayMixin {
         int $$7 = Math.round(v * 255.0F);
         int $$8 = FastColor.ARGB32.color($$7, 255, 255, 255);
         $$0.fill(x + 2, y + 2, x + $$6, y2 - 2, $$8);
+        $$0.fill(x + 1, y, x2 - 1, y + 1, $$8);
+        $$0.fill(x + 1, y2, x2 - 1, y2 - 1, $$8);
+        $$0.fill(x, y, x + 1, y2, $$8);
+        $$0.fill(x2, y, x2 - 1, y2, $$8);
+    }
+
+    @Unique
+    private static void draco$drawMemoryBar(GuiGraphics $$0, int x, int y, int w, int h, float v, float progress) {
+        int x2 = x+w;
+        int y2 = y+h;
+        int $$6 = Mth.ceil((float)(x2 - x - 2) * progress);
+        int $$7 = Math.round(v * 255.0F);
+        var col = Color.getHSBColor(((1.0f - (float)Math.pow(progress,1.5f)) / 3f), 1.0f, 0.5f);
+        int $$8 = FastColor.ARGB32.color($$7, 255, 255, 255);
+        int $$9 = FastColor.ARGB32.color($$7, col.getRed(), col.getGreen(), col.getBlue());
+        $$0.fill(x + 2, y + 2, x + $$6, y2 - 2, $$9);
         $$0.fill(x + 1, y, x2 - 1, y + 1, $$8);
         $$0.fill(x + 1, y2, x2 - 1, y2 - 1, $$8);
         $$0.fill(x, y, x + 1, y2, $$8);
@@ -145,7 +162,7 @@ public class LoadingOverlayMixin {
             final MemoryUsage heapusage = mem.getHeapMemoryUsage();
             String heap = String.format("Heap: %d/%d MB (%.1f%%) OffHeap: %d MB", heapusage.getUsed() >> 20, heapusage.getMax() >> 20, ((float) heapusage.getUsed() / heapusage.getMax()) * 100.0, mem.getNonHeapMemoryUsage().getUsed() >> 20);
             draco$drawString(gfx, gfx.guiWidth() / 2 - ((heap.length() * 6) / 2), 1, heap, a);
-            draco$drawProgressBar(gfx, $$1, 10, $$3 - $$1, $$4 - $$2, a, (float) heapusage.getUsed() / heapusage.getMax());
+            draco$drawMemoryBar(gfx, $$1, 10, $$3 - $$1, $$4 - $$2, a, (float) heapusage.getUsed() / heapusage.getMax());
             // Draw Early Logs
             for (int i = 0; i < DracoEarlyLog.INSTANCE.getLog().size(); i++) {
                 String s = DracoEarlyLog.INSTANCE.getLog().get(i);

@@ -1,5 +1,6 @@
 package sh.talonfloof.draco_std.loading
 
+import net.minecraft.util.Mth
 import sh.talonfloof.draco_std.CommonEntrypoint
 import sh.talonfloof.draco_std.debug.DracoEarlyLog
 import java.awt.*
@@ -9,6 +10,7 @@ import java.lang.management.ManagementFactory
 import javax.imageio.ImageIO
 import javax.swing.*
 import javax.swing.border.EmptyBorder
+import kotlin.math.pow
 
 
 class JMultilineLabel() : JTextArea() {
@@ -151,6 +153,9 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
                 progressBarLabel[id]!!.text = title
             }
         }
+
+        @JvmStatic
+        private fun interpolateColor(n: Double, a: Color, b: Color) : Color = Color(Mth.lerp(n,a.red.toDouble(),b.red.toDouble()).toInt(),Mth.lerp(n,a.green.toDouble(),b.green.toDouble()).toInt(),Mth.lerp(n,a.blue.toDouble(),b.blue.toDouble()).toInt())
     }
 
     fun calculateScale() : Int {
@@ -236,6 +241,7 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
                 setExtendedState(extendedState and MAXIMIZED_BOTH.inv())
                 val mem = ManagementFactory.getMemoryMXBean()
                 val heapusage = mem.heapMemoryUsage
+                val percent = heapusage.used.toFloat() / heapusage.max
                 val heap = String.format(
                     "Heap: %d/%d MB (%.1f%%) OffHeap: %d MB",
                     heapusage.used shr 20,
@@ -245,6 +251,7 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
                 )
                 memoryBar.maximum = (heapusage.max shr 20).toInt()
                 memoryBar.value = (heapusage.used shr 20).toInt()
+                memoryBar.foreground = Color.getHSBColor(((1.0f - percent.pow(1.5f)) / 3f), 1.0f, 0.5f)
                 memoryLabel.text = heap
                 var s = ""
                 for(i in DracoEarlyLog.log.reversed()) {
