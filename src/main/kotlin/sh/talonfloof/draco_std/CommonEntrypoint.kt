@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import sh.talonfloof.draco_std.listeners.IRegisterListener
 import sh.talonfloof.draco_std.transformation.RegistryUnfreezeTransformer
+import sh.talonfloof.draco_std.transformation.ResourceLocationAccessTransformer
 import sh.talonfloof.dracoloader.transform.DracoTransformerRegistry
 import java.io.File
 
@@ -19,7 +20,7 @@ open class CommonEntrypoint : IRegisterListener {
     init {
         LOGGER.info("Draco Standard Library $VERSION")
         DracoTransformerRegistry.addTransformer(RegistryUnfreezeTransformer)
-        File(".").resolve("libraries").resolve("com").resolve("github").resolve("Draco-MC").deleteOnExit()
+        DracoTransformerRegistry.addTransformer(ResourceLocationAccessTransformer)
     }
 
     companion object {

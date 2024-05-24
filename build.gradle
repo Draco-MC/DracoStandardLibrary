@@ -27,7 +27,7 @@ apply plugin: "org.spongepowered.gradle.vanilla"
 apply plugin: 'kotlin'
 
 group = 'sh.talonfloof.draco_std'
-version = "1.0.0-snapshot-SNAPSHOT"
+version = "1.20.6-SNAPSHOT"
 
 configurations {
     shadow
