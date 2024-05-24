@@ -29,6 +29,7 @@
     "ICreativeModeTabAccessor",
     "ICreativeModeTabsAccessor",
     "IPackRepoAccessor",
+    "MappedRegistryMixin",
     "entity.DefaultAttributesRegistryMixin",
     "entity.IAttributeRegistryAccessor",
     "listeners.RegistryMixin",
