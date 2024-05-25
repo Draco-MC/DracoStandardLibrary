@@ -14,7 +14,7 @@ import net.minecraft.util.GsonHelper
 import java.io.InputStream
 
 
-class GroupPackResources(private val info: PackLocationInfo, val packs: MutableList<PackResources>, private val type: PackType) : AbstractPackResources(info) {
+class GroupPackResources(info: PackLocationInfo, val packs: MutableList<PackResources>, private val type: PackType) : AbstractPackResources(info) {
 
     override fun close() {
 
