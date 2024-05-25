@@ -20,6 +20,8 @@ import com.google.common.collect.UnmodifiableIterator;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
@@ -67,15 +69,30 @@ public class RegistryMixin {
         }
         DracoEarlyLog.addToLog("FREEZE BlockStates");
         DracoLoadingScreen.updateCustomBar("IRegisterListener","FREEZE BlockStates",null,null);
-        Iterator<Map.Entry<ResourceKey<Block>, Block>> it = BuiltInRegistries.BLOCK.entrySet().stream().iterator();
-        while(it.hasNext()) {
-            var entry = it.next();
-            if(!entry.getKey().location().getNamespace().equals("minecraft")) {
-                for (BlockState state : entry.getValue().getStateDefinition().getPossibleStates()) {
-                    Block.BLOCK_STATE_REGISTRY.add(state);
-                    state.initCache();
+        {
+            Iterator<Map.Entry<ResourceKey<Block>, Block>> it = BuiltInRegistries.BLOCK.entrySet().stream().iterator();
+            while (it.hasNext()) {
+                var entry = it.next();
+                if (!entry.getKey().location().getNamespace().equals("minecraft")) {
+                    for (BlockState state : entry.getValue().getStateDefinition().getPossibleStates()) {
+                        Block.BLOCK_STATE_REGISTRY.add(state);
+                        state.initCache();
+                    }
+                    entry.getValue().getLootTable();
                 }
-                entry.getValue().getLootTable();
+            }
+        }
+        DracoEarlyLog.addToLog("FREEZE BlockToItem");
+        DracoLoadingScreen.updateCustomBar("IRegisterListener","FREEZE BlockToItem",null,null);
+        {
+            Iterator<Map.Entry<ResourceKey<Item>, Item>> it = BuiltInRegistries.ITEM.entrySet().stream().iterator();
+            while (it.hasNext()) {
+                var entry = it.next();
+                if (!entry.getKey().location().getNamespace().equals("minecraft")) {
+                    if (entry.getValue() instanceof BlockItem blockItem) {
+                        Item.BY_BLOCK.put(blockItem.getBlock(), blockItem);
+                    }
+                }
             }
         }
         DracoLoadingScreen.updateCustomBar("IRegisterListener",null,null,null);
