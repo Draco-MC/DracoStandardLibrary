@@ -16,33 +16,28 @@
 
 package sh.talonfloof.draco_std.mixins.listeners;
 
+import com.google.common.collect.UnmodifiableIterator;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import sh.talonfloof.draco_std.debug.DracoEarlyLog;
 import sh.talonfloof.draco_std.listeners.IRegisterListener;
 import sh.talonfloof.draco_std.loading.DracoLoadingScreen;
 import sh.talonfloof.dracoloader.api.DracoListenerManager;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
+import java.util.Map;
 
 
 @Mixin(BuiltInRegistries.class)
 public class RegistryMixin {
-    @Inject(
-            at = @At(
-                    value = "HEAD"
-            ),
-            method = "Lnet/minecraft/core/registries/BuiltInRegistries;freeze()V"
-    )
-    private static void draco$registryFreeze(CallbackInfo ci) {
-        DracoEarlyLog.addToLog("FREEZE BuiltInRegistries");
-        DracoLoadingScreen.createCustomProgressBar("IRegisterListener","FREEZE BuiltinRegistries",0);
-    }
     @Inject(
             at = @At(
                     value = "TAIL"
@@ -50,12 +45,12 @@ public class RegistryMixin {
             method = "Lnet/minecraft/core/registries/BuiltInRegistries;freeze()V"
     )
     private static void draco$registryHook(CallbackInfo ci) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        DracoEarlyLog.addToLog("UNFREEZE BuiltInRegistries");
         for(Registry<?> i : BuiltInRegistries.REGISTRY) {
             i.getClass().getDeclaredMethod("unfreeze").invoke(i);
         }
         DracoEarlyLog.addToLog("HOOK IRegisterListener");
         var instances = DracoListenerManager.getListeners(IRegisterListener.class);
+        DracoLoadingScreen.createCustomProgressBar("IRegisterListener","HOOK IRegisterListener",0);
         if (instances != null) {
             DracoLoadingScreen.updateCustomBar("IRegisterListener","HOOK IRegisterListener",0,instances.size());
             final int[] i = {0};
@@ -64,11 +59,24 @@ public class RegistryMixin {
                 i[0]++;
                 DracoLoadingScreen.updateCustomBar("IRegisterListener",null,i[0],null);
             });
-            DracoLoadingScreen.updateCustomBar("IRegisterListener","REFREEZE BuiltinRegistries",null,0);
+            DracoLoadingScreen.updateCustomBar("IRegisterListener","FREEZE BuiltinRegistries",null,0);
         }
-        DracoEarlyLog.addToLog("REFREEZE BuiltInRegistries");
+        DracoEarlyLog.addToLog("FREEZE BuiltInRegistries");
         for(Registry<?> i : BuiltInRegistries.REGISTRY) {
             i.freeze();
+        }
+        DracoEarlyLog.addToLog("FREEZE BlockStates");
+        DracoLoadingScreen.updateCustomBar("IRegisterListener","FREEZE BlockStates",null,null);
+        Iterator<Map.Entry<ResourceKey<Block>, Block>> it = BuiltInRegistries.BLOCK.entrySet().stream().iterator();
+        while(it.hasNext()) {
+            var entry = it.next();
+            if(!entry.getKey().location().getNamespace().equals("minecraft")) {
+                for (BlockState state : entry.getValue().getStateDefinition().getPossibleStates()) {
+                    Block.BLOCK_STATE_REGISTRY.add(state);
+                    state.initCache();
+                }
+                entry.getValue().getLootTable();
+            }
         }
         DracoLoadingScreen.updateCustomBar("IRegisterListener",null,null,null);
     }
