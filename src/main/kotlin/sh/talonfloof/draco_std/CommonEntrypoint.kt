@@ -24,20 +24,8 @@ open class CommonEntrypoint : IRegisterListener {
         @JvmField
         val LOGGER: Logger = LogManager.getLogger("DracoStandardLibrary")
         const val VERSION = "1.20.6-alpha0.1"
-        val ITEM_REGISTRY = DeferredRegistry.create(Registries.ITEM,"draco")
-        val DRACO_TEST_ITEM = ITEM_REGISTRY.register("test_item") {
-            Item(Item.Properties())
-        }
-        val TAB_REGISTRY = DeferredRegistry.create(Registries.CREATIVE_MODE_TAB,"draco")
-        val TEST_TAB = TAB_REGISTRY.register("test") { CreativeModeTab.builder(CreativeModeTab.Row.TOP,0).title(
-            Component.literal("Draco Test Tab")).icon {ItemStack(
-            Items.AMETHYST_SHARD)}.displayItems { _, ctx ->
-                ctx.accept(ItemStack(DRACO_TEST_ITEM.get()))
-        }.build() }
     }
 
     override fun register() {
-        ITEM_REGISTRY.register()
-        TAB_REGISTRY.register()
     }
 }
