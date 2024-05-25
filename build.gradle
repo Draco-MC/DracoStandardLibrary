@@ -57,6 +57,7 @@ test {
 
 minecraft {
     version("1.20.6")
+    accessWideners("src/main/resources/draco.accesswidener")
     runs {
         server() {
             mainClass("net.minecraft.launchwrapper.Launch")
