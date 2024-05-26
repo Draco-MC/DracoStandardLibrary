@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_21",
   "package": "sh.talonfloof.draco_std.mixins",
   "client": [
     "client.AccessorGridLayout",

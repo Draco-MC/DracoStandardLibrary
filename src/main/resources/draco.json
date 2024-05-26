@@ -10,7 +10,7 @@
   ],
   "transformers": [
     "sh.talonfloof.draco_std.transformation.RegistryUnfreezeTransformer",
-    "sh.talonfloof.draco_std.transformation.ResourceLocationHackTransformer",
-    "sh.talonfloof.draco_std.transformation.AccessWidenerTransformer"
-  ]
+    "sh.talonfloof.draco_std.transformation.ResourceLocationHackTransformer"
+  ],
+  "accessWidener": "draco.accesswidener"
 }
