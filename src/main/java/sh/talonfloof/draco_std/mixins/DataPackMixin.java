@@ -20,19 +20,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.*;
 import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.world.flag.FeatureFlagSet;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import sh.talonfloof.draco_std.resources.GroupPackResources;
 import sh.talonfloof.dracoloader.mod.DracoModLoader;
 
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Mixin(MinecraftServer.class)
 public class DataPackMixin {
@@ -41,17 +39,14 @@ public class DataPackMixin {
             method = "configurePackRepository"
     )
     private static void draco$addData(PackRepository packRepository) {
-        final var packs = new ArrayList<PackResources>();
         final var access = (IPackRepoAccessor)packRepository;
         final var sources = Sets.newHashSet(Objects.requireNonNull(access.getSources()));
-        DracoModLoader.INSTANCE.getMOD_PATHS().forEach((id, jar) -> {
+        sources.add((packList) -> DracoModLoader.INSTANCE.getMOD_PATHS().forEach((id, jar) -> {
+            System.out.println(id);
             final var info = new PackLocationInfo(id, Component.literal(Objects.requireNonNull(DracoModLoader.INSTANCE.getMODS().get(id).getName())), PackSource.BUILT_IN, Optional.empty());
-            final var supplier = jar.toString().endsWith(".jar") ? new FilePackResources.FileResourcesSupplier(Paths.get(jar)) : new PathPackResources.PathResourcesSupplier(Paths.get(jar));
-            packs.add(supplier.openPrimary(info));
-        });
-        sources.add((packList) -> {
-            packList.accept(Pack.readMetaAndCreate(new PackLocationInfo("draco_group",Component.literal("Draco Mods"),PackSource.BUILT_IN,Optional.empty()),new GroupPackResources.FileResourcesSupplier(packs,PackType.SERVER_DATA), PackType.SERVER_DATA, new PackSelectionConfig(true,Pack.Position.TOP,false)));
-        });
+            final Pack packResourceInfo = new Pack(info, jar.toString().endsWith(".jar") ? new FilePackResources.FileResourcesSupplier(Paths.get(jar)) : new PathPackResources.PathResourcesSupplier(Paths.get(jar)), new Pack.Metadata(Component.literal("Mod Data"), PackCompatibility.COMPATIBLE, FeatureFlagSet.of(), List.of()), new PackSelectionConfig(true,Pack.Position.TOP,false));
+            packList.accept(packResourceInfo);
+        }));
         access.setSources(Set.copyOf(sources));
         packRepository.reload();
     }
