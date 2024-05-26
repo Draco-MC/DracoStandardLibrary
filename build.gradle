@@ -65,6 +65,7 @@ minecraft {
         client() {
             mainClass("net.minecraft.launchwrapper.Launch")
             args("--tweakClass", "sh.talonfloof.dracoloader.bootstrap.MinecraftClientBootstrap", "--username", "Dev")
+            //jvmArgs("-Dmixin.debug.verbose=true")
         }
     }
 }

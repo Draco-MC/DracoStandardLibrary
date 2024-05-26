@@ -18,6 +18,8 @@
     "client.TitleScreenMixin",
     "client.entity.EntityModelsMixin",
     "client.entity.EntityRenderersMixin",
+    "client.CreateWorldScreenMixin",
+    "client.PackSelectionModelMixin",
     "client.entity.IModelLayersAccessor",
     "listeners.ClientTickMixin",
     "networking.ClientboundCustomPacketMixin"
@@ -30,6 +32,8 @@
     "ICreativeModeTabsAccessor",
     "IPackRepoAccessor",
     "MappedRegistryMixin",
+    "PackMixin",
+    "PackRepositoryMixin",
     "entity.DefaultAttributesRegistryMixin",
     "entity.IAttributeRegistryAccessor",
     "listeners.RegistryMixin",

@@ -16,6 +16,7 @@
 package sh.talonfloof.draco_std.mixins;
 
 import com.google.common.collect.Sets;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.*;
@@ -24,9 +25,18 @@ import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.level.DataPackConfig;
+import net.minecraft.world.level.WorldDataConfiguration;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+import sh.talonfloof.draco_std.resources.DataPackPopulation;
 import sh.talonfloof.dracoloader.mod.DracoModLoader;
 
 import java.nio.file.Paths;
@@ -34,20 +44,11 @@ import java.util.*;
 
 @Mixin(MinecraftServer.class)
 public class DataPackMixin {
-    @Redirect(
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;reload()V"),
+    @Inject(
+            at = @At(value = "HEAD"),
             method = "configurePackRepository"
     )
-    private static void draco$addData(PackRepository packRepository) {
-        final var access = (IPackRepoAccessor)packRepository;
-        final var sources = Sets.newHashSet(Objects.requireNonNull(access.getSources()));
-        sources.add((packList) -> DracoModLoader.INSTANCE.getMOD_PATHS().forEach((id, jar) -> {
-            System.out.println(id);
-            final var info = new PackLocationInfo(id, Component.literal(Objects.requireNonNull(DracoModLoader.INSTANCE.getMODS().get(id).getName())), PackSource.BUILT_IN, Optional.empty());
-            final Pack packResourceInfo = new Pack(info, jar.toString().endsWith(".jar") ? new FilePackResources.FileResourcesSupplier(Paths.get(jar)) : new PathPackResources.PathResourcesSupplier(Paths.get(jar)), new Pack.Metadata(Component.literal("Mod Data"), PackCompatibility.COMPATIBLE, FeatureFlagSet.of(), List.of()), new PackSelectionConfig(true,Pack.Position.TOP,false));
-            packList.accept(packResourceInfo);
-        }));
-        access.setSources(Set.copyOf(sources));
-        packRepository.reload();
+    private static void draco$addData(PackRepository packRepository, WorldDataConfiguration $$1, boolean $$2, boolean $$3, CallbackInfoReturnable<?> ci) {
+        DataPackPopulation.populateDataPack(packRepository);
     }
 }
