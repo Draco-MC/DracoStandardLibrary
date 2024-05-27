@@ -26,6 +26,8 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
+import sh.talonfloof.dracoloader.api.EnvironmentType
+import sh.talonfloof.dracoloader.api.Side
 import sh.talonfloof.dracoloader.mod.DracoModLoader
 import java.nio.file.Paths
 import java.util.jar.JarFile
@@ -34,8 +36,9 @@ import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.sin
 
+@Side(EnvironmentType.CLIENT)
 class DracoModMenuScreen(
-    private val ParentScreen: Screen?
+    private val parentScreen: Screen?
 ) : Screen(Component.literal("Draco Mod Menu")) {
     private var scrollPosition: Int = 0
     private var scrollTransitionPrevious: Double = 0.0

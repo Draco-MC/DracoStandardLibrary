@@ -14,10 +14,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import sh.talonfloof.draco_std.modmenu.DracoButton;
 import sh.talonfloof.draco_std.modmenu.DracoModMenuScreen;
+import sh.talonfloof.dracoloader.api.EnvironmentType;
+import sh.talonfloof.dracoloader.api.Side;
 
 import java.util.List;
 import java.util.Objects;
 
+@Side(EnvironmentType.CLIENT)
 @Mixin(PauseScreen.class)
 public class PauseScreenMixin extends Screen {
 

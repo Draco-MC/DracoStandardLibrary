@@ -35,11 +35,14 @@ import sh.talonfloof.draco_std.mixins.IPackRepoAccessor;
 import sh.talonfloof.draco_std.debug.DracoEarlyLog;
 import sh.talonfloof.draco_std.resources.EmptyPackResources;
 import sh.talonfloof.draco_std.resources.PackChildrenHolder;
+import sh.talonfloof.dracoloader.api.EnvironmentType;
+import sh.talonfloof.dracoloader.api.Side;
 import sh.talonfloof.dracoloader.mod.DracoModLoader;
 
 import java.nio.file.Paths;
 import java.util.*;
 
+@Side(EnvironmentType.CLIENT)
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
     @Inject(method = "allowsTelemetry", at = @At("HEAD"), cancellable = true)
@@ -58,7 +61,7 @@ public class MinecraftMixin {
         final var access = (IPackRepoAccessor)packRepository;
         final var sources = Sets.newHashSet(Objects.requireNonNull(access.getSources()));
         sources.add((packList) -> DracoModLoader.INSTANCE.getMOD_PATHS().forEach((id, jar) -> {
-            final var info = new PackLocationInfo(id + "_resources", Component.literal(Objects.requireNonNull(DracoModLoader.INSTANCE.getMODS().get(id).getName())), PackSource.BUILT_IN, Optional.empty());
+            final var info = new PackLocationInfo("mod_resources/"+id, Component.literal(Objects.requireNonNull(DracoModLoader.INSTANCE.getMODS().get(id).getName())), PackSource.BUILT_IN, Optional.empty());
             final var pack = new Pack(info,jar.toString().endsWith(".jar") ? new FilePackResources.FileResourcesSupplier(Paths.get(jar)) : new PathPackResources.PathResourcesSupplier(Paths.get(jar)),new Pack.Metadata(Component.literal(info.title().getString()+" Resources"), PackCompatibility.COMPATIBLE, FeatureFlagSet.of(),List.of()),new PackSelectionConfig(true,Pack.Position.TOP,false));
             ((PackChildrenHolder)pack).draco$setHidden(true);
             packs.add(pack);
@@ -66,7 +69,7 @@ public class MinecraftMixin {
         }));
         sources.add((packList) -> {
             final var info = new PackLocationInfo("draco_group",Component.literal("Mod Resources"),PackSource.BUILT_IN,Optional.empty());
-            final var pack = new Pack(info,new EmptyPackResources.EmptyResourcesSupplier(),new Pack.Metadata(Component.literal("Draco Mod Resources"),PackCompatibility.COMPATIBLE,FeatureFlagSet.of(),List.of()),new PackSelectionConfig(true,Pack.Position.TOP,false));
+            final var pack = new Pack(info,new EmptyPackResources.EmptyResourcesSupplier(),new Pack.Metadata(Component.literal("Resources for "+DracoModLoader.INSTANCE.getMOD_PATHS().size()+" Draco Mod"+(DracoModLoader.INSTANCE.getMOD_PATHS().size() != 1 ? "s" : "")),PackCompatibility.COMPATIBLE,FeatureFlagSet.of(),List.of()),new PackSelectionConfig(true,Pack.Position.TOP,false));
             ((PackChildrenHolder)pack).draco$setChildren(packs);
             packList.accept(pack);
         });

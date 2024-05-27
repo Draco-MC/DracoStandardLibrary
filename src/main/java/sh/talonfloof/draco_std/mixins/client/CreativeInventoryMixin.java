@@ -19,7 +19,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sh.talonfloof.draco_std.creative_tab.DracoCreativeModeTab;
 import sh.talonfloof.draco_std.creative_tab.DracoCreativeTabVars;
+import sh.talonfloof.dracoloader.api.EnvironmentType;
+import sh.talonfloof.dracoloader.api.Side;
 
+@Side(EnvironmentType.CLIENT)
 @Mixin(CreativeModeInventoryScreen.class)
 public abstract class CreativeInventoryMixin<T extends AbstractContainerMenu> extends EffectRenderingInventoryScreen<T> {
     private static int currentPage = 0;

@@ -12,9 +12,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import sh.talonfloof.draco_std.debug.DracoEarlyLog;
 import sh.talonfloof.draco_std.rendering.DracoEntityRendering;
+import sh.talonfloof.dracoloader.api.EnvironmentType;
+import sh.talonfloof.dracoloader.api.Side;
 
 import java.util.Map;
 
+@Side(EnvironmentType.CLIENT)
 @Mixin(LayerDefinitions.class)
 public class EntityModelsMixin {
     @Inject(method = "createRoots", at = @At(value = "INVOKE", target="Lcom/google/common/collect/ImmutableMap$Builder;build()Lcom/google/common/collect/ImmutableMap;"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)

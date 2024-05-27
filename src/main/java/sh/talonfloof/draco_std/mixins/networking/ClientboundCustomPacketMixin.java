@@ -11,7 +11,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sh.talonfloof.draco_std.networking.CustomPayloadHolder;
 import sh.talonfloof.draco_std.networking.DracoMessageRegistry;
+import sh.talonfloof.dracoloader.api.EnvironmentType;
+import sh.talonfloof.dracoloader.api.Side;
 
+@Side(EnvironmentType.CLIENT)
 @Mixin(ClientboundCustomPayloadPacket.class)
 public abstract class ClientboundCustomPacketMixin {
     @Shadow

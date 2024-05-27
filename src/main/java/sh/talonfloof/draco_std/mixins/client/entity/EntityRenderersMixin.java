@@ -11,10 +11,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sh.talonfloof.draco_std.debug.DracoEarlyLog;
 import sh.talonfloof.draco_std.rendering.DracoEntityRendering;
+import sh.talonfloof.dracoloader.api.EnvironmentType;
+import sh.talonfloof.dracoloader.api.Side;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Side(EnvironmentType.CLIENT)
 @Mixin(EntityRenderers.class)
 public class EntityRenderersMixin {
     @Shadow

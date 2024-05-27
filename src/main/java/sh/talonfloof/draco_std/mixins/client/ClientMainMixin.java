@@ -7,6 +7,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sh.talonfloof.draco_std.CommonEntrypoint;
 import sh.talonfloof.draco_std.debug.DracoEarlyLog;
 import sh.talonfloof.draco_std.loading.DracoLoadingScreen;
+import sh.talonfloof.dracoloader.api.EnvironmentType;
+import sh.talonfloof.dracoloader.api.Side;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +16,7 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 
+@Side(EnvironmentType.CLIENT)
 @Mixin(Main.class)
 public class ClientMainMixin {
 

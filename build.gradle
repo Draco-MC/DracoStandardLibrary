@@ -48,7 +48,7 @@ dependencies {
     implementation 'org.ow2.asm:asm-tree:9.7'
     implementation 'org.ow2.asm:asm-util:9.7'
     implementation 'org.ow2.asm:asm-commons:9.7'
-    //implementation "com.formdev:flatlaf:3.1.1"
+    implementation 'com.moandjiezana.toml:toml4j:0.7.2'
 }
 
 test {
@@ -65,7 +65,6 @@ minecraft {
         client() {
             mainClass("net.minecraft.launchwrapper.Launch")
             args("--tweakClass", "sh.talonfloof.dracoloader.bootstrap.MinecraftClientBootstrap", "--username", "Dev")
-            jvmArgs("-Dmixin.debug.verbose=true")
         }
     }
 }
@@ -104,6 +103,6 @@ publishing {
 shadowJar {
     configurations = [project.configurations.compileClasspath]
     dependencies {
-        include(dependency("com.formdev:flatlaf:3.1.1"))
+        include(dependency('com.moandjiezana.toml:toml4j:0.7.2'))
     }
 }

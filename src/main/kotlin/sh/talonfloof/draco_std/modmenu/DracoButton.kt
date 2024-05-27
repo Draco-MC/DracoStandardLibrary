@@ -1,16 +1,16 @@
 package sh.talonfloof.draco_std.modmenu
 
-import com.google.common.hash.Hashing
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
-import net.minecraft.client.renderer.texture.SimpleTexture
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
 import sh.talonfloof.draco_std.modmenu.DracoModMenuScreen.Companion.renderBox
+import sh.talonfloof.dracoloader.api.EnvironmentType
+import sh.talonfloof.dracoloader.api.Side
 import kotlin.math.abs
 import kotlin.math.sin
 
+@Side(EnvironmentType.CLIENT)
 class DracoButton(x: Int, y: Int, width: Int, height: Int, text: Component, press: OnPress) : Button(x,y,width,height,text,press,DEFAULT_NARRATION) {
     private companion object {
         @JvmField

@@ -5,7 +5,10 @@ import com.mojang.authlib.yggdrasil.response.UserAttributesResponse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import sh.talonfloof.dracoloader.api.EnvironmentType;
+import sh.talonfloof.dracoloader.api.Side;
 
+@Side(EnvironmentType.CLIENT)
 @Mixin(YggdrasilUserApiService.class)
 public class NewYggdrasilUserApiServiceMixin {
     @Redirect(method = "fetchProperties", at = @At(value = "INVOKE", target = "Lcom/mojang/authlib/yggdrasil/response/UserAttributesResponse$Privileges;getTelemetry()Z", remap = false), remap = false, require = 0)

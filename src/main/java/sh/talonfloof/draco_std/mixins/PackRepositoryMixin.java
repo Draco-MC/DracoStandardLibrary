@@ -18,7 +18,6 @@ import sh.talonfloof.draco_std.resources.PackChildrenHolder;
 
 import java.util.*;
 
-@Debug(print = false)
 @Mixin(PackRepository.class)
 public class PackRepositoryMixin {
     @Inject(method = "rebuildSelected", at = @At(value = "INVOKE", target = "java/util/stream/Stream.collect(Ljava/util/stream/Collector;)Ljava/lang/Object;", shift = At.Shift.BY, by = 3), locals = LocalCapture.CAPTURE_FAILHARD)

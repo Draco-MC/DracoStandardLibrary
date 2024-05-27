@@ -19,7 +19,10 @@ package sh.talonfloof.draco_std.mixins.client;
 import net.minecraft.obfuscate.DontObfuscate;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import sh.talonfloof.dracoloader.api.EnvironmentType;
+import sh.talonfloof.dracoloader.api.Side;
 
+@Side(EnvironmentType.CLIENT)
 @Mixin(targets={"net.minecraft.client.ClientBrandRetriever"},remap=false)
 public class ClientBrandRetrieverMixin {
     /**

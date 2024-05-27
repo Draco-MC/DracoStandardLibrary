@@ -7,9 +7,12 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
+import sh.talonfloof.dracoloader.api.EnvironmentType;
+import sh.talonfloof.dracoloader.api.Side;
 
 import java.util.List;
 
+@Side(EnvironmentType.CLIENT)
 @Mixin(Screen.class)
 public interface IScreenAccessor {
     @Accessor("renderables")

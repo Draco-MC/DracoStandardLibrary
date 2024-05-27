@@ -22,6 +22,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import sh.talonfloof.draco_std.mixins.IPackRepoAccessor;
 import sh.talonfloof.draco_std.resources.DataPackPopulation;
+import sh.talonfloof.dracoloader.api.EnvironmentType;
+import sh.talonfloof.dracoloader.api.Side;
 import sh.talonfloof.dracoloader.mod.DracoModLoader;
 
 import java.nio.file.Paths;
@@ -30,6 +32,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+@Side(EnvironmentType.CLIENT)
 @Mixin(CreateWorldScreen.class)
 public class CreateWorldScreenMixin {
     @Redirect(method = "getDataPackSelectionSettings", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;reload()V"))

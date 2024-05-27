@@ -38,9 +38,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sh.talonfloof.draco_std.CommonEntrypoint;
 import sh.talonfloof.draco_std.modmenu.DracoButton;
 import sh.talonfloof.draco_std.modmenu.DracoModMenuScreen;
+import sh.talonfloof.dracoloader.api.EnvironmentType;
+import sh.talonfloof.dracoloader.api.Side;
 
 import java.util.List;
 
+@Side(EnvironmentType.CLIENT)
 @Mixin(TitleScreen.class)
 public class TitleScreenMixin {
     @Inject(at = @At("HEAD"), method = "tick")

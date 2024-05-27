@@ -6,12 +6,15 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import sh.talonfloof.draco_std.mixins.client.entity.IModelLayersAccessor
-import java.util.function.Supplier
+import sh.talonfloof.dracoloader.api.EnvironmentType
+import sh.talonfloof.dracoloader.api.Side
 
+@Side(EnvironmentType.CLIENT)
 fun interface LayerDefinitionSupplier {
     fun getLayerDefinition() : LayerDefinition
 }
 
+@Side(EnvironmentType.CLIENT)
 object DracoEntityRendering {
     private val renderers: MutableMap<EntityType<*>, EntityRendererProvider<*>> = mutableMapOf()
     private val layerProviders: MutableMap<ModelLayerLocation, LayerDefinitionSupplier> = mutableMapOf()

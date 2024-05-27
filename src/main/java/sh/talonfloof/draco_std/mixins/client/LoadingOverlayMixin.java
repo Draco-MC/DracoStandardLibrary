@@ -17,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import sh.talonfloof.draco_std.debug.DracoEarlyLog;
+import sh.talonfloof.dracoloader.api.EnvironmentType;
+import sh.talonfloof.dracoloader.api.Side;
 
 import java.awt.*;
 import java.lang.management.ManagementFactory;
@@ -26,6 +28,7 @@ import java.util.function.Consumer;
 
 import static sh.talonfloof.draco_std.CommonEntrypoint.VERSION;
 
+@Side(EnvironmentType.CLIENT)
 @Mixin(LoadingOverlay.class)
 public class LoadingOverlayMixin {
     @Unique

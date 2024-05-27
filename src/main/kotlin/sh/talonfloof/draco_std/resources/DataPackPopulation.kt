@@ -28,7 +28,7 @@ object DataPackPopulation {
         sources.add { packList: Consumer<Pack> ->
             DracoModLoader.MOD_PATHS.forEach { (id: String, jar: URI) ->
                 val info = PackLocationInfo(
-                    id,
+                    "mod_data/"+id,
                     Component.literal(
                         Objects.requireNonNull<String>(
                             DracoModLoader.MODS.get(id)!!.getName()
@@ -66,7 +66,7 @@ object DataPackPopulation {
                 info,
                 EmptyResourcesSupplier(),
                 Pack.Metadata(
-                    Component.literal("Data for ${DracoModLoader.MOD_PATHS.size} Draco Mods"),
+                    Component.literal("Data for ${DracoModLoader.MOD_PATHS.size} Draco Mod"+(if(DracoModLoader.MOD_PATHS.size != 1) "s" else "")),
                     PackCompatibility.COMPATIBLE,
                     FeatureFlagSet.of(),
                     listOf()
