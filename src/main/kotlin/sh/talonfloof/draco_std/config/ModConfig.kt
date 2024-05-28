@@ -29,9 +29,12 @@ open class ModConfig(private val name: String, private val type: ConfigType, pri
                 mutableListOf()
             }.add(value)
         }
+
+        @JvmStatic
+        fun getConfigs(name: String) : List<Pair<ConfigType,ModConfig>>? = configs[name]
     }
 
-    private fun getFile() : File = if(fileName != null) File("./config/$fileName") else File("./config/$name-${type.name.lowercase()}.toml")
+    fun getFile() : File = if(fileName != null) File("./config/$fileName") else File("./config/$name-${type.name.lowercase()}.toml")
 
     fun freeze() {
         if(!frozen) {
@@ -73,7 +76,7 @@ open class ModConfig(private val name: String, private val type: ConfigType, pri
                     }
                     t = (t[it]!! as MutableMap<String, Any>)
                 }
-                t[path.last] = entry.value.defaultValue as Any
+                t[path.last] = entry.value.get() as Any
             }
             getFile().parentFile.mkdirs()
             TomlWriter().write(finalTable, getFile())
@@ -115,6 +118,10 @@ open class ModConfig(private val name: String, private val type: ConfigType, pri
 
         fun set(v: Any) {
             if(!modConfig.frozen) throw RuntimeException("Attempted to set value of $key before the configuration ${modConfig.getFile().name} was frozen!")
+            if(v is Number && defaultValue is Number) {
+                currentValue = v as T?
+                return
+            }
             if(!v::class.isInstance(defaultValue)) {
                 LOGGER.error("Type mismatch in config ${modConfig.getFile().name}: ($key = ${currentValue.toString()}) -> ($key = ${v.toString()}), Change will not be applied")
                 return
