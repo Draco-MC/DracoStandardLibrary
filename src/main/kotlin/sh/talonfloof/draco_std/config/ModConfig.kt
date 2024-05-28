@@ -34,7 +34,9 @@ open class ModConfig(private val name: String, private val type: ConfigType, pri
         fun getConfigs(name: String) : List<Pair<ConfigType,ModConfig>>? = configs[name]
     }
 
-    fun getFile() : File = if(fileName != null) File("./config/$fileName") else File("./config/$name-${type.name.lowercase()}.toml")
+    private fun getFile() : File = if(fileName != null) File("./config/$fileName") else File("./config/$name-${type.name.lowercase()}.toml")
+
+    fun getName() : String = getFile().absolutePath.replace(File.separator,"/").substringAfterLast("/config/")
 
     fun freeze() {
         if(!frozen) {
@@ -56,7 +58,9 @@ open class ModConfig(private val name: String, private val type: ConfigType, pri
                 entry.key.split(".").dropLast(1).forEach {
                     t = (t[it] as Map<String, Any>)
                 }
-                entry.value.set(t[entry.key.split(".").last]!!)
+                if(t[entry.key.split(".").last] != null) {
+                    entry.value.set(t[entry.key.split(".").last]!!)
+                }
             }
             save()
         } else {
