@@ -12,7 +12,7 @@ import kotlin.math.sin
 
 @Side(EnvironmentType.CLIENT)
 class DracoButton(x: Int, y: Int, width: Int, height: Int, text: Component, press: OnPress) : Button(x,y,width,height,text,press,DEFAULT_NARRATION) {
-    private companion object {
+    companion object {
         @JvmField
         var ticks: Long = 0
     }
@@ -20,13 +20,12 @@ class DracoButton(x: Int, y: Int, width: Int, height: Int, text: Component, pres
     override fun renderWidget(gfx: GuiGraphics, mouseX: Int, mouseY: Int, d: Float) {
         renderBox(gfx,x,y,width,height)
         if (this.isHoveredOrFocused) {
-            val intensity = (abs(sin(Math.toRadians((ticks * 9).toDouble()))) * 128).toInt()
             gfx.fill(
                 x,
                 y,
                 x + width,
                 y + height,
-                ((intensity.toUInt() shl 24) or (intensity.toUInt() shl 16) or (intensity.toUInt() shl 8) or intensity.toUInt()).toInt()
+                (0x40ffffff).toInt()
             )
         } else {
             ticks = 5

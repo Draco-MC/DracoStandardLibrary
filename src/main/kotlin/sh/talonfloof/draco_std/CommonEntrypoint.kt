@@ -2,11 +2,15 @@ package sh.talonfloof.draco_std
 
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import sh.talonfloof.draco_std.config.ConfigType
+import sh.talonfloof.draco_std.config.ModConfig
 import sh.talonfloof.draco_std.listeners.IRegisterListener
+import java.io.File
 
 open class CommonEntrypoint : IRegisterListener {
     init {
         LOGGER.info("Draco Standard Library $VERSION")
+        if(!File("./config").exists()) File("./config").mkdir()
     }
 
     companion object {
@@ -16,5 +20,10 @@ open class CommonEntrypoint : IRegisterListener {
     }
 
     override fun register() {
+        val config = ModConfig.Builder("draco", ConfigType.COMMON, null)
+        config.defineRange("diamondsPerCluster",5,1,10)
+        config.define("inline.a",5)
+        config.define("inline.b",mutableMapOf(Pair("key","value")))
+        config.build()
     }
 }

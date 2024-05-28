@@ -22,10 +22,13 @@ import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.renderer.texture.DynamicTexture
+import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.sounds.SoundEvents
 import net.minecraft.util.Mth
+import sh.talonfloof.draco_std.config.ModConfig
 import sh.talonfloof.dracoloader.api.EnvironmentType
 import sh.talonfloof.dracoloader.api.Side
 import sh.talonfloof.dracoloader.mod.DracoModLoader
@@ -46,7 +49,6 @@ class DracoModMenuScreen(
     private var secondScrollPosition: Int = 0
     private var secondScrollTransitionPrevious: Double = 0.0
     private var secondScrollTransition: Double = 0.0
-    private var ticks: Long = 0
     private var selectedMod: Int = -1
     private var modIcons: MutableMap<String, Pair<ResourceLocation,Pair<Int,Int>>> = mutableMapOf()
     private val keys = DracoModLoader.MODS.keys.stream().sorted().toArray()
@@ -82,7 +84,6 @@ class DracoModMenuScreen(
 
     override fun tick() {
         super.tick()
-        ticks += 1
         if((secondScrollTransition.toInt() - secondScrollPosition).absoluteValue > 0.1) {
             secondScrollTransitionPrevious = secondScrollTransition
             for(i in 0 until 3) {
@@ -142,8 +143,7 @@ class DracoModMenuScreen(
             if(keys.getOrNull(index) != null) {
                 if (DracoModLoader.MOD_PATHS[keys[index]] != null) {
                     if(index == selectedMod) {
-                        val intensity = (abs(sin(Math.toRadians((ticks * 9).toDouble()))) * 128).toInt()
-                        gfx.fill(0,beginOffset + 32 + (y * 32),width,(beginOffset + 32 + (y * 32))+32,((intensity.toUInt() shl 24) or (intensity.toUInt() shl 16) or (intensity.toUInt() shl 8) or intensity.toUInt()).toInt())
+                        gfx.fill(0,beginOffset + 32 + (y * 32),width,(beginOffset + 32 + (y * 32))+32,(0x20ffffff).toInt())
                     }
                     if (modIcons.contains(keys[index])) {
                         val dimensions = modIcons[keys[index]]!!.second
@@ -232,6 +232,19 @@ class DracoModMenuScreen(
                         gfx.drawString(font, text.string, 2, 4+32+1+(index*font.lineHeight), 0xffffffff.toInt())
                         index++
                     }
+                    if(ModConfig.hasConfig(DracoModLoader.MODS[keys[selectedMod]]?.getID()!!)) {
+                        renderBox(gfx, secondSize - 26, 6, 20, 20)
+                        gfx.blit(ResourceLocation("draco","textures/gui/configure_button.png"),secondSize - 26, 6,20,20,0F,0F,20,20,20,20)
+                        if (a >= (secondX + secondSize - 26) && a < (secondX + secondSize - 6) && b >= 32 && b >= ((32+6) - secondScrollTransition) && b < ((32+6) - secondScrollTransition) + 20) {
+                            gfx.fill(
+                                secondSize - 26,
+                                6,
+                                secondSize - 6,
+                                26,
+                                (0x40ffffff).toInt()
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -258,25 +271,35 @@ class DracoModMenuScreen(
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
         super.mouseClicked(mouseX, mouseY, button)
+        val x2 =(width.toDouble()*0.5).toInt()+8
+        val y2 = 38-secondScrollTransition
+        val w2 = width-8-((width.toDouble()*0.5).toInt()+8)
         return if(mouseY >= 34 && mouseY <= height-34 && mouseX >= 8 && mouseX <= (width.toDouble()*0.6).toInt()) {
-            val size = ((height-64)/32)
-            val beginOffset = ((height-64)/2)-(size*32/2)
-            for(i in 0 until size) {
-                if(mouseY >= 32 + beginOffset + (i * 32) && mouseY <= 32 + beginOffset + ((i+1) * 32)) {
-                    selectedMod = i+scrollPosition
+            val size = ((height - 64) / 32)
+            val beginOffset = ((height - 64) / 2) - (size * 32 / 2)
+            for (i in 0 until size) {
+                if (mouseY >= 32 + beginOffset + (i * 32) && mouseY <= 32 + beginOffset + ((i + 1) * 32)) {
+                    selectedMod = i + scrollPosition
                     secondScrollPosition = 0
-                    ticks = 5
                     return true
                 }
             }
             selectedMod = -1
             false
+        } else if(mouseX >= (x2+w2-26) && mouseX <= (x2+w2-6) && mouseY >= 32 && mouseY >= y2 && mouseY <= y2+20 && ModConfig.hasConfig(DracoModLoader.MODS[keys[selectedMod]]?.getID()!!)) {
+            minecraft!!.soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F))
+            minecraft!!.setScreen(DracoConfigScreen(this,DracoModLoader.MODS[keys[selectedMod]]?.getID()!!))
+            true
         } else {
             if(mouseY < 32) {
                 selectedMod = -1
             }
             false
         }
+    }
+
+    override fun onClose() {
+        minecraft!!.setScreen(parentScreen)
     }
 
     override fun shouldCloseOnEsc(): Boolean = true
