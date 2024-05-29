@@ -15,6 +15,7 @@ import net.minecraft.sounds.SoundEvents
 import net.minecraft.util.CommonColors
 import net.minecraft.util.FormattedCharSequence
 import net.minecraft.util.Mth
+import org.lwjgl.glfw.GLFW
 import sh.talonfloof.draco_std.config.ConfigType
 import sh.talonfloof.draco_std.config.ModConfig
 import sh.talonfloof.draco_std.config.ModConfig.Companion.getConfigs
@@ -26,7 +27,7 @@ import kotlin.math.absoluteValue
 
 @Side(EnvironmentType.CLIENT)
 open class ConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, var topSeparator: Boolean, var bottomSeparator: Boolean) {
-    open fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int) {
+    open fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
         //DracoModMenuScreen.renderBox(gfx,18,y+18,gfx.guiWidth()-18,32)
         RenderSystem.enableBlend()
         if(topSeparator)
@@ -39,14 +40,96 @@ open class ConfigScreenEntry(private val screen: DracoConfigScreen, private val 
     open fun mouseClicked(x: Int, y: Int, button: Int) : Boolean {
         return false
     }
+    open fun charTyped(c: Char, i: Int) : Boolean {
+        return false
+    }
+    open fun keyPressed(key: Int) : Boolean {
+        return false
+    }
+    open fun onFocusRemoved() {
+
+    }
+}
+
+@Side(EnvironmentType.CLIENT)
+class SliderConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val entry: ModConfig.ConfigValue<*>) : ConfigScreenEntry(screen,name,false,false) {
+    override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
+        super.render(gfx, mouseX, mouseY, focused)
+        DracoModMenuScreen.renderBox(gfx,gfx.guiWidth()-18-32-128,6,128,20)
+    }
+}
+
+@Side(EnvironmentType.CLIENT)
+class BooleanConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val entry: ModConfig.ConfigValue<*>) : ConfigScreenEntry(screen,name,false,false) {
+    override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
+        super.render(gfx, mouseX, mouseY, focused)
+        DracoModMenuScreen.renderBox(gfx,gfx.guiWidth()-18-32-128,6,128,20)
+        if(mouseX >= (gfx.guiWidth()-18-32-128) && mouseX < (gfx.guiWidth()-18-32) && mouseY >= 6 && mouseY < 26) {
+            gfx.fill((gfx.guiWidth()-18-32-128),6,(gfx.guiWidth()-18-32),26,(0x20ffffff).toInt())
+        }
+        gfx.drawCenteredString(Minecraft.getInstance().font,Component.translatable(if(entry.get() as Boolean) "gui.yes" else "gui.no"),gfx.guiWidth()-18-32-64,16-(Minecraft.getInstance().font.lineHeight/2),-1)
+    }
+
+    override fun mouseClicked(x: Int, y: Int, button: Int): Boolean {
+        if(x >= (this.screen.width-18-32-128) &&x < (this.screen.width-18-32) && y >= 6 && y < 26) {
+            Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F))
+            entry.set(!(entry.get() as Boolean))
+            return true
+        }
+        return super.mouseClicked(x,y,button)
+    }
+}
+
+@Side(EnvironmentType.CLIENT)
+class TextBoxConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val entry: ModConfig.ConfigValue<*>) : ConfigScreenEntry(screen,name,false,false) {
+    var value: String = entry.get().toString()
+
+    override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
+        super.render(gfx, mouseX, mouseY, focused)
+        DracoModMenuScreen.renderBox(gfx,gfx.guiWidth()-18-32-128,6,128,20)
+        val comp = Component.literal(Minecraft.getInstance().font.plainSubstrByWidth(value,128,true)).append(Component.literal(if(focused) "|" else "").withStyle(ChatFormatting.GRAY))
+        gfx.drawString(Minecraft.getInstance().font,comp,gfx.guiWidth()-18-32-128+1,16-(Minecraft.getInstance().font.lineHeight/2),-1,false)
+    }
+
+    override fun charTyped(c: Char, i: Int) : Boolean {
+        value += c
+        return true
+    }
+
+    override fun keyPressed(key: Int) : Boolean {
+        if(key == GLFW.GLFW_KEY_BACKSPACE) {
+            value = value.dropLast(1)
+            return true
+        } else if(key == GLFW.GLFW_KEY_ENTER) {
+            screen.focused = -1
+            onFocusRemoved()
+            return true
+        }
+        return super.keyPressed(key)
+    }
+
+    override fun onFocusRemoved() {
+        if(entry.get() is Number) {
+            if(entry.get() is Double) {
+                value.toDoubleOrNull()?.let { entry.set(it) }
+            } else if(entry.get() is Float) {
+                value.toFloatOrNull()?.let { entry.set(it) }
+            } else {
+                value.toLongOrNull()?.let { entry.set(it) }
+            }
+        } else if(entry.get() is String) {
+            entry.set(value)
+        }
+        value = entry.get().toString()
+    }
 }
 
 @Side(EnvironmentType.CLIENT)
 class CategoryConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val children: List<out ConfigScreenEntry>) : ConfigScreenEntry(screen,name,true,true) {
     var expanded: Boolean = false
 
-    override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int) {
-        super.render(gfx,mouseX,mouseY)
+    override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
+        super.render(gfx,mouseX,mouseY,focused)
         gfx.pose().pushPose()
         gfx.pose().translate(16F,16F,0F)
         gfx.pose().mulPose(Axis.ZP.rotationDegrees(if(expanded) 90F else 0F))
@@ -103,16 +186,41 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
     private var configs: List<Pair<ConfigType, ModConfig>> = getConfigs(namespace)!!
     private var selectedConfig = 0
     var entries: MutableList<out ConfigScreenEntry> = mutableListOf()
+    var focused = -1
+    var unfocusButton = false
+
+    init {
+        loadConfig()
+    }
 
     fun createConfigEntries(map: Map<String, Any>) : MutableList<ConfigScreenEntry> {
         val l = mutableListOf<ConfigScreenEntry>()
         for(entry in map.entries) {
+            val fancyName = run {
+                val splitName = mutableListOf<String>()
+                splitName.addAll(entry.key.split("_"))
+                splitName.replaceAll {
+                    it.replaceFirstChar {
+                        it.titlecase()
+                    }
+                }
+                splitName.joinToString(" ")
+            }
             if(entry.value is Map<*,*>) {
                 val entries = createConfigEntries(entry.value as Map<String, Any>)
-                val category = CategoryConfigScreenEntry(this,Component.literal(entry.key),entries)
+                val category = CategoryConfigScreenEntry(this,Component.literal(fancyName),entries)
                 l.add(category)
             } else {
-                l.add(ConfigScreenEntry(this,Component.literal(entry.key),false,false))
+                if(entry.value is ModConfig.ConfigValue<*>) {
+                    val value = (entry.value as ModConfig.ConfigValue<*>)
+                    if(value.defaultValue !is Boolean) {
+                        l.add(TextBoxConfigScreenEntry(this,Component.literal(fancyName),value))
+                    } else {
+                        l.add(BooleanConfigScreenEntry(this,Component.literal(fancyName),value))
+                    }
+                } else {
+                    throw RuntimeException("Unknown value type detected in config!")
+                }
             }
         }
         return l
@@ -137,18 +245,36 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
     }
 
     override fun init() {
-        loadConfig()
-        addRenderableWidget(DracoButton(this.width-154,this.height-24,150,20,Component.literal("Save & Close")) {
-            minecraft!!.setScreen(parentScreen)
+        addRenderableWidget(DracoButton(19,this.height-24,150,20,Component.translatable("gui.abuseReport.draft.discard").append(" ").append(Component.translatable("mco.backup.changes.tooltip"))) {
+            if(focused != -1)
+                entries[focused].onFocusRemoved()
+            focused = -1
+            configs.forEach {
+                it.second.load()
+            }
+            loadConfig()
+            unfocusButton = true
+        })
+        addRenderableWidget(DracoButton(this.width-154,this.height-24,150,20,Component.translatable("selectWorld.edit.save").append(" & ").append(Component.translatable("spectatorMenu.close"))) {
+            unfocusButton = true
+            this.onClose()
         })
     }
 
     override fun onClose() {
+        if(focused != -1)
+            entries[focused].onFocusRemoved()
+        configs.forEach {
+            it.second.save()
+        }
         minecraft!!.setScreen(parentScreen)
     }
 
     override fun tick() {
-        DracoButton.ticks += 1
+        if(unfocusButton) {
+            this.clearFocus()
+            unfocusButton = false
+        }
         if((menuPopout.toInt() - menuPopoutTarget).absoluteValue > 0.1) {
             for (i in 0 until 3) {
                 menuPopout = Mth.lerp(0.3, menuPopout, menuPopoutTarget.toDouble())
@@ -233,7 +359,7 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
             }
             gfx.pose().pushPose()
             gfx.pose().translate(18F,optionsScroll.toFloat()+(32*i).toFloat(),0F)
-            entries[i].render(gfx, mX, mY)
+            entries[i].render(gfx, mX, mY, focused == i)
             gfx.pose().popPose()
         }
         gfx.disableScissor()
@@ -241,19 +367,30 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
     }
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        val oldFocus = focused
+        focused = -1
         if(menuPopoutTarget == 0) {
-            if(super.mouseClicked(mouseX,mouseY,button))
+            if(super.mouseClicked(mouseX,mouseY,button)) {
                 return true
+            }
         }
         if(mouseX <= 16 && menuPopoutTarget == 0) {
+            Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F))
             menuPopoutTarget = (this.width/2)-18
+            if(oldFocus != -1)
+                entries[oldFocus].onFocusRemoved()
             return true
         } else if(mouseX >= menuPopoutTarget && mouseX <= menuPopoutTarget+16 && menuPopoutTarget != 0) {
+            Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F))
             menuPopoutTarget = 0
+            if(oldFocus != -1)
+                entries[oldFocus].onFocusRemoved()
             return true
         } else if(mouseX < menuPopout && menuPopoutTarget != 0) {
             for(i in configs.indices) {
                 if(mouseY >= 1+configScroll+(32*i) && mouseY <= 32+configScroll+(32*i)) {
+                    if(oldFocus != -1)
+                        entries[oldFocus].onFocusRemoved()
                     if(selectedConfig != i) {
                         selectedConfig = i
                         optionsScrollTarget = 18
@@ -265,10 +402,15 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
         } else {
             for(i in 0..<entries.size) {
                 if(mouseX >= 18+menuPopout.toInt() && mouseY >= optionsScroll+(32*i) && mouseY <= optionsScroll+((32*i)+31)) {
+                    focused = i
+                    if(oldFocus != -1)
+                        entries[oldFocus].onFocusRemoved()
                     return entries[i].mouseClicked((mouseX.toInt())-(18+menuPopout.toInt()),(mouseY.toInt())-((optionsScroll.toInt())+(32*i)),button)
                 }
             }
         }
+        if(oldFocus != -1)
+            entries[oldFocus].onFocusRemoved()
         return false
     }
 
@@ -288,5 +430,21 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
         return super.mouseScrolled(mouseX,mouseY,idk,scrollAmount)
     }
 
-    override fun shouldCloseOnEsc(): Boolean = true
+    override fun charTyped(c: Char, i: Int) : Boolean {
+        if(focused != -1) {
+            if(entries[focused].charTyped(c,i))
+                return true
+        }
+        return super.charTyped(c,i)
+    }
+
+    override fun keyPressed(key: Int, scanCode: Int, modifier: Int) : Boolean {
+        if(focused != -1) {
+            if(entries[focused].keyPressed(key))
+                return true
+        }
+        return super.keyPressed(key,scanCode,modifier)
+    }
+
+    override fun shouldCloseOnEsc(): Boolean = false
 }

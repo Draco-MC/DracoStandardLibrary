@@ -21,14 +21,16 @@ open class CommonEntrypoint : IRegisterListener {
 
     override fun register() {
         val config = ModConfig.Builder("draco", ConfigType.COMMON, null)
-        config.defineRange("diamondsPerCluster",5,1,10)
+        config.defineRange("diamonds_per_cluster",5,1,10)
         config.define("category.a",5)
-        config.define("category.anotherCategory.isGay",true)
-        config.define("yetAnotherCategory.doubleTest",10.0)
-        config.define("yetAnotherCategory.a",5)
+        config.define("category.another_category.is_gay",true)
+        config.define("category.another_category.is_straight",false)
+        config.define("category.another_category.a_third_category.is_bi","Maybe")
+        config.define("yet_another_category.double_test",10.0)
+        config.define("yet_another_category.a",5)
         config.build()
         val config2 = ModConfig.Builder("draco", ConfigType.CLIENT, null)
-        config2.define("client-category.a","Meow")
+        config2.define("client_category.a","Meow")
         config2.build()
     }
 }

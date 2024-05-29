@@ -50,21 +50,30 @@ open class ModConfig(private val name: String, private val type: ConfigType, pri
         }
     }
 
-    private fun load() {
-        if(frozen && getFile().exists()) {
-            val map = Toml(defaultTOML).read(getFile()).toMap()
-            for(entry in values.entries) {
+    fun load() {
+        if(frozen) {
+            val map = try {
+                Toml(defaultTOML).read(getFile()).toMap()
+            } catch(_: Exception) {
+                LOGGER.warn("${getName()} didn't exist, loading default values")
+                Toml(defaultTOML).toMap()
+            }
+            for (entry in values.entries) {
                 var t = map
-                entry.key.split(".").dropLast(1).forEach {
-                    t = (t[it] as Map<String, Any>)
-                }
-                if(t[entry.key.split(".").last] != null) {
-                    entry.value.set(t[entry.key.split(".").last]!!)
+                try {
+                    entry.key.split(".").dropLast(1).forEach {
+                        t = (t[it] as Map<String, Any>)
+                    }
+                    if (t[entry.key.split(".").last] != null) {
+                        entry.value.set(t[entry.key.split(".").last]!!)
+                    }
+                } catch (_: NullPointerException) {
+                    LOGGER.warn("${entry.key} didn't exist in the config ${getName()}, loading the default value")
                 }
             }
             save()
         } else {
-            throw RuntimeException("Attempted to load config ${getFile().name} before it was frozen")
+            throw RuntimeException("Attempted to load config ${getName()} before it was frozen")
         }
     }
 
@@ -85,7 +94,7 @@ open class ModConfig(private val name: String, private val type: ConfigType, pri
             getFile().parentFile.mkdirs()
             TomlWriter().write(finalTable, getFile())
         } else {
-            throw RuntimeException("Attempted to save config ${getFile().name} before it was frozen")
+            throw RuntimeException("Attempted to save config ${getName()} before it was frozen")
         }
     }
 
@@ -116,18 +125,18 @@ open class ModConfig(private val name: String, private val type: ConfigType, pri
         }
 
         fun get() : T {
-            if(!modConfig.frozen) throw RuntimeException("Attempted to get value of $key before the configuration ${modConfig.getFile().name} was frozen!")
+            if(!modConfig.frozen) throw RuntimeException("Attempted to get value of $key before the configuration ${modConfig.getName()} was frozen!")
             return currentValue!!
         }
 
         fun set(v: Any) {
-            if(!modConfig.frozen) throw RuntimeException("Attempted to set value of $key before the configuration ${modConfig.getFile().name} was frozen!")
+            if(!modConfig.frozen) throw RuntimeException("Attempted to set value of $key before the configuration ${modConfig.getName()} was frozen!")
             if(v is Number && defaultValue is Number) {
                 currentValue = v as T?
                 return
             }
             if(!v::class.isInstance(defaultValue)) {
-                LOGGER.error("Type mismatch in config ${modConfig.getFile().name}: ($key = ${currentValue.toString()}) -> ($key = ${v.toString()}), Change will not be applied")
+                LOGGER.error("Type mismatch in config ${modConfig.getName()}: ($key = ${currentValue.toString()}) -> ($key = ${v.toString()}), Change will not be applied")
                 return
             }
             if(minimumValue != null && maximumValue != null) {
