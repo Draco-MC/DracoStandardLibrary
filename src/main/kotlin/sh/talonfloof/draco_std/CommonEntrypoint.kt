@@ -21,7 +21,7 @@ open class CommonEntrypoint : IRegisterListener {
 
     override fun register() {
         val config = ModConfig.Builder("draco", ConfigType.COMMON, null)
-        config.defineRange("diamonds_per_cluster",5,1,10)
+        config.defineRange("diamonds_per_cluster",5,0,10)
         config.define("category.a",5)
         config.define("category.another_category.is_gay",true)
         config.define("category.another_category.is_straight",false)

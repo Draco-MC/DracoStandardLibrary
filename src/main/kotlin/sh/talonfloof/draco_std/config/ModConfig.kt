@@ -131,6 +131,12 @@ open class ModConfig(private val name: String, private val type: ConfigType, pri
 
         fun set(v: Any) {
             if(!modConfig.frozen) throw RuntimeException("Attempted to set value of $key before the configuration ${modConfig.getName()} was frozen!")
+            if(minimumValue != null && maximumValue != null) {
+                if (defaultValue is Long) {
+                    currentValue = (v as Long).coerceIn(minimumValue as Long, maximumValue as Long) as T?
+                    return
+                }
+            }
             if(v is Number && defaultValue is Number) {
                 currentValue = v as T?
                 return
@@ -139,13 +145,7 @@ open class ModConfig(private val name: String, private val type: ConfigType, pri
                 LOGGER.error("Type mismatch in config ${modConfig.getName()}: ($key = ${currentValue.toString()}) -> ($key = ${v.toString()}), Change will not be applied")
                 return
             }
-            if(minimumValue != null && maximumValue != null) {
-                if(defaultValue is Long) {
-                    currentValue = (v as Long).coerceIn(minimumValue as Long, maximumValue as Long) as T?
-                }
-            } else {
-                currentValue = v as T?
-            }
+            currentValue = v as T?
         }
     }
 

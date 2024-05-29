@@ -24,6 +24,7 @@ import sh.talonfloof.dracoloader.api.EnvironmentType
 import sh.talonfloof.dracoloader.api.Side
 import java.io.File
 import kotlin.math.absoluteValue
+import kotlin.math.roundToLong
 
 @Side(EnvironmentType.CLIENT)
 open class ConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, var topSeparator: Boolean, var bottomSeparator: Boolean) {
@@ -46,6 +47,9 @@ open class ConfigScreenEntry(private val screen: DracoConfigScreen, private val 
     open fun keyPressed(key: Int) : Boolean {
         return false
     }
+    open fun mouseDragged(x: Int, y: Int) : Boolean {
+        return false
+    }
     open fun onFocusRemoved() {
 
     }
@@ -53,9 +57,53 @@ open class ConfigScreenEntry(private val screen: DracoConfigScreen, private val 
 
 @Side(EnvironmentType.CLIENT)
 class SliderConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val entry: ModConfig.ConfigValue<*>) : ConfigScreenEntry(screen,name,false,false) {
+    var dragging = false
+
     override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
         super.render(gfx, mouseX, mouseY, focused)
+        RenderSystem.enableBlend()
         DracoModMenuScreen.renderBox(gfx,gfx.guiWidth()-18-32-128,6,128,20)
+        val min = entry.minimumValue as Long
+        val max = entry.maximumValue as Long
+        val range = max-min
+        gfx.drawCenteredString(Minecraft.getInstance().font,"Value: "+entry.get().toString(),gfx.guiWidth()-18-32-64,16-(Minecraft.getInstance().font.lineHeight/2),-1)
+        RenderSystem.enableBlend()
+        gfx.pose().pushPose()
+        gfx.pose().translate(
+            (((gfx.guiWidth() - 18 - 32 - 128).toFloat()) + 4F) + ((120F / range) * ((entry.get() as Long) - min)),
+            16F,
+            1F
+        )
+        gfx.pose().mulPose(Axis.ZP.rotationDegrees(90F))
+        gfx.pose().translate(-10F,-4F,0F)
+        DracoModMenuScreen.renderBox(gfx,0,0,20,8)
+        gfx.pose().popPose()
+        RenderSystem.disableBlend()
+    }
+
+    override fun mouseClicked(x: Int, y: Int, button: Int) : Boolean {
+        dragging = false
+        val min = entry.minimumValue as Long
+        val max = entry.maximumValue as Long
+        val range = max-min
+        val barX = (((screen.width - 18 - 32 - 128).toFloat())) + ((120F / range) * ((entry.get() as Long) - min))
+        if(x >= barX && x < barX+8) {
+            Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F))
+            dragging = true
+            return true
+        }
+        return super.mouseClicked(x,y,button)
+    }
+
+    override fun mouseDragged(x: Int, y: Int) : Boolean {
+        if(dragging) {
+            val curX = (x-((screen.width - 18 - 32 - 128).toFloat()) - 4F).coerceIn(0F,120F)
+            val min = entry.minimumValue as Long
+            val max = entry.maximumValue as Long
+            val range = max-min
+            entry.set(((curX/(120.0 / range))+min).roundToLong())
+        }
+        return super.mouseDragged(x,y)
     }
 }
 
@@ -63,11 +111,13 @@ class SliderConfigScreenEntry(private val screen: DracoConfigScreen, private val
 class BooleanConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val entry: ModConfig.ConfigValue<*>) : ConfigScreenEntry(screen,name,false,false) {
     override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
         super.render(gfx, mouseX, mouseY, focused)
+        RenderSystem.enableBlend()
         DracoModMenuScreen.renderBox(gfx,gfx.guiWidth()-18-32-128,6,128,20)
         if(mouseX >= (gfx.guiWidth()-18-32-128) && mouseX < (gfx.guiWidth()-18-32) && mouseY >= 6 && mouseY < 26) {
             gfx.fill((gfx.guiWidth()-18-32-128),6,(gfx.guiWidth()-18-32),26,(0x20ffffff).toInt())
         }
         gfx.drawCenteredString(Minecraft.getInstance().font,Component.translatable(if(entry.get() as Boolean) "gui.yes" else "gui.no"),gfx.guiWidth()-18-32-64,16-(Minecraft.getInstance().font.lineHeight/2),-1)
+        RenderSystem.disableBlend()
     }
 
     override fun mouseClicked(x: Int, y: Int, button: Int): Boolean {
@@ -86,9 +136,11 @@ class TextBoxConfigScreenEntry(private val screen: DracoConfigScreen, private va
 
     override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
         super.render(gfx, mouseX, mouseY, focused)
+        RenderSystem.enableBlend()
         DracoModMenuScreen.renderBox(gfx,gfx.guiWidth()-18-32-128,6,128,20)
         val comp = Component.literal(Minecraft.getInstance().font.plainSubstrByWidth(value,128,true)).append(Component.literal(if(focused) "|" else "").withStyle(ChatFormatting.GRAY))
         gfx.drawString(Minecraft.getInstance().font,comp,gfx.guiWidth()-18-32-128+1,16-(Minecraft.getInstance().font.lineHeight/2),-1,false)
+        RenderSystem.disableBlend()
     }
 
     override fun charTyped(c: Char, i: Int) : Boolean {
@@ -214,7 +266,11 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
                 if(entry.value is ModConfig.ConfigValue<*>) {
                     val value = (entry.value as ModConfig.ConfigValue<*>)
                     if(value.defaultValue !is Boolean) {
-                        l.add(TextBoxConfigScreenEntry(this,Component.literal(fancyName),value))
+                        if(value.minimumValue != null && value.maximumValue != null) {
+                            l.add(SliderConfigScreenEntry(this, Component.literal(fancyName), value))
+                        } else {
+                            l.add(TextBoxConfigScreenEntry(this, Component.literal(fancyName), value))
+                        }
                     } else {
                         l.add(BooleanConfigScreenEntry(this,Component.literal(fancyName),value))
                     }
@@ -364,6 +420,13 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
         }
         gfx.disableScissor()
         gfx.pose().popPose()
+    }
+
+    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaMouseX: Double, deltaMouseY: Double): Boolean {
+        if(focused != -1) {
+            return entries[focused].mouseDragged(mouseX.toInt()-(18+menuPopout.toInt()),mouseY.toInt()-((optionsScroll.toInt())+(32*focused)))
+        }
+        return super.mouseDragged(mouseX, mouseY, button, deltaMouseX, deltaMouseY)
     }
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
