@@ -177,7 +177,7 @@ class TextBoxConfigScreenEntry(private val screen: DracoConfigScreen, private va
 }
 
 @Side(EnvironmentType.CLIENT)
-class CategoryConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val children: List<out ConfigScreenEntry>) : ConfigScreenEntry(screen,name,true,true) {
+open class CategoryConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val children: List<out ConfigScreenEntry>) : ConfigScreenEntry(screen,name,true,true) {
     var expanded: Boolean = false
 
     override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
@@ -224,6 +224,14 @@ class CategoryConfigScreenEntry(private val screen: DracoConfigScreen, private v
             return true
         }
         return super.mouseClicked(x,y,button)
+    }
+}
+
+@Side(EnvironmentType.CLIENT)
+class ListConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val children: MutableList<out ConfigScreenEntry>) : CategoryConfigScreenEntry(screen,name,children) {
+    override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
+        super.render(gfx,mouseX,mouseY,focused)
+        gfx.drawString(Minecraft.getInstance().font,"+",gfx.guiWidth()-18-32-16+(Minecraft.getInstance().font.width("+")/2),16-(Minecraft.getInstance().font.lineHeight/2),-1,false)
     }
 }
 
@@ -458,6 +466,7 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
                         selectedConfig = i
                         optionsScrollTarget = 18
                         loadConfig()
+                        menuPopoutTarget = 0
                     }
                     return true
                 }

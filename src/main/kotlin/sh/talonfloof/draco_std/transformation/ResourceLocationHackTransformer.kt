@@ -21,7 +21,7 @@ class ResourceLocationHackTransformer : IDracoTransformer {
             var applyRsHack: Boolean = false
             with(node.methods.find { it.name == "<init>" && it.desc == "(Ljava/lang/String;Ljava/lang/String;)V" }) {
                 if(this != null) {
-                    if(this.access == Opcodes.ACC_PROTECTED) {
+                    if(this.access == Opcodes.ACC_PROTECTED || this.access == Opcodes.ACC_PRIVATE) {
                         this.access = Opcodes.ACC_PUBLIC
                         applyRsHack = true
                     }
