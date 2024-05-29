@@ -91,16 +91,14 @@ publishing {
     }
 
     publications {
-        mavenJava(MavenPublication) {
-            groupId project.group
-            artifactId project.name
-            version project.version
-            from components.java
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
         }
     }
 }
 
 shadowJar {
+    archiveClassifier = ""
     configurations = [project.configurations.compileClasspath]
     dependencies {
         include(dependency('com.moandjiezana.toml:toml4j:0.7.2'))
