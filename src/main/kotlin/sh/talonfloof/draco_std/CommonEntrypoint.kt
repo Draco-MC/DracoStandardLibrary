@@ -28,6 +28,7 @@ open class CommonEntrypoint : IRegisterListener {
         config.define("category.another_category.a_third_category.is_bi","Maybe")
         config.define("yet_another_category.double_test",10.0)
         config.define("yet_another_category.a",5)
+        config.define("yet_another_category.string_array_test",mutableListOf<String>())
         config.build()
         val config2 = ModConfig.Builder("draco", ConfigType.CLIENT, null)
         config2.define("client_category.a","Meow")

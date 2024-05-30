@@ -177,7 +177,7 @@ class TextBoxConfigScreenEntry(private val screen: DracoConfigScreen, private va
 }
 
 @Side(EnvironmentType.CLIENT)
-open class CategoryConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val children: List<out ConfigScreenEntry>) : ConfigScreenEntry(screen,name,true,true) {
+open class CategoryConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val children: MutableList<out ConfigScreenEntry>) : ConfigScreenEntry(screen,name,true,true) {
     var expanded: Boolean = false
 
     override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
@@ -228,10 +228,30 @@ open class CategoryConfigScreenEntry(private val screen: DracoConfigScreen, priv
 }
 
 @Side(EnvironmentType.CLIENT)
-class ListConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val children: MutableList<out ConfigScreenEntry>) : CategoryConfigScreenEntry(screen,name,children) {
+class ListConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val entry: ModConfig.ConfigValue<*>) : CategoryConfigScreenEntry(screen,name,mutableListOf()){
     override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
         super.render(gfx,mouseX,mouseY,focused)
         gfx.drawString(Minecraft.getInstance().font,"+",gfx.guiWidth()-18-32-16+(Minecraft.getInstance().font.width("+")/2),16-(Minecraft.getInstance().font.lineHeight/2),-1,false)
+    }
+
+    override fun mouseClicked(x: Int, y: Int, button: Int) : Boolean {
+        if(x >= this.screen.width-18-64 && x < this.screen.width-18-32) {
+            Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F))
+            return true
+        }
+        return super.mouseClicked(x,y,button)
+    }
+}
+
+@Side(EnvironmentType.CLIENT)
+class ListEntryConfigScreenEntry(private val screen: DracoConfigScreen, private val parent: ListConfigScreenEntry, var value: Any) : ConfigScreenEntry(screen,Component.empty(),false,false) {
+    override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
+        super.render(gfx,mouseX,mouseY,focused)
+        gfx.drawString(Minecraft.getInstance().font,value.toString(),64-18,16-(Minecraft.getInstance().font.lineHeight/2),(0xffffffff).toInt(),true)
+        gfx.drawString(Minecraft.getInstance().font,"-",16-(Minecraft.getInstance().font.width("-")/2),16-(Minecraft.getInstance().font.lineHeight/2),-1,false)
+        if(mouseX in 0..31) {
+            gfx.fill(0,0,32,32,(0x40ffffff).toInt())
+        }
     }
 }
 
@@ -273,7 +293,9 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
             } else {
                 if(entry.value is ModConfig.ConfigValue<*>) {
                     val value = (entry.value as ModConfig.ConfigValue<*>)
-                    if(value.defaultValue !is Boolean) {
+                    if(value.defaultValue is MutableList<*>) {
+                        l.add(ListConfigScreenEntry(this, Component.literal(fancyName), value))
+                    } else if(value.defaultValue !is Boolean) {
                         if(value.minimumValue != null && value.maximumValue != null) {
                             l.add(SliderConfigScreenEntry(this, Component.literal(fancyName), value))
                         } else {
