@@ -7,7 +7,7 @@
   "mixin": "draco_std.mixins.json",
   "listeners": {
     "COMMON": [
-      "sh.talonfloof.draco_std.CommonEntrypoint"
+      "sh.talonfloof.draco_std.DracoStandardLibrary"
     ]
   },
   "transformers": [

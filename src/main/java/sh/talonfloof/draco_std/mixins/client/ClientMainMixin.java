@@ -4,7 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import sh.talonfloof.draco_std.CommonEntrypoint;
+import sh.talonfloof.draco_std.DracoStandardLibrary;
 import sh.talonfloof.draco_std.debug.DracoEarlyLog;
 import sh.talonfloof.draco_std.loading.DracoLoadingScreen;
 import sh.talonfloof.dracoloader.api.EnvironmentType;
@@ -22,7 +22,7 @@ public class ClientMainMixin {
 
     @Inject(method="main", at=@At("HEAD"))
     private static void draco$earlyLoad(String[] args, CallbackInfo ci) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, NoSuchMethodException, InvocationTargetException {
-        DracoEarlyLog.addToLog("Loading Draco "+ CommonEntrypoint.VERSION);
+        DracoEarlyLog.addToLog("Loading Draco "+ DracoStandardLibrary.VERSION);
         System.setProperty("java.awt.headless","false");
         Color color = new Color(239, 50, 61);
         File options = new File(".").toPath().resolve("options.txt").toFile();

@@ -6,7 +6,6 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.LoadingOverlay;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.util.FastColor;
@@ -26,7 +25,7 @@ import java.lang.management.MemoryUsage;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static sh.talonfloof.draco_std.CommonEntrypoint.VERSION;
+import static sh.talonfloof.draco_std.DracoStandardLibrary.VERSION;
 
 @Side(EnvironmentType.CLIENT)
 @Mixin(LoadingOverlay.class)

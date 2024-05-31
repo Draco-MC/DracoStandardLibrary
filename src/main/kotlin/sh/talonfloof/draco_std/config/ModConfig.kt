@@ -2,7 +2,7 @@ package sh.talonfloof.draco_std.config
 
 import com.moandjiezana.toml.Toml
 import com.moandjiezana.toml.TomlWriter
-import sh.talonfloof.draco_std.CommonEntrypoint.Companion.LOGGER
+import sh.talonfloof.draco_std.DracoStandardLibrary.Companion.LOGGER
 import java.io.File
 
 enum class ConfigType {

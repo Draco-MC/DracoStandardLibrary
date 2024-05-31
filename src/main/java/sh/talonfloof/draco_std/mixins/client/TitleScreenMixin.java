@@ -26,16 +26,13 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.CommonColors;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import sh.talonfloof.draco_std.CommonEntrypoint;
+import sh.talonfloof.draco_std.DracoStandardLibrary;
 import sh.talonfloof.draco_std.modmenu.DracoButton;
 import sh.talonfloof.draco_std.modmenu.DracoModMenuScreen;
 import sh.talonfloof.dracoloader.api.EnvironmentType;
@@ -89,15 +86,15 @@ public class TitleScreenMixin {
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)I"))
     public void draco$render(GuiGraphics gfx, int $$1, int $$2, float $$3, CallbackInfo ci, @Local(ordinal=2) int fade) {
-        gfx.drawString(Minecraft.getInstance().font,"DracoMC "+CommonEntrypoint.VERSION,2,gfx.guiHeight()-10-10,16777215 | fade);
+        gfx.drawString(Minecraft.getInstance().font,"DracoMC "+ DracoStandardLibrary.VERSION,2,gfx.guiHeight()-10-10,16777215 | fade);
     }
 
     @Inject(method = "render", at = @At(value = "TAIL"))
     private void draco$labelRender(GuiGraphics gfx, int a, int b, float delta, CallbackInfo ci, @Local(ordinal=2) int fade) {
-        if(CommonEntrypoint.VERSION.contains("alpha")) {
+        if(DracoStandardLibrary.VERSION.contains("alpha")) {
             var label = MultiLineLabel.create(Minecraft.getInstance().font, Component.literal("This is an alpha version of Draco"), Component.literal("Bugs may occur, as well as APIs and Features being incomplete"));
             label.renderCentered(gfx, gfx.guiWidth() / 2, 2, 9, CommonColors.SOFT_RED | fade);
-        } else if(CommonEntrypoint.VERSION.contains("beta")) {
+        } else if(DracoStandardLibrary.VERSION.contains("beta")) {
             var label = MultiLineLabel.create(Minecraft.getInstance().font, Component.literal("This is a beta version of Draco"), Component.literal("Major issues may occur, verify before reporting"));
             label.renderCentered(gfx, gfx.guiWidth() / 2, 2, 9, CommonColors.SOFT_RED | fade);
         }

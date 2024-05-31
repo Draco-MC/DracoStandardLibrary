@@ -1,6 +1,6 @@
 package sh.talonfloof.draco_std.debug
 
-import sh.talonfloof.draco_std.CommonEntrypoint.Companion.LOGGER
+import sh.talonfloof.draco_std.DracoStandardLibrary.Companion.LOGGER
 
 object DracoEarlyLog {
     val log = mutableListOf("")

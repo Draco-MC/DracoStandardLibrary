@@ -1,11 +1,10 @@
 package sh.talonfloof.draco_std.entity
 
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.core.registries.Registries
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier
-import sh.talonfloof.draco_std.CommonEntrypoint.Companion.LOGGER
+import sh.talonfloof.draco_std.DracoStandardLibrary.Companion.LOGGER
 import sh.talonfloof.draco_std.mixins.entity.IAttributeRegistryAccessor
 
 

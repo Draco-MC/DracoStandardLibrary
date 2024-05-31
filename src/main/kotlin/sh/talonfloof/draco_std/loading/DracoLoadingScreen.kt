@@ -1,7 +1,7 @@
 package sh.talonfloof.draco_std.loading
 
 import net.minecraft.util.Mth
-import sh.talonfloof.draco_std.CommonEntrypoint
+import sh.talonfloof.draco_std.DracoStandardLibrary
 import sh.talonfloof.draco_std.debug.DracoEarlyLog
 import java.awt.*
 import java.awt.event.ComponentAdapter
@@ -76,7 +76,7 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
         @JvmField
         var logLabel = JMultilineLabel()
         @JvmField
-        var versionLabel = JLabel(CommonEntrypoint.VERSION)
+        var versionLabel = JLabel(DracoStandardLibrary.VERSION)
         @JvmField
         var memoryLabel = JLabel("")
         @JvmField
@@ -177,7 +177,7 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
         setSize(854, 480)
         layeredPane.background = localColor
         contentPane.background = localColor
-        //isResizable = false
+        isResizable = false
         defaultCloseOperation = WindowConstants.DO_NOTHING_ON_CLOSE
         image.image = image.image.getScaledInstance(1,1, Image.SCALE_FAST)
         imageLabel.icon = image
