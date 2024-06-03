@@ -15,7 +15,7 @@ buildscript {
 plugins {
     id 'java'
     id "org.jetbrains.kotlin.jvm" version "1.9.20"
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'maven-publish'
 }
 
@@ -109,4 +109,5 @@ shadowJar {
     dependencies {
         include(dependency('com.moandjiezana.toml:toml4j:0.7.2'))
     }
+    relocate "com.moandjiezana.toml", "sh.talonfloof.draco_std.dependencies.com.moandjiezana.toml"
 }
