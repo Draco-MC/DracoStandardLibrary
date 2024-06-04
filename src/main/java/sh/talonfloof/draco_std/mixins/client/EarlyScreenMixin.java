@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.DisplayData;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.VirtualScreen;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,7 +14,6 @@ import sh.talonfloof.draco_std.loading.DracoLoadingScreen;
 import sh.talonfloof.dracoloader.api.EnvironmentType;
 import sh.talonfloof.dracoloader.api.Side;
 
-import javax.annotation.Nullable;
 import javax.swing.*;
 
 @Side(EnvironmentType.CLIENT)

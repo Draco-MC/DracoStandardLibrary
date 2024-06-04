@@ -4,7 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "package": "sh.talonfloof.draco_std.mixins",
   "client": [
-    "client.AccessorGridLayout",
+    "client.IAccessorGridLayout",
     "client.ClientBrandRetrieverMixin",
     "client.ClientMainMixin",
     "client.CreateWorldScreenMixin",

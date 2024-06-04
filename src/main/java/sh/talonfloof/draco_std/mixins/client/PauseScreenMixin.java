@@ -36,7 +36,7 @@ public class PauseScreenMixin extends Screen {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/layouts/GridLayout;visitWidgets(Ljava/util/function/Consumer;)V"), method = "createPauseMenu", locals = LocalCapture.CAPTURE_FAILSOFT)
     public void buttonOverride(CallbackInfo ci, GridLayout layout, GridLayout.RowHelper helper) {
         if (layout != null) {
-            final List<LayoutElement> buttons = ((AccessorGridLayout)layout).getChildren();
+            final List<LayoutElement> buttons = ((IAccessorGridLayout)layout).getChildren();
             for (int i = 0; i < buttons.size(); i++) {
                 LayoutElement widget = buttons.get(i);
                 if(widget instanceof Button) {

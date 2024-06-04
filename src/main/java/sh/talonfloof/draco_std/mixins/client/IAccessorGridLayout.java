@@ -11,7 +11,7 @@ import java.util.List;
 
 @Side(EnvironmentType.CLIENT)
 @Mixin(GridLayout.class)
-public interface AccessorGridLayout {
+public interface IAccessorGridLayout {
     @Accessor
     List<LayoutElement> getChildren();
 }

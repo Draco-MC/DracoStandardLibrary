@@ -6,7 +6,7 @@ import net.minecraft.core.MappedRegistry
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
-import javax.annotation.Nullable
+import org.jetbrains.annotations.Nullable
 
 
 class RegistryBuilder<T>(registryKey: ResourceKey<out Registry<T>?>) {

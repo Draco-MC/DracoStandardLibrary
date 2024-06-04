@@ -4,9 +4,11 @@ import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
+import sh.talonfloof.dracoloader.api.DracoTransformer
 import sh.talonfloof.dracoloader.transform.IDracoTransformer
 import sh.talonfloof.dracoloader.transform.visitAsm
 
+@DracoTransformer
 class RegistryUnfreezeTransformer : IDracoTransformer {
     override fun transform(loader: ClassLoader, className: String, originalClassData: ByteArray?): ByteArray? {
         if(className == "net.minecraft.core.MappedRegistry" || className == "net.minecraft.core.DefaultedMappedRegistry") {
