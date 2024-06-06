@@ -207,7 +207,7 @@ open class CategoryConfigScreenEntry(private val screen: DracoConfigScreen, priv
             this.bottomSeparator = true
         } else if(newVal && !expanded) {
             if(this.children.isNotEmpty()) {
-                this.children.last.bottomSeparator = true
+                this.children.last().bottomSeparator = true
                 this.bottomSeparator = false
             } else {
                 this.bottomSeparator = true
@@ -325,7 +325,7 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
                 }
                 t = (t[it]!! as MutableMap<String, Any>)
             }
-            t[path.last] = entry.value
+            t[path.last()] = entry.value
         }
         entries = createConfigEntries(finalTable)
     }

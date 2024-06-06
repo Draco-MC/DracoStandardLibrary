@@ -84,6 +84,39 @@ public class TitleScreenMixin {
         }
     }
 
+    @Inject(at = @At("TAIL"), method = "createDemoMenuOptions")
+    public void draco$injectDemoButton(int a, int b, CallbackInfo ci) {
+        int modsButtonIndex = -1;
+        int buttonsY = ((TitleScreen)(Object)this).height / 4 + 48;
+        final int spacing = 24;
+        final List<GuiEventListener> buttons = (List<GuiEventListener>)((TitleScreen)(Object)this).children();
+        for(int i = 0; i < buttons.size(); i++) {
+            GuiEventListener widget = buttons.get(i);
+            if (widget instanceof Button button) {
+                if(button.visible) {
+                    if (modsButtonIndex == -1) {
+                        buttonsY = button.getY();
+                    }
+                }
+                ComponentContents c = button.getMessage().getContents();
+                if((c instanceof TranslatableContents) && ((TranslatableContents)c).getKey().equals("menu.resetdemo")) {
+                    modsButtonIndex = i + 1;
+                    if (button.visible) {
+                        buttonsY = button.getY();
+                    }
+                }
+            }
+        }
+        if (modsButtonIndex != -1) {
+            DracoButton button = new DracoButton(((TitleScreen) (Object) this).width / 2 - 100, buttonsY + spacing, 200, 20, Component.literal("Mods"), (x) -> {
+                Minecraft.getInstance().setScreen(new DracoModMenuScreen(((TitleScreen) (Object) this)));
+            });
+            ((IScreenAccessor)((TitleScreen)(Object)this)).getRenderables().add(modsButtonIndex, button);
+            ((IScreenAccessor)((TitleScreen)(Object)this)).getNarratables().add(modsButtonIndex, button);
+            buttons.add(modsButtonIndex, button);
+        }
+    }
+
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)I"))
     public void draco$render(GuiGraphics gfx, int $$1, int $$2, float $$3, CallbackInfo ci, @Local(ordinal=2) int fade) {
         gfx.drawString(Minecraft.getInstance().font,"DracoMC "+ DracoStandardLibrary.VERSION,2,gfx.guiHeight()-10-10,16777215 | fade);
@@ -92,11 +125,11 @@ public class TitleScreenMixin {
     @Inject(method = "render", at = @At(value = "TAIL"))
     private void draco$labelRender(GuiGraphics gfx, int a, int b, float delta, CallbackInfo ci, @Local(ordinal=2) int fade) {
         if(DracoStandardLibrary.VERSION.contains("alpha")) {
-            var label = MultiLineLabel.create(Minecraft.getInstance().font, Component.literal("This is an alpha version of Draco"), Component.literal("Bugs may occur, as well as APIs and Features being incomplete"));
-            label.renderCentered(gfx, gfx.guiWidth() / 2, 2, 9, CommonColors.SOFT_RED | fade);
+            var label = MultiLineLabel.create(Minecraft.getInstance().font, Component.literal("This is an alpha version of Draco").withColor(CommonColors.SOFT_RED), Component.literal("Bugs may occur, as well as APIs and Features being incomplete"));
+            label.renderCentered(gfx, gfx.guiWidth() / 2, 2, 9, 16777215 | fade);
         } else if(DracoStandardLibrary.VERSION.contains("beta")) {
-            var label = MultiLineLabel.create(Minecraft.getInstance().font, Component.literal("This is a beta version of Draco"), Component.literal("Major issues may occur, verify before reporting"));
-            label.renderCentered(gfx, gfx.guiWidth() / 2, 2, 9, CommonColors.SOFT_RED | fade);
+            var label = MultiLineLabel.create(Minecraft.getInstance().font, Component.literal("This is a beta version of Draco").withColor(CommonColors.SOFT_RED), Component.literal("Major issues may occur, verify before reporting"));
+            label.renderCentered(gfx, gfx.guiWidth() / 2, 2, 9, 16777215 | fade);
         }
     }
 }

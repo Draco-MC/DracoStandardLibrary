@@ -16,22 +16,61 @@ This doesn't affect standard releases and only 24w21a and above, a more permanen
 
 @DracoTransformer
 class ResourceLocationHackTransformer : IDracoTransformer {
+    var applyRlHack: Boolean = false
+    var applyMllHack: Boolean = false
+
     override fun transform(loader: ClassLoader, className: String, originalClassData: ByteArray?): ByteArray? {
-        if(className == "net.minecraft.resources.ResourceLocation") {
+        if(className == "net.minecraft.client.gui.components.MultiLineLabel") {
             val reader = ClassReader(originalClassData)
             val node = ClassNode()
             reader.accept(node, 0)
-            var applyRsHack: Boolean = false
-            with(node.methods.find { it.name == "<init>" && it.desc == "(Ljava/lang/String;Ljava/lang/String;)V" }) {
-                if(this != null) {
-                    if(this.access == Opcodes.ACC_PROTECTED || this.access == Opcodes.ACC_PRIVATE) {
-                        this.access = Opcodes.ACC_PUBLIC
-                        applyRsHack = true
+            if(!applyMllHack) {
+                with(node.methods.find { it.name == "renderCentered" && it.desc == "(Lnet/minecraft/client/gui/GuiGraphics;IIII)V" }) {
+                    if (this != null) {
+                        DracoEarlyLog.addToLog("Applying MultiLineLabel Hack")
+                        applyMllHack = true
                     }
                 }
             }
-            if(applyRsHack) {
-                DracoEarlyLog.addToLog("Applying ResourceLocation Hack")
+            if(applyMllHack) {
+                node.visitMethod(Opcodes.ACC_PUBLIC,"renderCentered","(Lnet/minecraft/client/gui/GuiGraphics;IIII)I",null,null).visitAsm {
+                    aload(0)
+                    aload(1)
+                    iload(2)
+                    iload(3)
+                    iload(4)
+                    iload(5)
+                    invokeinterface("net/minecraft/client/gui/components/MultiLineLabel","renderCentered","(Lnet/minecraft/client/gui/GuiGraphics;IIII)V")
+                    iload(3)
+                    ireturn
+                }
+                node.visitMethod(Opcodes.ACC_PUBLIC,"renderCentered","(Lnet/minecraft/client/gui/GuiGraphics;II)I",null,null).visitAsm {
+                    aload(0)
+                    aload(1)
+                    iload(2)
+                    iload(3)
+                    invokeinterface("net/minecraft/client/gui/components/MultiLineLabel","renderCentered","(Lnet/minecraft/client/gui/GuiGraphics;II)V")
+                    iload(3)
+                    ireturn
+                }
+                return ClassWriter(reader, ClassWriter.COMPUTE_FRAMES).also { node.accept(it) }.toByteArray()
+            }
+        } else if(className == "net.minecraft.resources.ResourceLocation") {
+            val reader = ClassReader(originalClassData)
+            val node = ClassNode()
+            reader.accept(node, 0)
+            if(!applyRlHack) {
+                with(node.methods.find { it.name == "<init>" && it.desc == "(Ljava/lang/String;Ljava/lang/String;)V" }) {
+                    if (this != null) {
+                        if (this.access == Opcodes.ACC_PROTECTED || this.access == Opcodes.ACC_PRIVATE) {
+                            this.access = Opcodes.ACC_PUBLIC
+                            DracoEarlyLog.addToLog("Applying ResourceLocation Hack")
+                            applyRlHack = true
+                        }
+                    }
+                }
+            }
+            if(applyRlHack) {
                 node.visitMethod(Opcodes.ACC_PUBLIC,"<init>","(Ljava/lang/String;)V",null,null).visitAsm {
                     aload(0)
                     ldc("minecraft")

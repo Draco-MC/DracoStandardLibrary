@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sh.talonfloof.draco_std.loading.DracoLoadingScreen;
 import sh.talonfloof.draco_std.mixins.IPackRepoAccessor;
@@ -76,6 +77,6 @@ public class MinecraftMixin {
         access.setSources(Set.copyOf(sources));
         packRepository.reload();
         DracoLoadingScreen.updateCustomBar("resources",null,null,null);
-        DracoLoadingScreen.updateCustomBar("minecraft_load","Minecraft Load",0,100);
+        DracoLoadingScreen.updateCustomBar("minecraft_load","Minecraft Progress",0,100);
     }
 }

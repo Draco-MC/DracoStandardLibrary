@@ -22,29 +22,11 @@ public class ClientMainMixin {
 
     @Inject(method="main", at=@At("HEAD"))
     private static void draco$earlyLoad(String[] args, CallbackInfo ci) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, NoSuchMethodException, InvocationTargetException {
-        DracoEarlyLog.addToLog("Loading Draco "+ DracoStandardLibrary.VERSION);
-        System.setProperty("java.awt.headless","false");
-        Color color = new Color(239, 50, 61);
-        File options = new File(".").toPath().resolve("options.txt").toFile();
-        if(options.exists()) {
-            try (var stream = new FileInputStream(options)) {
-                var content = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-                int index = content.indexOf("darkMojangStudiosBackground:");
-                if(index != -1) {
-                    if(content.substring(index+("darkMojangStudiosBackground:".length())).startsWith("true")) {
-                        color = Color.BLACK;
-                    }
-                }
-            }
-        }
-        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-        UIManager.getDefaults().put("ProgressBar.horizontalSize", new Dimension(146, 12));
-        UIManager.getDefaults().put("ProgressBar.font", UIManager.getFont("ProgressBar.font").deriveFont(18f));
-        DracoLoadingScreen.screen = new DracoLoadingScreen(color);
-        DracoLoadingScreen.screen.setVisible(true);
-        DracoLoadingScreen.diffX = (int)(DracoLoadingScreen.screen.getBounds().getWidth() - DracoLoadingScreen.screen.getRootPane().getBounds().getWidth());
-        DracoLoadingScreen.diffY = (int)(DracoLoadingScreen.screen.getBounds().getHeight() - DracoLoadingScreen.screen.getRootPane().getBounds().getHeight());
-        DracoLoadingScreen.screen.setSize(854+DracoLoadingScreen.diffX,480+DracoLoadingScreen.diffY);
-        DracoLoadingScreen.createCustomProgressBar("minecraft_load","Bootstrap Minecraft",0);
+        DracoLoadingScreen.updateCustomBar("minecraft_load","Launching Minecraft",null,null);
+    }
+
+    @Inject(method="main", at=@At(value = "INVOKE", target = "Lnet/minecraft/server/Bootstrap;bootStrap()V"))
+    private static void draco$bootResourceLoad(CallbackInfo ci) {
+        DracoLoadingScreen.updateCustomBar("minecraft_load","Loading Bootstrap Resources",null,null);
     }
 }

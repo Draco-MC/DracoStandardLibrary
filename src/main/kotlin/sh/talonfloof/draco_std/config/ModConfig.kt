@@ -64,8 +64,8 @@ open class ModConfig(private val name: String, private val type: ConfigType, pri
                     entry.key.split(".").dropLast(1).forEach {
                         t = (t[it] as Map<String, Any>)
                     }
-                    if (t[entry.key.split(".").last] != null) {
-                        entry.value.set(t[entry.key.split(".").last]!!)
+                    if (t[entry.key.split(".").last()] != null) {
+                        entry.value.set(t[entry.key.split(".").last()]!!)
                     }
                 } catch (_: NullPointerException) {
                     LOGGER.warn("${entry.key} didn't exist in the config ${getName()}, loading the default value")
@@ -89,7 +89,7 @@ open class ModConfig(private val name: String, private val type: ConfigType, pri
                     }
                     t = (t[it]!! as MutableMap<String, Any>)
                 }
-                t[path.last] = entry.value.get() as Any
+                t[path.last()] = entry.value.get() as Any
             }
             getFile().parentFile.mkdirs()
             TomlWriter().write(finalTable, getFile())
@@ -174,7 +174,7 @@ open class ModConfig(private val name: String, private val type: ConfigType, pri
                     }
                     t = (t[it]!! as MutableMap<String, Any>)
                 }
-                t[path.last] = entry.value.defaultValue as Any
+                t[path.last()] = entry.value.defaultValue as Any
             }
             config.defaultTOML = Toml().read(TomlWriter().write(finalTable))
             config.freeze()

@@ -2,15 +2,20 @@ package sh.talonfloof.draco_std
 
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import sh.talonfloof.draco_std.debug.DracoEarlyLog.addToLog
 import sh.talonfloof.draco_std.listeners.IRegisterListener
-import sh.talonfloof.dracoloader.api.EnvironmentType
+import sh.talonfloof.draco_std.loading.DracoLoadingScreen
+import sh.talonfloof.draco_std.loading.DracoLoadingScreen.Companion.createCustomProgressBar
 import sh.talonfloof.dracoloader.api.ListenerSubscriber
+import java.awt.Color
 import java.io.File
+import java.io.FileInputStream
+import java.nio.charset.StandardCharsets
+import javax.swing.UIManager
 
 @ListenerSubscriber
 open class DracoStandardLibrary : IRegisterListener {
     init {
-        LOGGER.info("Draco Standard Library $VERSION")
         if(!File("./config").exists()) File("./config").mkdir()
     }
 

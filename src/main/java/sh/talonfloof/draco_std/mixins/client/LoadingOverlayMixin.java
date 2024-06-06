@@ -2,6 +2,7 @@ package sh.talonfloof.draco_std.mixins.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.sun.management.OperatingSystemMXBean;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -42,6 +43,12 @@ public class LoadingOverlayMixin {
     private static int draco$guiScale = 0;
     @Unique
     private static int draco$logoHeight = 0;
+
+    @Unique
+    private static OperatingSystemMXBean draco$osBean;
+
+    @Unique
+    private static String draco$cpu = "CPU: 0.0%";
 
     @Inject(method="render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;setOverlay(Lnet/minecraft/client/gui/screens/Overlay;)V"))
     private void draco$endFirstLoad(CallbackInfo ci) {
@@ -99,18 +106,21 @@ public class LoadingOverlayMixin {
     @Inject(method="<init>", at = @At("TAIL"))
     private void loadMods(Minecraft minecraft, ReloadInstance $$1, Consumer<Optional<Throwable>> $$2, boolean $$3, CallbackInfo ci) {
         if(firstLoad) {
+            draco$osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
             Thread t = new Thread(() -> {
-                //DracoEarlyLog.addToLog("LOAD Lateinit");
-                //DracoEarlyLog.customBarName = "Draco Late Initialization";
-                /*for(int i=0; i < 10; i ++) {
+                while(firstLoad) {
+                    var cpuLoad = draco$osBean.getProcessCpuLoad();
+                    if (cpuLoad == -1.0) {
+                        draco$cpu = String.format("*CPU: %.1f%%", draco$osBean.getCpuLoad() * 100f);
+                    } else {
+                        draco$cpu = String.format("CPU: %.1f%%", cpuLoad * 100f);
+                    }
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                    VulpesEarlyLog.customBarProgress = (float)(i+1)/10.0F;
                 }
-                VulpesEarlyLog.customBarName = "";*/
             });
             t.start();
         }
@@ -157,12 +167,12 @@ public class LoadingOverlayMixin {
     }
 
     @Inject(method = "drawProgressBar", at = @At("TAIL"))
-    public void draco$addVulpesLogo(GuiGraphics gfx, int $$1, int $$2, int $$3, int $$4, float a, CallbackInfo ci) {
+    public void draco$addDracoLogo(GuiGraphics gfx, int $$1, int $$2, int $$3, int $$4, float a, CallbackInfo ci) {
         if(firstLoad) {
             // Heap Bar
             var mem = ManagementFactory.getMemoryMXBean();
             final MemoryUsage heapusage = mem.getHeapMemoryUsage();
-            String heap = String.format("Heap: %d/%d MB (%.1f%%) OffHeap: %d MB", heapusage.getUsed() >> 20, heapusage.getMax() >> 20, ((float) heapusage.getUsed() / heapusage.getMax()) * 100.0, mem.getNonHeapMemoryUsage().getUsed() >> 20);
+            String heap = String.format("Heap: %d/%d MB (%.1f%%) OffHeap: %d MB  %s", heapusage.getUsed() >> 20, heapusage.getMax() >> 20, ((float) heapusage.getUsed() / heapusage.getMax()) * 100.0, mem.getNonHeapMemoryUsage().getUsed() >> 20, draco$cpu);
             draco$drawString(gfx, gfx.guiWidth() / 2 - ((heap.length() * 6) / 2), 1, heap, a);
             draco$drawMemoryBar(gfx, $$1, 10, $$3 - $$1, $$4 - $$2, a, (float) heapusage.getUsed() / heapusage.getMax());
             // Draw Early Logs
@@ -170,7 +180,7 @@ public class LoadingOverlayMixin {
                 String s = DracoEarlyLog.INSTANCE.getLog().get(i);
                 draco$drawString(gfx, 1, gfx.guiHeight() - (i * 10) - 10, s, a * Mth.lerp((float) i / 5, 1F, 1F));
             }
-            draco$drawString(gfx, $$1, $$2 - 9, "Minecraft Load", a);
+            draco$drawString(gfx, $$1, $$2 - 9, "Minecraft Progress", a);
             if (!DracoEarlyLog.customBarName.isEmpty()) {
                 draco$drawString(gfx, $$1, $$2 + 32 - 10, DracoEarlyLog.customBarName, a);
                 draco$drawProgressBar(gfx, $$1, $$2 + 32, $$3 - $$1, $$4 - $$2, a, DracoEarlyLog.customBarProgress);

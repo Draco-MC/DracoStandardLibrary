@@ -31,6 +31,7 @@ public abstract class EarlyScreenMixin {
         ((IWindowAccessor) (Object) win).setY(DracoLoadingScreen.screen.getLocationOnScreen().y+DracoLoadingScreen.diffY -8);
         win.setWindowed(DracoLoadingScreen.screen.getSize().width-DracoLoadingScreen.diffX,DracoLoadingScreen.screen.getSize().height-DracoLoadingScreen.diffY);
         DracoLoadingScreen.screen.setVisible(false);
+        DracoLoadingScreen.cpuThread.interrupt();
         DracoLoadingScreen.memoryThread.interrupt();
     }
 }

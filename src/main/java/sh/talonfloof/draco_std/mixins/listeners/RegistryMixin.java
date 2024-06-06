@@ -46,7 +46,8 @@ public class RegistryMixin {
             ),
             method = "Lnet/minecraft/core/registries/BuiltInRegistries;freeze()V"
     )
-    private static void draco$registryHook(CallbackInfo ci) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private static void draco$registryHook(CallbackInfo ci) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InterruptedException {
+        DracoLoadingScreen.updateCustomBar("minecraft_load","Launching Mods",null,null);
         for(Registry<?> i : BuiltInRegistries.REGISTRY) {
             i.getClass().getDeclaredMethod("unfreeze").invoke(i);
         }
@@ -61,14 +62,16 @@ public class RegistryMixin {
                 i[0]++;
                 DracoLoadingScreen.updateCustomBar("IRegisterListener",null,i[0],null);
             });
-            DracoLoadingScreen.updateCustomBar("IRegisterListener","FREEZE BuiltinRegistries",null,0);
+            DracoLoadingScreen.updateCustomBar("IRegisterListener",null,null,null);
         }
-        DracoEarlyLog.addToLog("FREEZE BuiltInRegistries");
+        DracoLoadingScreen.updateCustomBar("minecraft_load","Transition Registries -> FREEZE_DATA",null,null);
         for(Registry<?> i : BuiltInRegistries.REGISTRY) {
+            DracoEarlyLog.addToLog(i.key().location()+" -> FREEZE_DATA");
             i.freeze();
+            Thread.sleep(100);
         }
-        DracoEarlyLog.addToLog("FREEZE BlockStates");
-        DracoLoadingScreen.updateCustomBar("IRegisterListener","FREEZE BlockStates",null,null);
+        DracoEarlyLog.addToLog("BlockStates -> FREEZE_DATA");
+        DracoLoadingScreen.updateCustomBar("minecraft_load","Transition BlockStates -> FREEZE_DATA",null,null);
         {
             Iterator<Map.Entry<ResourceKey<Block>, Block>> it = BuiltInRegistries.BLOCK.entrySet().stream().iterator();
             while (it.hasNext()) {
@@ -81,9 +84,10 @@ public class RegistryMixin {
                     entry.getValue().getLootTable();
                 }
             }
+            Thread.sleep(1);
         }
-        DracoEarlyLog.addToLog("FREEZE BlockToItem");
-        DracoLoadingScreen.updateCustomBar("IRegisterListener","FREEZE BlockToItem",null,null);
+        DracoEarlyLog.addToLog("BlockToItem -> FREEZE_DATA");
+        DracoLoadingScreen.updateCustomBar("minecraft_load","Transition BlockToItem -> FREEZE_DATA",null,null);
         {
             Iterator<Map.Entry<ResourceKey<Item>, Item>> it = BuiltInRegistries.ITEM.entrySet().stream().iterator();
             while (it.hasNext()) {
@@ -94,7 +98,8 @@ public class RegistryMixin {
                     }
                 }
             }
+            Thread.sleep(1);
         }
-        DracoLoadingScreen.updateCustomBar("IRegisterListener",null,null,null);
+        DracoLoadingScreen.updateCustomBar("minecraft_load","Loading Late Resources",null,null);
     }
 }

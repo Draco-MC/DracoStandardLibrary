@@ -1,5 +1,6 @@
 package sh.talonfloof.draco_std.loading
 
+import com.sun.management.OperatingSystemMXBean
 import net.minecraft.util.Mth
 import sh.talonfloof.draco_std.DracoStandardLibrary
 import sh.talonfloof.draco_std.debug.DracoEarlyLog
@@ -20,8 +21,8 @@ class JMultilineLabel() : JTextArea() {
         isOpaque = true
         isFocusable = false
         font = UIManager.getFont("Label.font")
-        wrapStyleWord = true
-        lineWrap = true
+        wrapStyleWord = false
+        lineWrap = false
         border = EmptyBorder(0,0,0,0)
         alignmentY = BOTTOM_ALIGNMENT
     }
@@ -40,7 +41,7 @@ class DracoScreenAdapter : ComponentAdapter() {
                         c.icon = ImageIcon(DracoLoadingScreen.image.image.getScaledInstance(width*DracoLoadingScreen.screen!!.calculateScale(),height*DracoLoadingScreen.screen!!.calculateScale(), Image.SCALE_FAST))
                         c.isOpaque = false
                     }
-                    c.font = DracoLoadingScreen.f.deriveFont(8.0F * DracoLoadingScreen.screen!!.calculateScale())
+                    c.font = DracoLoadingScreen.f.deriveFont(9.0F * DracoLoadingScreen.screen!!.calculateScale())
                 }
                 if(c is JPanel) {
                     val cm = c.components.first()
@@ -54,8 +55,9 @@ class DracoScreenAdapter : ComponentAdapter() {
                 }
             }
             DracoLoadingScreen.dracoLabel.icon = ImageIcon(DracoLoadingScreen.draco.image.getScaledInstance(39*DracoLoadingScreen.screen!!.calculateScale(),50*DracoLoadingScreen.screen!!.calculateScale(), Image.SCALE_FAST))
-            DracoLoadingScreen.logLabel.font = DracoLoadingScreen.f.deriveFont(8.0F * DracoLoadingScreen.screen!!.calculateScale())
-            DracoLoadingScreen.versionLabel.font = DracoLoadingScreen.f.deriveFont(8.0F * DracoLoadingScreen.screen!!.calculateScale())
+            DracoLoadingScreen.logLabel.font = DracoLoadingScreen.f.deriveFont(9.0F * DracoLoadingScreen.screen!!.calculateScale())
+            DracoLoadingScreen.versionLabel.font = DracoLoadingScreen.f.deriveFont(9.0F * DracoLoadingScreen.screen!!.calculateScale())
+            DracoLoadingScreen.memoryLabel.font = DracoLoadingScreen.f.deriveFont(9.0F * DracoLoadingScreen.screen!!.calculateScale())
             DracoLoadingScreen.screen!!.repaint()
         }
     }
@@ -82,6 +84,8 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
         @JvmField
         var memoryBar = JProgressBar()
         @JvmField
+        var cpuThread: Thread? = null
+        @JvmField
         var memoryThread: Thread? = null
         @JvmField
         var diffX = 0
@@ -106,7 +110,7 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
                 val c = GridBagConstraints()
                 c.fill = GridBagConstraints.HORIZONTAL
                 c.gridx = 0
-                c.gridy = (progressBarLabel.size*2)+3
+                c.gridy = (progressBarLabel.size*2)+2
                 val l = JPanel(BorderLayout())
                 val progressBar = JProgressBar()
                 progressBar.isIndeterminate = max == 0
@@ -123,7 +127,8 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
                 l.border = BorderFactory.createLineBorder(Color.WHITE, screen!!.calculateScale())
                 val label = JLabel(title)
                 label.foreground = Color.WHITE
-                label.font = f.deriveFont(8.0F * screen!!.calculateScale())
+                label.font = f.deriveFont(9.0F * screen!!.calculateScale())
+                label.horizontalAlignment = SwingConstants.LEFT
                 topPanel.add(label,c)
                 topPanel.revalidate()
                 progressBarLabel[id] = label
@@ -177,16 +182,23 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
         setSize(854, 480)
         layeredPane.background = localColor
         contentPane.background = localColor
-        isResizable = false
+        isResizable = true
         defaultCloseOperation = WindowConstants.DO_NOTHING_ON_CLOSE
         image.image = image.image.getScaledInstance(1,1, Image.SCALE_FAST)
         imageLabel.icon = image
         imageLabel.horizontalAlignment = SwingConstants.CENTER
+        topPanel.border = BorderFactory.createEmptyBorder(0,0,0,0)
+
+        val rootPanel = JPanel(BorderLayout())
+        rootPanel.background = localColor
+        rootPanel.border = BorderFactory.createEmptyBorder(0,0,0,0)
 
         topPanel.background = localColor
         val c = GridBagConstraints()
         c.fill = GridBagConstraints.HORIZONTAL
         c.gridx = 0
+        c.ipadx = 0
+        c.ipady = 0
         run {
             val l = JPanel(BorderLayout())
             memoryLabel.horizontalAlignment = SwingConstants.CENTER
@@ -197,16 +209,22 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
             l.add(memoryBar, BorderLayout.CENTER)
             l.border = BorderFactory.createLineBorder(Color.WHITE, 2)
             c.gridy = 0
-            topPanel.add(memoryLabel, c)
-            c.gridy = 1
+            c.fill = GridBagConstraints.NONE
+            rootPanel.add(memoryLabel, BorderLayout.NORTH)
+            c.fill = GridBagConstraints.HORIZONTAL
             topPanel.add(l, c)
         }
-        c.gridy = 2
-        c.ipady = 20
+        c.gridy = 1
+        run {
+            c.fill = GridBagConstraints.NONE
+            rootPanel.add(topPanel, BorderLayout.CENTER)
+            c.fill = GridBagConstraints.HORIZONTAL
+        }
+        c.ipady = 6
         topPanel.add(imageLabel, c)
         c.ipady = 0
 
-        add(topPanel, BorderLayout.NORTH)
+        add(rootPanel, BorderLayout.NORTH)
         val panel = JPanel(GridBagLayout())
         panel.background = localColor
         logLabel.font = f.deriveFont(16.0F)
@@ -224,7 +242,7 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
         run {
             val box = JPanel(BorderLayout(1,1))
             box.background = localColor
-            dracoLabel.icon = ImageIcon(draco.image.getScaledInstance(39 * 2, 50 * 2, Image.SCALE_FAST))
+            dracoLabel.icon = ImageIcon(draco.image.getScaledInstance(39 * 2, (50 * 2), Image.SCALE_FAST))
             box.add(dracoLabel, BorderLayout.EAST)
             box.add(versionLabel, BorderLayout.SOUTH)
             c.gridx = 1
@@ -236,18 +254,39 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
     }
 
     private fun startMemoryThread() {
+        val osBean = ManagementFactory.getPlatformMXBean(
+            OperatingSystemMXBean::class.java
+        )
+        val mem = ManagementFactory.getMemoryMXBean()
+        var cpuText: String = "CPU: 0.0%"
+        cpuThread = Thread({
+            while(true) {
+                val cpuLoad = osBean.processCpuLoad
+                cpuText = if (cpuLoad == -1.0) {
+                    String.format("*CPU: %.1f%%", osBean.cpuLoad * 100f)
+                } else {
+                    String.format("CPU: %.1f%%", cpuLoad * 100f)
+                }
+                try {
+                    Thread.sleep(1000L/60)
+                } catch (e: InterruptedException) {
+                    break
+                }
+            }
+        }, "CpuUsageListener")
+        cpuThread!!.start()
         memoryThread = Thread({
             while (true) {
                 setExtendedState(extendedState and MAXIMIZED_BOTH.inv())
-                val mem = ManagementFactory.getMemoryMXBean()
                 val heapusage = mem.heapMemoryUsage
                 val percent = heapusage.used.toFloat() / heapusage.max
                 val heap = String.format(
-                    "Heap: %d/%d MB (%.1f%%) OffHeap: %d MB",
+                    "Heap: %d/%d MB (%.1f%%) OffHeap: %d MB  %s",
                     heapusage.used shr 20,
                     heapusage.max shr 20,
                     heapusage.used.toFloat() / heapusage.max * 100.0,
-                    mem.nonHeapMemoryUsage.used shr 20
+                    mem.nonHeapMemoryUsage.used shr 20,
+                    cpuText
                 )
                 memoryBar.maximum = (heapusage.max shr 20).toInt()
                 memoryBar.value = (heapusage.used shr 20).toInt()

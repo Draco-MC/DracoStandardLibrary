@@ -61,6 +61,7 @@ open class DeferredHolder<R, T : R>(private val key: ResourceKey<R>) : Holder<R>
         return this.holder != null && this.holder!!.canSerializeIn(owner)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun `is`(holder: Holder<R>): Boolean {
         attemptRetrieval(false)
         return this.holder != null && this.holder!!.`is`(holder)

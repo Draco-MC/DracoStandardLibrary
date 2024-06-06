@@ -21,8 +21,8 @@ import java.util.List;
 public abstract class CreativeModeTabsMixin {
     @Inject(method = "validate", at = @At("HEAD"), cancellable = true)
     private static void validate(CallbackInfo ci) {
-        DracoEarlyLog.addToLog("REGISTER CreativeModeTabs");
-        DracoLoadingScreen.createCustomProgressBar("CreativeTabs","REGISTER CreativeModeTabs",0);
+        DracoEarlyLog.addToLog("CreativeModeTabs -> FREEZE_DATA");
+        DracoLoadingScreen.createCustomProgressBar("CreativeTabs","Transition CreativeModeTabs -> FREEZE_DATA",0);
         int count = 0;
         final List<ResourceKey<CreativeModeTab>> vanillaGroups = List.of(
                 ICreativeModeTabsAccessor.BUILDING_BLOCKS(),
