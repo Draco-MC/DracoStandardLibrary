@@ -4,6 +4,8 @@ import com.sun.management.OperatingSystemMXBean
 import net.minecraft.util.Mth
 import sh.talonfloof.draco_std.DracoStandardLibrary
 import sh.talonfloof.draco_std.debug.DracoEarlyLog
+import sh.talonfloof.dracoloader.api.DracoEnvironment
+import sh.talonfloof.dracoloader.api.EnvironmentType
 import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -102,60 +104,64 @@ class DracoLoadingScreen(val localColor: Color) : JFrame() {
 
         @JvmStatic
         fun createCustomProgressBar(id: String, title: String?, max: Int) {
-            val guiW = DracoLoadingScreen.screen!!.rootPane.width/DracoLoadingScreen.screen!!.calculateScale()
-            val guiH = DracoLoadingScreen.screen!!.rootPane.height/DracoLoadingScreen.screen!!.calculateScale()
-            val height = (((guiW * 0.75).coerceAtMost(guiH.toDouble()))*0.25).toInt()
-            val width = height*4
-            run {
-                val c = GridBagConstraints()
-                c.fill = GridBagConstraints.HORIZONTAL
-                c.gridx = 0
-                c.gridy = (progressBarLabel.size*2)+2
-                val l = JPanel(BorderLayout())
-                val progressBar = JProgressBar()
-                progressBar.isIndeterminate = max == 0
-                progressBar.background = color
-                progressBar.foreground = Color.WHITE
-                progressBar.isBorderPainted = false
-                progressBar.maximum = max
-                progressBar.maximumSize = Dimension(width,8*screen!!.calculateScale())
-                progressBar.minimumSize = progressBar.maximumSize
-                progressBar.preferredSize = progressBar.maximumSize
-                progressBar.size = progressBar.maximumSize
-                progressBar.border = BorderFactory.createLineBorder(Color.WHITE, screen!!.calculateScale())
-                l.add(progressBar, BorderLayout.CENTER)
-                l.border = BorderFactory.createLineBorder(Color.WHITE, screen!!.calculateScale())
-                val label = JLabel(title)
-                label.foreground = Color.WHITE
-                label.font = f.deriveFont(9.0F * screen!!.calculateScale())
-                label.horizontalAlignment = SwingConstants.LEFT
-                topPanel.add(label,c)
-                topPanel.revalidate()
-                progressBarLabel[id] = label
-                c.gridy++
-                topPanel.add(l,c)
-                topPanel.revalidate()
-                progressBars[id] = l
+            if(DracoEnvironment.getEnvironment() == EnvironmentType.CLIENT) {
+                val guiW = DracoLoadingScreen.screen!!.rootPane.width / DracoLoadingScreen.screen!!.calculateScale()
+                val guiH = DracoLoadingScreen.screen!!.rootPane.height / DracoLoadingScreen.screen!!.calculateScale()
+                val height = (((guiW * 0.75).coerceAtMost(guiH.toDouble())) * 0.25).toInt()
+                val width = height * 4
+                run {
+                    val c = GridBagConstraints()
+                    c.fill = GridBagConstraints.HORIZONTAL
+                    c.gridx = 0
+                    c.gridy = (progressBarLabel.size * 2) + 2
+                    val l = JPanel(BorderLayout())
+                    val progressBar = JProgressBar()
+                    progressBar.isIndeterminate = max == 0
+                    progressBar.background = color
+                    progressBar.foreground = Color.WHITE
+                    progressBar.isBorderPainted = false
+                    progressBar.maximum = max
+                    progressBar.maximumSize = Dimension(width, 8 * screen!!.calculateScale())
+                    progressBar.minimumSize = progressBar.maximumSize
+                    progressBar.preferredSize = progressBar.maximumSize
+                    progressBar.size = progressBar.maximumSize
+                    progressBar.border = BorderFactory.createLineBorder(Color.WHITE, screen!!.calculateScale())
+                    l.add(progressBar, BorderLayout.CENTER)
+                    l.border = BorderFactory.createLineBorder(Color.WHITE, screen!!.calculateScale())
+                    val label = JLabel(title)
+                    label.foreground = Color.WHITE
+                    label.font = f.deriveFont(9.0F * screen!!.calculateScale())
+                    label.horizontalAlignment = SwingConstants.LEFT
+                    topPanel.add(label, c)
+                    topPanel.revalidate()
+                    progressBarLabel[id] = label
+                    c.gridy++
+                    topPanel.add(l, c)
+                    topPanel.revalidate()
+                    progressBars[id] = l
+                }
+                topPanel.repaint()
             }
-            topPanel.repaint()
         }
 
         @JvmStatic
         fun updateCustomBar(id: String, title: String?, v: Int?, max: Int?) {
-            if(v == null && title == null && max == null) {
-                topPanel.remove(progressBarLabel[id]!!)
-                topPanel.remove(progressBars[id]!!)
-                return
-            }
-            if(max != null) {
-                (progressBars[id]!!.components.first() as JProgressBar).maximum = max
-                (progressBars[id]!!.components.first() as JProgressBar).isIndeterminate = max == 0
-            }
-            if(v != null) {
-                (progressBars[id]!!.components.first() as JProgressBar).value = v
-            }
-            if(title != null) {
-                progressBarLabel[id]!!.text = title
+            if(DracoEnvironment.getEnvironment() == EnvironmentType.CLIENT) {
+                if (v == null && title == null && max == null) {
+                    topPanel.remove(progressBarLabel[id]!!)
+                    topPanel.remove(progressBars[id]!!)
+                    return
+                }
+                if (max != null) {
+                    (progressBars[id]!!.components.first() as JProgressBar).maximum = max
+                    (progressBars[id]!!.components.first() as JProgressBar).isIndeterminate = max == 0
+                }
+                if (v != null) {
+                    (progressBars[id]!!.components.first() as JProgressBar).value = v
+                }
+                if (title != null) {
+                    progressBarLabel[id]!!.text = title
+                }
             }
         }
 

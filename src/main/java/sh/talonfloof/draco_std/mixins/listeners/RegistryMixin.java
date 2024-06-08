@@ -64,11 +64,11 @@ public class RegistryMixin {
             });
             DracoLoadingScreen.updateCustomBar("IRegisterListener",null,null,null);
         }
+        DracoEarlyLog.addToLog("Registries -> FREEZE_DATA");
         DracoLoadingScreen.updateCustomBar("minecraft_load","Transition Registries -> FREEZE_DATA",null,null);
         for(Registry<?> i : BuiltInRegistries.REGISTRY) {
-            DracoEarlyLog.addToLog(i.key().location()+" -> FREEZE_DATA");
             i.freeze();
-            Thread.sleep(100);
+            Thread.sleep(1);
         }
         DracoEarlyLog.addToLog("BlockStates -> FREEZE_DATA");
         DracoLoadingScreen.updateCustomBar("minecraft_load","Transition BlockStates -> FREEZE_DATA",null,null);

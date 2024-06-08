@@ -22,7 +22,7 @@ public abstract class CreativeModeTabsMixin {
     @Inject(method = "validate", at = @At("HEAD"), cancellable = true)
     private static void validate(CallbackInfo ci) {
         DracoEarlyLog.addToLog("CreativeModeTabs -> FREEZE_DATA");
-        DracoLoadingScreen.createCustomProgressBar("CreativeTabs","Transition CreativeModeTabs -> FREEZE_DATA",0);
+        DracoLoadingScreen.createCustomProgressBar("CreativeTabs","CreativeModeTabs -> FREEZE_DATA",0);
         int count = 0;
         final List<ResourceKey<CreativeModeTab>> vanillaGroups = List.of(
                 ICreativeModeTabsAccessor.BUILDING_BLOCKS(),
@@ -44,15 +44,15 @@ public abstract class CreativeModeTabsMixin {
                 .toList();
         for (ResourceKey<CreativeModeTab> registryKey : sortedItemGroups) {
             final CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.getOrThrow(registryKey);
-            final DracoCreativeModeTab vulpesTab = (DracoCreativeModeTab)tab;
+            final DracoCreativeModeTab dracoTab = (DracoCreativeModeTab)tab;
 
             if (vanillaGroups.contains(registryKey)) {
                 // Vanilla group goes on the first page.
-                vulpesTab.setPage(0);
+                dracoTab.setPage(0);
                 continue;
             }
             final ICreativeModeTabAccessor itemGroupAccessor = (ICreativeModeTabAccessor)tab;
-            vulpesTab.setPage((count / 10) + 1);
+            dracoTab.setPage((count / 10) + 1);
             int pageIndex = count % 10;
             CreativeModeTab.Row row = pageIndex < (10 / 2) ? CreativeModeTab.Row.TOP : CreativeModeTab.Row.BOTTOM;
             itemGroupAccessor.setRow(row);
@@ -64,9 +64,9 @@ public abstract class CreativeModeTabsMixin {
         var map = new HashMap<TabPosition, String>();
         for (ResourceKey<CreativeModeTab> registryKey : BuiltInRegistries.CREATIVE_MODE_TAB.registryKeySet()) {
             final CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.getOrThrow(registryKey);
-            final DracoCreativeModeTab vulpesTab = (DracoCreativeModeTab)tab;
+            final DracoCreativeModeTab dracoTab = (DracoCreativeModeTab)tab;
             final String displayName = tab.getDisplayName().getString();
-            final var position = new TabPosition(tab.row(), tab.column(), vulpesTab.getPage());
+            final var position = new TabPosition(tab.row(), tab.column(), dracoTab.getPage());
             final String existingName = map.put(position, displayName);
 
             if (existingName != null) {

@@ -15,7 +15,7 @@ This doesn't affect standard releases and only 24w21a and above, a more permanen
  */
 
 @DracoTransformer
-class ResourceLocationHackTransformer : IDracoTransformer {
+class CompatibilityHacksTransformer : IDracoTransformer {
     var applyRlHack: Boolean = false
     var applyMllHack: Boolean = false
 
