@@ -60,7 +60,7 @@ public abstract class CreativeModeTabsMixin {
             count++;
         }
         DracoCreativeTabVars.pageCount = Math.ceilDiv(count,10)+1;
-        record TabPosition(CreativeModeTab.Row row, int column, int page) { }
+        record TabPosition(CreativeModeTab.Row row, int column, int page) { }   
         var map = new HashMap<TabPosition, String>();
         for (ResourceKey<CreativeModeTab> registryKey : BuiltInRegistries.CREATIVE_MODE_TAB.registryKeySet()) {
             final CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.getOrThrow(registryKey);

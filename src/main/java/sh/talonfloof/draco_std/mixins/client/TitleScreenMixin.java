@@ -75,9 +75,9 @@ public class TitleScreenMixin {
             }
         }
         if (modsButtonIndex != -1) {
-            DracoButton button = new DracoButton(((TitleScreen) (Object) this).width / 2 - 100, buttonsY + spacing, 200, 20, Component.literal("Mods"), (x) -> {
+            Button button = new Button.Builder(Component.literal("Mods"),(x) -> {
                 Minecraft.getInstance().setScreen(new DracoModMenuScreen(((TitleScreen) (Object) this)));
-            });
+            }).bounds(((TitleScreen) (Object) this).width / 2 - 100, buttonsY + spacing,200, 20).build();
             ((IScreenAccessor)((TitleScreen)(Object)this)).getRenderables().add(modsButtonIndex, button);
             ((IScreenAccessor)((TitleScreen)(Object)this)).getNarratables().add(modsButtonIndex, button);
             buttons.add(modsButtonIndex, button);
@@ -108,9 +108,9 @@ public class TitleScreenMixin {
             }
         }
         if (modsButtonIndex != -1) {
-            DracoButton button = new DracoButton(((TitleScreen) (Object) this).width / 2 - 100, buttonsY + spacing, 200, 20, Component.literal("Mods"), (x) -> {
+            Button button = new Button.Builder(Component.literal("Mods"), (x) -> {
                 Minecraft.getInstance().setScreen(new DracoModMenuScreen(((TitleScreen) (Object) this)));
-            });
+            }).bounds(((TitleScreen) (Object) this).width / 2 - 100, buttonsY + spacing, 200, 20).build();
             ((IScreenAccessor)((TitleScreen)(Object)this)).getRenderables().add(modsButtonIndex, button);
             ((IScreenAccessor)((TitleScreen)(Object)this)).getNarratables().add(modsButtonIndex, button);
             buttons.add(modsButtonIndex, button);

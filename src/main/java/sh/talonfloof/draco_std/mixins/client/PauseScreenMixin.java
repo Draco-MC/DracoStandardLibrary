@@ -41,9 +41,9 @@ public class PauseScreenMixin extends Screen {
                 LayoutElement widget = buttons.get(i);
                 if(widget instanceof Button) {
                     if (Objects.equals(((Button) widget).getMessage().getString(), Component.translatable("menu.reportBugs").getString())) {
-                        buttons.set(i, new DracoButton(widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), Component.literal("Mods"), (x) -> {
+                        buttons.set(i, new Button.Builder(Component.literal("Mods"), (x) -> {
                             Minecraft.getInstance().setScreen(new DracoModMenuScreen(((PauseScreen) (Object) this)));
-                        }));
+                        }).bounds(widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight()).build());
                     }
                 }
             }
