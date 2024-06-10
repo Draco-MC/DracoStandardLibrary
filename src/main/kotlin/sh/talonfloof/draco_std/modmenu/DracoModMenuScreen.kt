@@ -27,6 +27,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundEvents
+import net.minecraft.util.CommonColors
 import net.minecraft.util.Mth
 import sh.talonfloof.draco_std.config.ModConfig
 import sh.talonfloof.dracoloader.api.EnvironmentType
@@ -128,9 +129,10 @@ class DracoModMenuScreen(
         super.render(gfx,a,b,c)
         //this.renderBlurredBackground(c);
         //gfx.fill( 0, 32, width, height-32, 0x7f000000)
+        val firstSize = (width.toDouble()*0.5).toInt()-8
         renderBox(gfx,8,32,(width.toDouble()*0.5).toInt()-8,height-64);
         val secondSize = width-8-((width.toDouble()*0.5).toInt()+8)
-        val secondX = (width.toDouble()*0.5).toInt()+8;
+        val secondX = (width.toDouble()*0.5).toInt()+8
         renderBox(gfx,secondX,32,secondSize,height-64);
 
         gfx.pose().pushPose()
@@ -143,7 +145,8 @@ class DracoModMenuScreen(
             if(keys.getOrNull(index) != null) {
                 if (DracoModLoader.MOD_PATHS[keys[index]] != null) {
                     if(index == selectedMod) {
-                        gfx.fill(0,beginOffset + 32 + (y * 32),width,(beginOffset + 32 + (y * 32))+32,(0x20ffffff).toInt())
+                        gfx.fill(0,beginOffset + 32 + (y * 32)-1,firstSize-6,(beginOffset + 32 + (y * 32))+33, CommonColors.WHITE)
+                        gfx.fill(1,beginOffset + 32 + (y * 32),firstSize-7,(beginOffset + 32 + (y * 32))+32, CommonColors.BLACK)
                     }
                     if (modIcons.contains(keys[index])) {
                         val dimensions = modIcons[keys[index]]!!.second
@@ -168,11 +171,18 @@ class DracoModMenuScreen(
                         beginOffset + 32 + (y * 32),
                         0xffffffff.toInt()
                     )
-                    var t = font.splitter.splitLines(DracoModLoader.MODS[keys[index]]?.getDescription()!!,(width.toDouble()*0.5).toInt()-8-32, Style.EMPTY)
+                    var t = font.splitter.splitLines(DracoModLoader.MODS[keys[index]]?.getDescription()!!,(width.toDouble()*0.5).toInt()-8-32-8, Style.EMPTY)
                     var ind = 0;
                     for(text in t) {
                         if(ind+1 >= 2) {
-                            gfx.drawString(font, text.string+"...", 33, beginOffset + 32 + (y * 32)+8+(ind*font.lineHeight), 0xff808080.toInt())
+                            var s = text.string
+                            var w = font.splitter.stringWidth(s)
+                            val dotWidth = if(t.size > 2) font.splitter.stringWidth("...") else 0F
+                            while((w+dotWidth) >= ((width.toDouble() * 0.5).toInt() - 8 - 32 - 8)) {
+                                s = s.dropLast(1)
+                                w = font.splitter.stringWidth(s)
+                            }
+                            gfx.drawString(font, s+(if(t.size > 2) "..." else ""), 33, beginOffset + 32 + (y * 32)+8+(ind*font.lineHeight), 0xff808080.toInt())
                             break
                         }
                         gfx.drawString(font, text.string, 33, beginOffset + 32 + (y * 32)+8+(ind*font.lineHeight), 0xff808080.toInt())
