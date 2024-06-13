@@ -32,21 +32,21 @@ public class ServerLifeMixin {
             method = "runServer",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;initServer()Z")
     )
-    private void onServerStarting(CallbackInfo ci) {
+    private void draco$onServerStarting(CallbackInfo ci) {
         var listeners = DracoListenerManager.getListeners(IServerStartingListener.class);
         if(listeners != null) {
             listeners.forEach(x -> ((IServerStartingListener)x).serverStarting((MinecraftServer)(Object)this));
         }
     }
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;tickChildren(Ljava/util/function/BooleanSupplier;)V"), method = "tickServer")
-    private void onTickStarting(CallbackInfo ci) {
+    private void draco$onTickStarting(CallbackInfo ci) {
         var listeners = DracoListenerManager.getListeners(IServerStartTickListener.class);
         if(listeners != null) {
             listeners.forEach(x -> ((IServerStartTickListener)x).serverStartTick((MinecraftServer)(Object)this));
         }
     }
     @Inject(at = @At("TAIL"), method = "tickServer")
-    private void onTickEnding(CallbackInfo ci) {
+    private void draco$onTickEnding(CallbackInfo ci) {
         var listeners = DracoListenerManager.getListeners(IServerEndTickListener.class);
         if(listeners != null) {
             listeners.forEach(x -> ((IServerEndTickListener)x).serverEndTick((MinecraftServer)(Object)this));

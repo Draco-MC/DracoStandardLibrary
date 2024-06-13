@@ -15,7 +15,7 @@ import sh.talonfloof.dracoloader.api.DracoListenerManager;
 @Mixin(Minecraft.class)
 public class ClientTickMixin {
     @Inject(method = "run", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;startTick()V"))
-    private void vulpes$clientTickStart(CallbackInfo ci) throws ClassNotFoundException {
+    private void draco$clientTickStart(CallbackInfo ci) throws ClassNotFoundException {
         var instances = DracoListenerManager.getListeners(IClientStartTickListener.class);
         if(instances != null) {
             instances.forEach((clazz) -> ((IClientStartTickListener) clazz).clientStartTick());
@@ -23,7 +23,7 @@ public class ClientTickMixin {
     }
 
     @Inject(method = "run", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;endTick()V"))
-    private void vulpes$clientTickEnd(CallbackInfo ci) {
+    private void draco$clientTickEnd(CallbackInfo ci) {
         var instances = DracoListenerManager.getListeners(IClientEndTickListener.class);
         if(instances != null) {
             instances.forEach((clazz) -> ((IClientEndTickListener) clazz).clientEndTick());

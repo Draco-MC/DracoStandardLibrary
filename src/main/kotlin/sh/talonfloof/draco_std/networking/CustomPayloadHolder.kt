@@ -7,4 +7,7 @@ interface CustomPayloadHolder {
     fun `draco$setBuf`(buf: ByteBuf)
 
     fun `draco$getBuf`() : FriendlyByteBuf
+
+    fun `draco$getType`(): DracoPacketType
+    fun `draco$setType`(t: DracoPacketType)
 }
