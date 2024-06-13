@@ -55,7 +55,7 @@ test {
 }
 
 minecraft {
-    version("1.21-rc1")
+    version("1.21")
     accessWideners("src/main/resources/draco.accesswidener")
     runs {
         server() {
