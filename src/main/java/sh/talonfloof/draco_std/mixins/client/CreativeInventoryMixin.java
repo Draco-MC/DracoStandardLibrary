@@ -30,7 +30,7 @@ public abstract class CreativeInventoryMixin<T extends AbstractContainerMenu> ex
     private static boolean rightSidePressed = false;
 
     @Unique
-    private static final ResourceLocation CREATIVE_ICONS = new ResourceLocation("draco","textures/gui/creative_buttons.png");
+    private static final ResourceLocation CREATIVE_ICONS = ResourceLocation.tryBuild("draco","textures/gui/creative_buttons.png");
 
     public CreativeInventoryMixin(T $$0, Inventory $$1, Component $$2) {
         super($$0, $$1, $$2);

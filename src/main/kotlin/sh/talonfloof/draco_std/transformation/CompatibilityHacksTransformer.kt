@@ -20,7 +20,7 @@ class CompatibilityHacksTransformer : IDracoTransformer {
     var applyMllHack: Boolean = false
 
     override fun transform(loader: ClassLoader, className: String, originalClassData: ByteArray?): ByteArray? {
-        if(className == "net.minecraft.client.gui.components.MultiLineLabel") {
+        /*if(className == "net.minecraft.client.gui.components.MultiLineLabel") {
             val reader = ClassReader(originalClassData)
             val node = ClassNode()
             reader.accept(node, 0)
@@ -80,7 +80,7 @@ class CompatibilityHacksTransformer : IDracoTransformer {
                 }
             }
             return ClassWriter(reader, ClassWriter.COMPUTE_FRAMES).also { node.accept(it) }.toByteArray()
-        }
+        }*/
         return originalClassData
     }
 }

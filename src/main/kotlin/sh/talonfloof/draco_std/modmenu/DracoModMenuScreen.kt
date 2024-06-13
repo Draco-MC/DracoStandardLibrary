@@ -65,7 +65,7 @@ class DracoModMenuScreen(
                     if (iconZipEntry != null) {
                         val img = DynamicTexture(NativeImage.read(jar.getInputStream(iconZipEntry)))
                         val resourceLocation =
-                            ResourceLocation("draco", "mod_icon/" + Hashing.sha1().hashString(id, Charsets.UTF_8))
+                            ResourceLocation.tryBuild("draco", "mod_icon/" + Hashing.sha1().hashString(id, Charsets.UTF_8))!!
                         minecraft!!.textureManager.register(resourceLocation, img)
                         modIcons[id] = Pair(resourceLocation, Pair(img.pixels!!.width, img.pixels!!.height))
                     }
@@ -74,7 +74,7 @@ class DracoModMenuScreen(
                     if(icon.exists()) {
                         val img = DynamicTexture(NativeImage.read(icon.inputStream()))
                         val resourceLocation =
-                            ResourceLocation("draco", "mod_icon/" + Hashing.sha1().hashString(id, Charsets.UTF_8))
+                            ResourceLocation.tryBuild("draco", "mod_icon/" + Hashing.sha1().hashString(id, Charsets.UTF_8))!!
                         minecraft!!.textureManager.register(resourceLocation, img)
                         modIcons[id] = Pair(resourceLocation, Pair(img.pixels!!.width, img.pixels!!.height))
                     }
@@ -107,7 +107,7 @@ class DracoModMenuScreen(
         public fun renderBox(gfx: GuiGraphics, x: Int, y: Int, w: Int, h: Int) {
             RenderSystem.enableBlend();
             gfx.blit(
-                ResourceLocation("textures/gui/menu_list_background.png"),
+                ResourceLocation.tryParse("textures/gui/menu_list_background.png")!!,
                 x,
                 y + 2,
                 (x + w).toFloat(),
@@ -244,7 +244,7 @@ class DracoModMenuScreen(
                     }
                     if(ModConfig.hasConfig(DracoModLoader.MODS[keys[selectedMod]]?.getID()!!)) {
                         renderBox(gfx, secondSize - 26, 6, 20, 20)
-                        gfx.blit(ResourceLocation("draco","textures/gui/configure_button.png"),secondSize - 26, 6,20,20,0F,0F,20,20,20,20)
+                        gfx.blit(ResourceLocation.tryBuild("draco","textures/gui/configure_button.png")!!,secondSize - 26, 6,20,20,0F,0F,20,20,20,20)
                         if (a >= (secondX + secondSize - 26) && a < (secondX + secondSize - 6) && b >= 32 && b >= ((32+6) - secondScrollTransition) && b < ((32+6) - secondScrollTransition) + 20) {
                             gfx.fill(
                                 secondSize - 26,

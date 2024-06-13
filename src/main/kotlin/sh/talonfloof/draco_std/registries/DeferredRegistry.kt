@@ -87,7 +87,7 @@ open class DeferredRegistry<T> protected constructor(private val registryKey: Re
     }
 
     fun <I : T> register(name: String, sup: Supplier<out I>) : DeferredHolder<T,I> {
-        val key = ResourceLocation(namespace, name)
+        val key = ResourceLocation.tryBuild(namespace, name)!!
         val ret: DeferredHolder<T, I> = DeferredHolder(ResourceKey.create(registryKey, key))
         require(deferredEntries.putIfAbsent(ret,sup) == null) { "Duplicate registration $name" }
         return ret

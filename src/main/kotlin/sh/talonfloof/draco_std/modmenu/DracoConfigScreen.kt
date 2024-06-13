@@ -187,7 +187,7 @@ open class CategoryConfigScreenEntry(private val screen: DracoConfigScreen, priv
         gfx.pose().mulPose(Axis.ZP.rotationDegrees(if(expanded) 90F else 0F))
         gfx.pose().translate(-2F,-(7/2F),0F)
         RenderSystem.enableBlend()
-        gfx.blit(ResourceLocation("draco","textures/gui/category_arrow.png"),0,0,4,7,0F,0F,4,7,4,7)
+        gfx.blit(ResourceLocation.tryBuild("draco","textures/gui/category_arrow.png")!!,0,0,4,7,0F,0F,4,7,4,7)
         gfx.pose().popPose()
         if(mouseX in 0..31) {
             gfx.fill(0,0,32,32,(0x40ffffff).toInt())
@@ -399,7 +399,7 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
         gfx.blit(HEADER_SEPARATOR,0,0,0.0F,0.0F,gfx.guiHeight(),2,32,2)
         gfx.pose().popPose()
         gfx.blit(
-            ResourceLocation("textures/gui/menu_list_background.png"),
+            ResourceLocation.tryParse("textures/gui/menu_list_background.png")!!,
             0,
             0,
             0F,
@@ -420,7 +420,7 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
                 if(selectedConfig == config.index) {
                     gfx.fill(1, 1 + config.index * 32, menuPopoutTarget, 33 + config.index * 32, (0x20ffffff).toInt())
                 }
-                gfx.blit(ResourceLocation("draco","textures/gui/config.png"),1,1+config.index*32,32,32,0F,0F,128,128,128,128)
+                gfx.blit(ResourceLocation.tryBuild("draco","textures/gui/config.png")!!,1,1+config.index*32,32,32,0F,0F,128,128,128,128)
                 gfx.drawString(minecraft!!.font,config.value.second.getName(),35,1+config.index*32,-1,true)
                 gfx.drawString(minecraft!!.font,config.value.first.name,35,(1+config.index*32)+minecraft!!.font.lineHeight,CommonColors.GRAY,true)
             }

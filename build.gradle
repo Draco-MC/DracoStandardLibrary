@@ -27,7 +27,7 @@ apply plugin: "org.spongepowered.gradle.vanilla"
 apply plugin: 'kotlin'
 
 group = 'sh.talonfloof.draco_std'
-version = "1.20.6-SNAPSHOT"
+version = "1.21-SNAPSHOT"
 
 configurations {
     shadow
@@ -55,7 +55,7 @@ test {
 }
 
 minecraft {
-    version("1.20.6")
+    version("1.21-rc1")
     accessWideners("src/main/resources/draco.accesswidener")
     runs {
         server() {

@@ -15,7 +15,7 @@ open class DracoStandardLibrary : IRegisterListener {
     companion object {
         @JvmField
         val LOGGER: Logger = LogManager.getLogger("DracoStandardLibrary")
-        const val VERSION = "1.20.6-alpha0.1"
+        const val VERSION = "1.21-alpha0.2"
     }
 
     override fun register() {

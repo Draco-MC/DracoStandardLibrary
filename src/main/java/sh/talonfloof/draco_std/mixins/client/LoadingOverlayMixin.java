@@ -64,7 +64,7 @@ public class LoadingOverlayMixin {
         for(int i=0; i < s.length(); i++) {
             int num = Byte.toUnsignedInt((byte)s.charAt(i));
             $$0.setColor(1.0F, 1.0F, 1.0F, v);
-            $$0.blit(new ResourceLocation("draco", "textures/monocraft.png"), x+(i*6), y, 8, 8, (num&0xF)*8F, ((num&0xF0)>>4)*8F, 8, 8, 128, 128);
+            $$0.blit(ResourceLocation.tryBuild("draco", "textures/monocraft.png"), x+(i*6), y, 8, 8, (num&0xF)*8F, ((num&0xF0)>>4)*8F, 8, 8, 128, 128);
             $$0.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
         RenderSystem.defaultBlendFunc();
@@ -191,7 +191,7 @@ public class LoadingOverlayMixin {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(770, 1);
             gfx.setColor(1.0F, 1.0F, 1.0F, a);
-            gfx.blit(new ResourceLocation("draco","draco_monochrome.png"), gfx.guiWidth()-40, gfx.guiHeight()-9-51, 39, 50, 0F, 0F, 39, 50, 39, 50);
+            gfx.blit(ResourceLocation.tryBuild("draco","draco_monochrome.png"), gfx.guiWidth()-40, gfx.guiHeight()-9-51, 39, 50, 0F, 0F, 39, 50, 39, 50);
             gfx.setColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.defaultBlendFunc();
             RenderSystem.disableBlend();

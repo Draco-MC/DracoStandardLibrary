@@ -19,10 +19,10 @@ class DracoCreativeTabBuilder {
         return this
     }
 
-    fun backgroundSuffix(s: String): DracoCreativeTabBuilder {
+    /*fun backgroundSuffix(s: String): DracoCreativeTabBuilder {
         builder.backgroundSuffix(s)
         return this
-    }
+    }*/
 
     fun items(items: DisplayItemsGenerator): DracoCreativeTabBuilder {
         builder.displayItems(items)
