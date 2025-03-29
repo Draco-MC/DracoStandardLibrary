@@ -103,7 +103,7 @@ publishing {
 }
 
 tasks.named("publishShadowPublicationToMavenLocal") {
-    dependsOn(tasks.named("shadowJar"))
+    dependsOn(tasks.named("jar"))
 }
 
 shadowJar {
