@@ -102,6 +102,10 @@ publishing {
     }
 }
 
+tasks.named("publishShadowPublicationToMavenLocal") {
+    dependsOn(tasks.named("shadowJar"))
+}
+
 shadowJar {
     archiveClassifier = ""
     configurations = [project.configurations.compileClasspath]
