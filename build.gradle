@@ -27,7 +27,7 @@ apply plugin: "org.spongepowered.gradle.vanilla"
 apply plugin: 'kotlin'
 
 group = 'sh.talonfloof.draco_std'
-version = "1.21-SNAPSHOT"
+version = "1.21.5-SNAPSHOT"
 
 configurations {
     shadow
@@ -55,7 +55,7 @@ test {
 }
 
 minecraft {
-    version("1.21")
+    version("1.21.5")
     accessWideners("src/main/resources/draco.accesswidener")
     runs {
         server() {
@@ -68,16 +68,16 @@ minecraft {
     }
 }
 
-/*compileKotlin {
+compileKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "21"
     }
 }
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "21"
     }
-}*/
+}
 
 publishing {
     repositories {

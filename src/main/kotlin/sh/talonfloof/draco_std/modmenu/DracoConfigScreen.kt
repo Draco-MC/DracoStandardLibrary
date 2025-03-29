@@ -8,6 +8,7 @@ import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -30,11 +31,10 @@ import kotlin.math.roundToLong
 open class ConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, var topSeparator: Boolean, var bottomSeparator: Boolean) {
     open fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
         //DracoModMenuScreen.renderBox(gfx,18,y+18,gfx.guiWidth()-18,32)
-        RenderSystem.enableBlend()
         if(topSeparator)
-            gfx.blit(Screen.HEADER_SEPARATOR,0,0,0.0F,0.0F,gfx.guiWidth()-18,1,32,2)
+            gfx.blit(RenderType::guiTextured,Screen.HEADER_SEPARATOR,0,0,0.0F,0.0F,gfx.guiWidth()-18,1,32,2)
         if(bottomSeparator)
-            gfx.blit(Screen.HEADER_SEPARATOR,0,31,0.0F,0.0F,gfx.guiWidth()-18,1,32,2)
+            gfx.blit(RenderType::guiTextured,Screen.HEADER_SEPARATOR,0,31,0.0F,0.0F,gfx.guiWidth()-18,1,32,2)
         gfx.drawString(Minecraft.getInstance().font,name,64-18,16-(Minecraft.getInstance().font.lineHeight/2),(0xffffffff).toInt(),true)
     }
 
@@ -61,13 +61,11 @@ class SliderConfigScreenEntry(private val screen: DracoConfigScreen, private val
 
     override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
         super.render(gfx, mouseX, mouseY, focused)
-        RenderSystem.enableBlend()
         DracoModMenuScreen.renderBox(gfx,gfx.guiWidth()-18-32-128,6,128,20)
         val min = entry.minimumValue as Long
         val max = entry.maximumValue as Long
         val range = max-min
         gfx.drawCenteredString(Minecraft.getInstance().font,"Value: "+entry.get().toString(),gfx.guiWidth()-18-32-64,16-(Minecraft.getInstance().font.lineHeight/2),-1)
-        RenderSystem.enableBlend()
         gfx.pose().pushPose()
         gfx.pose().translate(
             (((gfx.guiWidth() - 18 - 32 - 128).toFloat()) + 4F) + ((120F / range) * ((entry.get() as Long) - min)),
@@ -78,7 +76,6 @@ class SliderConfigScreenEntry(private val screen: DracoConfigScreen, private val
         gfx.pose().translate(-10F,-4F,0F)
         DracoModMenuScreen.renderBox(gfx,0,0,20,8)
         gfx.pose().popPose()
-        RenderSystem.disableBlend()
     }
 
     override fun mouseClicked(x: Int, y: Int, button: Int) : Boolean {
@@ -111,13 +108,11 @@ class SliderConfigScreenEntry(private val screen: DracoConfigScreen, private val
 class BooleanConfigScreenEntry(private val screen: DracoConfigScreen, private val name: Component, private val entry: ModConfig.ConfigValue<*>) : ConfigScreenEntry(screen,name,false,false) {
     override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
         super.render(gfx, mouseX, mouseY, focused)
-        RenderSystem.enableBlend()
         DracoModMenuScreen.renderBox(gfx,gfx.guiWidth()-18-32-128,6,128,20)
         if(mouseX >= (gfx.guiWidth()-18-32-128) && mouseX < (gfx.guiWidth()-18-32) && mouseY >= 6 && mouseY < 26) {
             gfx.fill((gfx.guiWidth()-18-32-128),6,(gfx.guiWidth()-18-32),26,(0x20ffffff).toInt())
         }
         gfx.drawCenteredString(Minecraft.getInstance().font,Component.translatable(if(entry.get() as Boolean) "gui.yes" else "gui.no"),gfx.guiWidth()-18-32-64,16-(Minecraft.getInstance().font.lineHeight/2),-1)
-        RenderSystem.disableBlend()
     }
 
     override fun mouseClicked(x: Int, y: Int, button: Int): Boolean {
@@ -136,11 +131,9 @@ class TextBoxConfigScreenEntry(private val screen: DracoConfigScreen, private va
 
     override fun render(gfx: GuiGraphics, mouseX: Int, mouseY: Int, focused: Boolean) {
         super.render(gfx, mouseX, mouseY, focused)
-        RenderSystem.enableBlend()
         DracoModMenuScreen.renderBox(gfx,gfx.guiWidth()-18-32-128,6,128,20)
         val comp = Component.literal(Minecraft.getInstance().font.plainSubstrByWidth(value,128,true)).append(Component.literal(if(focused) "|" else "").withStyle(ChatFormatting.GRAY))
         gfx.drawString(Minecraft.getInstance().font,comp,gfx.guiWidth()-18-32-128+1,16-(Minecraft.getInstance().font.lineHeight/2),-1,false)
-        RenderSystem.disableBlend()
     }
 
     override fun charTyped(c: Char, i: Int) : Boolean {
@@ -186,8 +179,7 @@ open class CategoryConfigScreenEntry(private val screen: DracoConfigScreen, priv
         gfx.pose().translate(16F,16F,0F)
         gfx.pose().mulPose(Axis.ZP.rotationDegrees(if(expanded) 90F else 0F))
         gfx.pose().translate(-2F,-(7/2F),0F)
-        RenderSystem.enableBlend()
-        gfx.blit(ResourceLocation.tryBuild("draco","textures/gui/category_arrow.png")!!,0,0,4,7,0F,0F,4,7,4,7)
+        gfx.blit(RenderType::guiTextured,ResourceLocation.tryBuild("draco","textures/gui/category_arrow.png")!!,0,0,0F,0F,4,7,4,7,4,7)
         gfx.pose().popPose()
         if(mouseX in 0..31) {
             gfx.fill(0,0,32,32,(0x40ffffff).toInt())
@@ -392,13 +384,13 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
             i.render(gfx,mouseX,mouseY,delta)
         }
         gfx.pose().popPose()
-        RenderSystem.enableBlend()
         gfx.pose().pushPose()
         gfx.pose().mulPose(Axis.ZP.rotationDegrees(90F))
         gfx.pose().translate(0F,-18F-menuPopout.toFloat(),0F)
-        gfx.blit(HEADER_SEPARATOR,0,0,0.0F,0.0F,gfx.guiHeight(),2,32,2)
+        gfx.blit(RenderType::guiTextured,HEADER_SEPARATOR,0,0,0.0F,0.0F,gfx.guiHeight(),2,32,2)
         gfx.pose().popPose()
         gfx.blit(
+            RenderType::guiTextured,
             ResourceLocation.tryParse("textures/gui/menu_list_background.png")!!,
             0,
             0,
@@ -420,22 +412,19 @@ class DracoConfigScreen(private val parentScreen: Screen, private val namespace:
                 if(selectedConfig == config.index) {
                     gfx.fill(1, 1 + config.index * 32, menuPopoutTarget, 33 + config.index * 32, (0x20ffffff).toInt())
                 }
-                gfx.blit(ResourceLocation.tryBuild("draco","textures/gui/config.png")!!,1,1+config.index*32,32,32,0F,0F,128,128,128,128)
+                gfx.blit(RenderType::guiTextured,ResourceLocation.tryBuild("draco","textures/gui/config.png")!!,1,1+config.index*32,0F,0F,32,32,128,128,128,128)
                 gfx.drawString(minecraft!!.font,config.value.second.getName(),35,1+config.index*32,-1,true)
                 gfx.drawString(minecraft!!.font,config.value.first.name,35,(1+config.index*32)+minecraft!!.font.lineHeight,CommonColors.GRAY,true)
             }
             gfx.pose().popPose()
             gfx.disableScissor()
         }
-        RenderSystem.disableBlend()
         gfx.drawCenteredString(minecraft!!.font,if(menuPopoutTarget == 0) ">" else "<",8+menuPopout.toInt(),gfx.guiHeight()/2,(0xffffffff).toInt())
         gfx.pose().pushPose()
         gfx.pose().translate(menuPopout.toFloat(),0F,0F)
-        RenderSystem.enableBlend()
-        gfx.blit(HEADER_SEPARATOR,18,16,0.0F,0.0F,gfx.guiWidth()-18,1,32,2)
-        RenderSystem.disableBlend()
+        gfx.blit(RenderType::guiTextured,HEADER_SEPARATOR,18,16,0.0F,0.0F,gfx.guiWidth()-18,1,32,2)
         gfx.drawString(minecraft!!.font, Component.literal(namespace).append(Component.literal(" > ").withStyle(ChatFormatting.GRAY)).append(Component.literal(configs[selectedConfig].second.getName())), 19, (minecraft!!.font.lineHeight/2), -1)
-        gfx.enableScissor(18+menuPopout.toInt(),17,gfx.guiWidth(),gfx.guiHeight()-25)
+        gfx.enableScissor(18,17,gfx.guiWidth(),gfx.guiHeight()-25)
         for(i in 0..<entries.size) {
             var mX = -1
             var mY = -1

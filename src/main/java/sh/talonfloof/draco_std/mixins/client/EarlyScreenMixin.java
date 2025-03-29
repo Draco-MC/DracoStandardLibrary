@@ -21,7 +21,7 @@ import javax.swing.*;
 public abstract class EarlyScreenMixin {
     @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/VirtualScreen;newWindow(Lcom/mojang/blaze3d/platform/DisplayData;Ljava/lang/String;Ljava/lang/String;)Lcom/mojang/blaze3d/platform/Window;"))
     private Window draco$delayWindowOpen(VirtualScreen instance, DisplayData a, @Nullable String b, String c) {
-        return instance.newWindow(new DisplayData(1,1,a.fullscreenWidth,a.fullscreenHeight,a.isFullscreen),b,c);
+        return instance.newWindow(new DisplayData(1,1,a.fullscreenWidth(),a.fullscreenHeight(),a.isFullscreen()),b,c);
     }
 
     @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setErrorCallback(Lorg/lwjgl/glfw/GLFWErrorCallbackI;)V", shift = At.Shift.AFTER, unsafe = true))

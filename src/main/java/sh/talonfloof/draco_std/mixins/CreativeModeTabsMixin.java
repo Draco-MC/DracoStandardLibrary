@@ -2,6 +2,7 @@ package sh.talonfloof.draco_std.mixins;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,7 +44,7 @@ public abstract class CreativeModeTabsMixin {
                 .sorted(Comparator.comparing(ResourceKey::location))
                 .toList();
         for (ResourceKey<CreativeModeTab> registryKey : sortedItemGroups) {
-            final CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.getOrThrow(registryKey);
+            final CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.getOrThrow(registryKey).value();
             final DracoCreativeModeTab dracoTab = (DracoCreativeModeTab)tab;
 
             if (vanillaGroups.contains(registryKey)) {
@@ -59,11 +60,11 @@ public abstract class CreativeModeTabsMixin {
             itemGroupAccessor.setColumn(row == CreativeModeTab.Row.TOP ? pageIndex % 10 : (pageIndex - 10 / 2) % (10));
             count++;
         }
-        DracoCreativeTabVars.pageCount = Math.ceilDiv(count,10)+1;
+        DracoCreativeTabVars.pageCount = Mth.positiveCeilDiv(count, 10)+1;
         record TabPosition(CreativeModeTab.Row row, int column, int page) { }   
         var map = new HashMap<TabPosition, String>();
         for (ResourceKey<CreativeModeTab> registryKey : BuiltInRegistries.CREATIVE_MODE_TAB.registryKeySet()) {
-            final CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.getOrThrow(registryKey);
+            final CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.getOrThrow(registryKey).value();
             final DracoCreativeModeTab dracoTab = (DracoCreativeModeTab)tab;
             final String displayName = tab.getDisplayName().getString();
             final var position = new TabPosition(tab.row(), tab.column(), dracoTab.getPage());

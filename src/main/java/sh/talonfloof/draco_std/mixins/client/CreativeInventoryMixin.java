@@ -2,8 +2,9 @@ package sh.talonfloof.draco_std.mixins.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +25,7 @@ import sh.talonfloof.dracoloader.api.Side;
 
 @Side(EnvironmentType.CLIENT)
 @Mixin(CreativeModeInventoryScreen.class)
-public abstract class CreativeInventoryMixin<T extends AbstractContainerMenu> extends EffectRenderingInventoryScreen<T> {
+public abstract class CreativeInventoryMixin<T extends AbstractContainerMenu> extends AbstractContainerScreen<CreativeModeInventoryScreen.ItemPickerMenu> {
     private static int currentPage = 0;
     private static boolean leftSidePressed = false;
     private static boolean rightSidePressed = false;
@@ -32,7 +33,7 @@ public abstract class CreativeInventoryMixin<T extends AbstractContainerMenu> ex
     @Unique
     private static final ResourceLocation CREATIVE_ICONS = ResourceLocation.tryBuild("draco","textures/gui/creative_buttons.png");
 
-    public CreativeInventoryMixin(T $$0, Inventory $$1, Component $$2) {
+    public CreativeInventoryMixin(CreativeModeInventoryScreen.ItemPickerMenu $$0, Inventory $$1, Component $$2) {
         super($$0, $$1, $$2);
     }
 
@@ -48,7 +49,7 @@ public abstract class CreativeInventoryMixin<T extends AbstractContainerMenu> ex
             gfx.fill(xpos + 11, ypos, xpos + 21, ypos + 1, rightSidePressed ? 0x80ffffff : 0x80000000);
             gfx.fill(xpos + 11, ypos + 1, xpos + 22, ypos + 10, rightSidePressed ? 0x80ffffff : 0x80000000);
             gfx.fill(xpos + 11, ypos + 10, xpos + 21, ypos + 11, rightSidePressed ? 0x80ffffff : 0x80000000);
-            gfx.blit(CREATIVE_ICONS, xpos, ypos, 22, 11, 0F, 0F, 22, 11, 256, 256);
+            gfx.blit(RenderType::guiTextured,CREATIVE_ICONS, xpos, ypos, 0F, 0F, 22, 11, 22, 11, 256, 256);
 
             if (mouseX >= xpos && mouseX < xpos + 22 && mouseY >= ypos && mouseY < ypos + 11) {
                 gfx.renderTooltip(font, Component.literal("Page " + (currentPage + 1) + "/" + (DracoCreativeTabVars.pageCount)), mouseX, mouseY);

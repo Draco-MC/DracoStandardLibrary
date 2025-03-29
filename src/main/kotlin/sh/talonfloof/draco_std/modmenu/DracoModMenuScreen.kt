@@ -21,6 +21,7 @@ import com.mojang.blaze3d.platform.NativeImage
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
@@ -63,7 +64,7 @@ class DracoModMenuScreen(
                     )
                     val iconZipEntry = jar.getEntry("pack.png")
                     if (iconZipEntry != null) {
-                        val img = DynamicTexture(NativeImage.read(jar.getInputStream(iconZipEntry)))
+                        val img = DynamicTexture({ id+"_pack_texture" },NativeImage.read(jar.getInputStream(iconZipEntry)))
                         val resourceLocation =
                             ResourceLocation.tryBuild("draco", "mod_icon/" + Hashing.sha1().hashString(id, Charsets.UTF_8))!!
                         minecraft!!.textureManager.register(resourceLocation, img)
@@ -72,7 +73,7 @@ class DracoModMenuScreen(
                 } else {
                     val icon = Paths.get(DracoModLoader.MOD_PATHS[id]!!).toFile().resolve("pack.png")
                     if(icon.exists()) {
-                        val img = DynamicTexture(NativeImage.read(icon.inputStream()))
+                        val img = DynamicTexture({ id+"_pack_texture" }, NativeImage.read(icon.inputStream()))
                         val resourceLocation =
                             ResourceLocation.tryBuild("draco", "mod_icon/" + Hashing.sha1().hashString(id, Charsets.UTF_8))!!
                         minecraft!!.textureManager.register(resourceLocation, img)
@@ -105,8 +106,8 @@ class DracoModMenuScreen(
     companion object {
         @JvmStatic
         public fun renderBox(gfx: GuiGraphics, x: Int, y: Int, w: Int, h: Int) {
-            RenderSystem.enableBlend();
             gfx.blit(
+                RenderType::guiTextured,
                 ResourceLocation.tryParse("textures/gui/menu_list_background.png")!!,
                 x,
                 y + 2,
@@ -119,9 +120,8 @@ class DracoModMenuScreen(
             )
             val head = HEADER_SEPARATOR
             val foot = FOOTER_SEPARATOR
-            gfx.blit(head, x, y, 0.0f, 0.0f, w, 2, 32, 2)
-            gfx.blit(foot, x, y + h - 2, 0.0f, 0.0f, w, 2, 32, 2)
-            RenderSystem.disableBlend();
+            gfx.blit(RenderType::guiTextured, head, x, y, 0.0f, 0.0f, w, 2, 32, 2)
+            gfx.blit(RenderType::guiTextured, foot, x, y + h - 2, 0.0f, 0.0f, w, 2, 32, 2)
         }
     }
 
@@ -136,8 +136,8 @@ class DracoModMenuScreen(
         renderBox(gfx,secondX,32,secondSize,height-64);
 
         gfx.pose().pushPose()
-        gfx.pose().translate(8.0,-Mth.lerp(c.toDouble(),scrollTransitionPrevious,scrollTransition),0.0)
         gfx.enableScissor(8,34,(width.toDouble()*0.5).toInt(),32+(height-64)-2)
+        gfx.pose().translate(8.0,-Mth.lerp(c.toDouble(),scrollTransitionPrevious,scrollTransition),0.0)
         val size = ((height-64)/32)
         val beginOffset = ((height-64)/2)-(size*32/2)
         for(index in scrollPosition-1 until scrollPosition+size+1) {
@@ -151,13 +151,14 @@ class DracoModMenuScreen(
                     if (modIcons.contains(keys[index])) {
                         val dimensions = modIcons[keys[index]]!!.second
                         gfx.blit(
+                            RenderType::guiTextured,
                             modIcons[keys[index]]!!.first,
                             0,
                             beginOffset + 32 + (y * 32),
-                            32,
-                            32,
                             0F,
                             0F,
+                            32,
+                            32,
                             dimensions.first,
                             dimensions.second,
                             dimensions.first,
@@ -194,21 +195,22 @@ class DracoModMenuScreen(
         gfx.disableScissor()
         gfx.pose().popPose()
         gfx.pose().pushPose()
-        gfx.pose().translate(secondX.toDouble(),32.0-Mth.lerp(c.toDouble(),secondScrollTransitionPrevious,secondScrollTransition), 0.0)
         gfx.enableScissor(secondX,34,width-8,32+(height-64)-2)
+        gfx.pose().translate(secondX.toDouble(),32.0-Mth.lerp(c.toDouble(),secondScrollTransitionPrevious,secondScrollTransition), 0.0)
         if (selectedMod != -1) {
             if(keys.getOrNull(selectedMod) != null) {
                 if (DracoModLoader.MODS[keys[selectedMod]] != null) {
                     if (modIcons.contains(keys[selectedMod])) {
                         val dimensions = modIcons[keys[selectedMod]]!!.second
                         gfx.blit(
+                            RenderType::guiTextured,
                             modIcons[keys[selectedMod]]!!.first,
                             2,
                             4,
-                            32,
-                            32,
                             0F,
                             0F,
+                            32,
+                            32,
                             dimensions.first,
                             dimensions.second,
                             dimensions.first,
@@ -244,7 +246,7 @@ class DracoModMenuScreen(
                     }
                     if(ModConfig.hasConfig(DracoModLoader.MODS[keys[selectedMod]]?.getID()!!)) {
                         renderBox(gfx, secondSize - 26, 6, 20, 20)
-                        gfx.blit(ResourceLocation.tryBuild("draco","textures/gui/configure_button.png")!!,secondSize - 26, 6,20,20,0F,0F,20,20,20,20)
+                        gfx.blit(RenderType::guiTextured,ResourceLocation.tryBuild("draco","textures/gui/configure_button.png")!!,secondSize - 26, 6,0F,0F,20,20,20,20,20,20)
                         if (a >= (secondX + secondSize - 26) && a < (secondX + secondSize - 6) && b >= 32 && b >= ((32+6) - secondScrollTransition) && b < ((32+6) - secondScrollTransition) + 20) {
                             gfx.fill(
                                 secondSize - 26,
@@ -260,7 +262,6 @@ class DracoModMenuScreen(
         }
         gfx.disableScissor()
         gfx.pose().popPose()
-        RenderSystem.enableBlend()
         gfx.drawString(font,"Draco Mod Menu",(width/2)-(font.width("Draco Mod Menu")/2),12,0xffffffff.toInt())
     }
 

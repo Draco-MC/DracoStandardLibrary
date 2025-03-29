@@ -32,6 +32,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sh.talonfloof.draco_std.DracoStandardLibrary;
 import sh.talonfloof.draco_std.modmenu.DracoButton;
 import sh.talonfloof.draco_std.modmenu.DracoModMenuScreen;
@@ -49,7 +50,7 @@ public class TitleScreenMixin {
     }
 
     @Inject(at = @At("TAIL"), method = "createNormalMenuOptions")
-    public void draco$injectButton(int a, int b, CallbackInfo ci) {
+    public void draco$injectButton(int $$0, int $$1, CallbackInfoReturnable<Integer> cir) {
         int modsButtonIndex = -1;
         int buttonsY = ((TitleScreen)(Object)this).height / 4 + 48;
         final int spacing = 24;
@@ -85,7 +86,7 @@ public class TitleScreenMixin {
     }
 
     @Inject(at = @At("TAIL"), method = "createDemoMenuOptions")
-    public void draco$injectDemoButton(int a, int b, CallbackInfo ci) {
+    public void draco$injectDemoButton(int $$0, int $$1, CallbackInfoReturnable<Integer> cir) {
         int modsButtonIndex = -1;
         int buttonsY = ((TitleScreen)(Object)this).height / 4 + 48;
         final int spacing = 24;

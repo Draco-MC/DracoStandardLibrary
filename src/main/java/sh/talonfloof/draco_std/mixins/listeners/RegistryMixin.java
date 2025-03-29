@@ -17,6 +17,7 @@
 package sh.talonfloof.draco_std.mixins.listeners;
 
 import com.google.common.collect.UnmodifiableIterator;
+import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -50,6 +51,7 @@ public class RegistryMixin {
         DracoLoadingScreen.updateCustomBar("minecraft_load","Launching Mods",null,null);
         for(Registry<?> i : BuiltInRegistries.REGISTRY) {
             i.getClass().getDeclaredMethod("unfreeze").invoke(i);
+            ((MappedRegistry)i).allTags = MappedRegistry.TagSet.unbound();
         }
         DracoEarlyLog.addToLog("HOOK IRegisterListener");
         var instances = DracoListenerManager.getListeners(IRegisterListener.class);

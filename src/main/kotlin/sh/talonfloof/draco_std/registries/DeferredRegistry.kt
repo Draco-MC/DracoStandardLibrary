@@ -26,7 +26,7 @@ open class DeferredHolder<R, T : R>(private val key: ResourceKey<R>) : Holder<R>
         if (holder != null) return
         val registry = getRegistry()
         if (registry != null) {
-            holder = registry.getHolder(key).orElse(null)
+            holder = registry.get(key).orElse(null)
         } else check(!throwOnMissingRegistry) { "Registry not present for " + this + ": " + key.registry() }
     }
 

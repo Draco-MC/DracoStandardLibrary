@@ -2,6 +2,8 @@ package sh.talonfloof.draco_std
 
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import sh.talonfloof.draco_std.config.ConfigType
+import sh.talonfloof.draco_std.config.ModConfig
 import sh.talonfloof.draco_std.listeners.IRegisterListener
 import sh.talonfloof.dracoloader.api.ListenerSubscriber
 import java.io.File
@@ -15,7 +17,7 @@ open class DracoStandardLibrary : IRegisterListener {
     companion object {
         @JvmField
         val LOGGER: Logger = LogManager.getLogger("DracoStandardLibrary")
-        const val VERSION = "1.21-alpha0.2"
+        const val VERSION = "1.21.5-alpha0.3"
     }
 
     override fun register() {
