@@ -9,17 +9,22 @@ import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.TagKey
+import net.minecraft.world.item.Item
+import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.state.BlockBehaviour
 import java.util.*
+import java.util.function.Function
 import java.util.function.Predicate
 import java.util.function.Supplier
 import java.util.stream.Stream
+import kotlin.jvm.optionals.getOrNull
 
 
 open class DeferredHolder<R, T : R>(private val key: ResourceKey<R>) : Holder<R>, Supplier<T> {
     private var holder: Holder<R>? = null
 
     fun getRegistry(): Registry<R>? {
-        return BuiltInRegistries.REGISTRY[key.registry()] as Registry<R>?
+        return BuiltInRegistries.REGISTRY[key.registry()].get().value() as Registry<R>?
     }
 
     protected fun attemptRetrieval(throwOnMissingRegistry: Boolean) {
@@ -90,6 +95,22 @@ open class DeferredRegistry<T> protected constructor(private val registryKey: Re
         val key = ResourceLocation.tryBuild(namespace, name)!!
         val ret: DeferredHolder<T, I> = DeferredHolder(ResourceKey.create(registryKey, key))
         require(deferredEntries.putIfAbsent(ret,sup) == null) { "Duplicate registration $name" }
+        return ret
+    }
+
+    fun <I : T> registerBlock(name: String, settings: BlockBehaviour.Properties, sup: Function<BlockBehaviour.Properties,I>) : DeferredHolder<T,I> {
+        val key = ResourceLocation.tryBuild(namespace, name)!!
+        val rKey = ResourceKey.create(registryKey, key)
+        val ret: DeferredHolder<T, I> = DeferredHolder(rKey)
+        require(deferredEntries.putIfAbsent(ret) { sup.apply(settings.setId(rKey as ResourceKey<Block>)) } == null) { "Duplicate registration $name" }
+        return ret
+    }
+
+    fun <I : T> registerItem(name: String, settings: Item.Properties, sup: Function<Item.Properties,I>) : DeferredHolder<T,I> {
+        val key = ResourceLocation.tryBuild(namespace, name)!!
+        val rKey = ResourceKey.create(registryKey, key)
+        val ret: DeferredHolder<T, I> = DeferredHolder(rKey)
+        require(deferredEntries.putIfAbsent(ret) { sup.apply(settings.setId(rKey as ResourceKey<Item>)) } == null) { "Duplicate registration $name" }
         return ret
     }
 

@@ -2,8 +2,6 @@ package sh.talonfloof.draco_std
 
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import sh.talonfloof.draco_std.config.ConfigType
-import sh.talonfloof.draco_std.config.ModConfig
 import sh.talonfloof.draco_std.listeners.IRegisterListener
 import sh.talonfloof.dracoloader.api.ListenerSubscriber
 import java.io.File
